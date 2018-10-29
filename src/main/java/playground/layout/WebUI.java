@@ -1,5 +1,8 @@
 package playground.layout;
 
-public class WebUI {
+import org.springframework.web.bind.annotation.RestController;
 
+@RestController
+public class WebUI {
+	
 }
