@@ -16,7 +16,7 @@ public class RateITApp extends Application {
 	public void start(Stage stage) throws Exception {
 		@SuppressWarnings("resource")
 		Scanner s = new Scanner(System.in);
-		System.out.println("Enter search terms: ");
+		System.out.println("Enter search term: ");
 		TrailerPane tpane = new TrailerPane(s.nextLine());
 		stage.setScene(new Scene(tpane));
 		stage.show();
