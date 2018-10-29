@@ -1,4 +1,4 @@
-package main.logic;
+package playground.logic;
 
 import java.io.IOException;
 import java.security.GeneralSecurityException;
