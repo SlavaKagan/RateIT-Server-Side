@@ -1,6 +1,7 @@
 package playground.logic;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ElementTO {
@@ -11,7 +12,7 @@ public class ElementTO {
 	private Date creationDate;
 	private Date experationDate;
 	private String type; // What's the difference between type and name?
-	private Map<String, Object> attributes;
+	private Map<String, Object> attributes = new HashMap<>();
 	private String creatorPlayground;
 	private String creatorEmail;
 
