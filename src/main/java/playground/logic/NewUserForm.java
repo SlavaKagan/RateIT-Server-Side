@@ -56,6 +56,5 @@ public class NewUserForm {
 	public String toString() {
 		return "NewUserForm [email=" + email + ", username=" + username + ", avatar=" + avatar + ", role=" + role + "]";
 	}
-	
-	
+
 }
