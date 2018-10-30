@@ -14,7 +14,12 @@ public class UserTO {
 	}
 	
 	public UserTO(NewUserForm form) {
-		
+		this.email = form.getEmail();
+		this.playground = Constants.PLAYGROUND;
+		this.userName = form.getUsername();
+		this.avatar = form.getAvatar();
+		this.role = form.getRole();
+		setPoints();
 	}
 
 	public String getEmail() {
@@ -61,8 +66,12 @@ public class UserTO {
 		return points;
 	}
 
-	public void setPoints(long points) {
-		this.points = points;
+	public void setPoints() {
+		if (this.role == Constants.MANAGER) {
+			this.points = 0;
+		} else if (this.role == Constants.REVIEWER){
+			this.points = 100;
+		}
 	}
 	
 }
