@@ -6,7 +6,18 @@ public class NewUserForm {
 	private String avatar;
 	private String role;
 	
-	public NewUserForm() {
+	public NewUserForm() { // added random default values for testing
+		this.email = "anonymous@gmail.com";
+		this.username = "anonymous";
+		this.avatar = "(-(-_(-_-)_-)-)";
+		this.role = "Manager";	
+	}
+	
+	public NewUserForm(String email, String username, String avatar, String role) {
+		this.email = email;
+		this.username = username;
+		this.avatar = avatar;
+		this.role = role;
 	}
 
 	public String getEmail() {
@@ -40,5 +51,11 @@ public class NewUserForm {
 	public void setRole(String role) {
 		this.role = role;
 	}
+
+	@Override
+	public String toString() {
+		return "NewUserForm [email=" + email + ", username=" + username + ", avatar=" + avatar + ", role=" + role + "]";
+	}
+	
 	
 }
