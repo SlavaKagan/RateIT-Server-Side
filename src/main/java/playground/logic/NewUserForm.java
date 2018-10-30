@@ -1,16 +1,16 @@
 package playground.logic;
 
-public class NewUserForm {
+public class NewUserForm extends Constants {
 	private String email;
 	private String username;
 	private String avatar;
 	private String role;
 	
 	public NewUserForm() { // added random default values for testing
-		this.email = "anonymous@gmail.com";
+		this.email = MANAGER_MAIL;
 		this.username = "anonymous";
 		this.avatar = "(-(-_(-_-)_-)-)";
-		this.role = "Manager";	
+		this.role = MANAGER_NAME;	
 	}
 	
 	public NewUserForm(String email, String username, String avatar, String role) {
