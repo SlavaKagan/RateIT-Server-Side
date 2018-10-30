@@ -29,9 +29,9 @@ public class WebUI {
 
 	// Please check this when you finish with UserTO class
 	@RequestMapping(
-			method = RequestMethod.POST,
-			path = "/playground/users",
-			produces = MediaType.APPLICATION_JSON_VALUE,
+			method = RequestMethod.POST, 
+			path = "/playground/users", 
+			produces = MediaType.APPLICATION_JSON_VALUE, 
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public UserTO createUser(@RequestBody NewUserForm userForm) {
 		return userpool.createUser(userForm);
@@ -39,8 +39,8 @@ public class WebUI {
 
 	// Please check this when you finish with UserTO class
 	@RequestMapping(
-			method = RequestMethod.GET,
-			path = "/playground/users/login/{playground}/{email}",
+			method = RequestMethod.GET, 
+			path = "/playground/users/login/{playground}/{email}", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserTO getUser(
 			@PathVariable("playground") String playground,
@@ -51,12 +51,12 @@ public class WebUI {
 	// Checked this, working, although i don't know what attribute belongs to what
 	// parameter
 	@RequestMapping(
-			method = RequestMethod.GET,
-			path = "/playground/elements/{userPlayground}/{email}/{playground}/{id}",
+			method = RequestMethod.GET, 
+			path = "/playground/elements/{userPlayground}/{email}/{playground}/{id}", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ElementTO getElement(
 			@PathVariable("userPlayground") String userPlayground,
-			@PathVariable("email") String email,
+			@PathVariable("email") String email, 
 			@PathVariable("playground") String playground,
 			@PathVariable("id") String id) {
 		return elementpool.getElement(userPlayground, email, playground, id);
@@ -64,8 +64,8 @@ public class WebUI {
 
 	// Checked this, working
 	@RequestMapping(
-			method = RequestMethod.GET,
-			path = "/playground/elements/{userPlayground}/{email}/all",
+			method = RequestMethod.GET, 
+			path = "/playground/elements/{userPlayground}/{email}/all", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ElementTO[] getAllElements(
 			@PathVariable("userPlayground") String userPlayground,
@@ -75,26 +75,23 @@ public class WebUI {
 
 	// Didn't check this
 	@RequestMapping(
-			method = RequestMethod.PUT,
-			path = "/playground/elements/{userPlayground}/{email}/{playground}/{id}",
+			method = RequestMethod.PUT, 
+			path = "/playground/elements/{userPlayground}/{email}/{playground}/{id}", 
 			consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void updateElement(
-			@PathVariable("userPlayground") String userPlayground,
-			@PathVariable("email") String email,
-			@PathVariable("playground") String playground,
-			@PathVariable("id") String id,
-			@RequestBody ElementTO newElement) {
+	public void updateElement(@PathVariable("userPlayground") String userPlayground,
+			@PathVariable("email") String email, @PathVariable("playground") String playground,
+			@PathVariable("id") String id, @RequestBody ElementTO newElement) {
 	}
 
 	// checked this, working
 	@RequestMapping(
-			method = RequestMethod.GET,
-			path = "/playground/elements/{userPlayground}/{email}/near/{x}/{y}/{distance}",
+			method = RequestMethod.GET, 
+			path = "/playground/elements/{userPlayground}/{email}/near/{x}/{y}/{distance}", 
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ElementTO[] getElementsByDistnace(
 			@PathVariable("userPlayground") String userPlayground,
-			@PathVariable("email") String email,
-			@PathVariable("x") String x,
+			@PathVariable("email") String email, 
+			@PathVariable("x") String x, 
 			@PathVariable("y") String y,
 			@PathVariable("distance") String distance) {
 		return elementpool.getAllElementsByDistance(userPlayground, email, Double.parseDouble(x), Double.parseDouble(y),
