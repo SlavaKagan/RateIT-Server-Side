@@ -10,7 +10,7 @@ public class NewUserForm implements Constants {
 		this.email = MANAGER_MAIL;
 		this.username = "anonymous";
 		this.avatar = "(-(-_(-_-)_-)-)";
-		this.role = MANAGER_NAME;	
+		this.role = GUEST;	
 	}
 	
 	public NewUserForm(String email, String username, String avatar, String role) {

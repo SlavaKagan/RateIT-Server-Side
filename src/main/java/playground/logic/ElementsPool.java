@@ -14,7 +14,7 @@ public class ElementsPool {
 			Arrays.asList(
 					new ElementTO("Messaging Board", "Messaging Board"),
 					new ElementTO("Movie Panel", "Venom 2018"), 
-					new ElementTO("Movie Panel", "Hallowing"))
+					new ElementTO("Movie Panel", "Halloween"))
 			);
 
 	public List<ElementTO> getAllElements() {

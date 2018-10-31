@@ -1,7 +1,6 @@
 package playground.logic;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
@@ -10,7 +9,7 @@ import playground.logic.UserTO;
 @Component
 public class UserPool implements Constants {
 
-	private List<UserTO> users = new ArrayList<>(Arrays.asList(new UserTO(), new UserTO(), new UserTO()));
+	private List<UserTO> users = new ArrayList<>();
 
 	public List<UserTO> getAllUsers() {
 		return users;
