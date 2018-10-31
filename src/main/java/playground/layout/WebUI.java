@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import playground.logic.Constants;
 import playground.logic.ElementTO;
 import playground.logic.ElementsPool;
 import playground.logic.NewUserForm;
@@ -15,7 +16,7 @@ import playground.logic.UserPool;
 import playground.logic.UserTO;
 
 @RestController
-public class WebUI {
+public class WebUI implements Constants {
 
 	private UserPool userpool;
 	private ElementsPool elementpool;
@@ -35,6 +36,23 @@ public class WebUI {
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public UserTO createUser(@RequestBody NewUserForm userForm) {
 		return userpool.createUser(userForm);
+	}
+	
+	// Have not checked this
+	@RequestMapping(
+			method = RequestMethod.GET,
+			path = "/playground/users/confirm/{playground}/{email}/{code}",
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public UserTO confirmUser(
+			@PathVariable("playground") String playground,
+			@PathVariable("email") String email,
+			@PathVariable("code") String code) throws Exception {
+		if (code.equals(TEMPORARY_CODE) && userpool.getUser(playground, email).getRole().equals(GUEST))
+			return userpool.confirmUser(playground, email);
+		else if (!code.equals(TEMPORARY_CODE))
+			throw new Exception("You have entered the wrong confirmation code");
+		else
+			throw new Exception("User is already confirmed");
 	}
 
 	// Please check this when you finish with UserTO class

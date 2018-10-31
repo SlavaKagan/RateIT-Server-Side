@@ -8,4 +8,5 @@ public interface Constants {
 	public static final String MANAGER = "Manager";
 	public static final String REVIEWER = "Reviewer";
 	public static final String GUEST = "Guest";
+	public static final String TEMPORARY_CODE = "1234";
 }
