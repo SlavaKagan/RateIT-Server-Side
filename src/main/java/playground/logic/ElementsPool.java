@@ -66,4 +66,9 @@ public class ElementsPool {
 						&& element.getAttributes().get(attributeName).equals(value))
 				.collect(Collectors.toList());
 	}
+
+	public void updateElement(String userPlayground, String email, String playground, String id, ElementTO newElement) {
+		getElement(userPlayground, email, playground, id).setParams(newElement);
+		
+	}
 }

@@ -11,7 +11,7 @@ public class ElementTO implements Constants {
 	private String name;
 	private Date creationDate;
 	private Date experationDate;
-	private String type; // What's the difference between type and name?
+	private String type;
 	private Map<String, Object> attributes;
 	private String creatorPlayground;
 	private String creatorEmail;
@@ -28,9 +28,7 @@ public class ElementTO implements Constants {
 		this.attributes.put("creatorsName", MANAGER_NAME);
 		this.attributes.put("isAMovie", "False");
 		this.attributes.put("movieName", "Venom 2018");
-		// Maybe you can think about more attributes to add...
 		this.id = creatorEmail + creatorPlayground;
-
 	}
 
 	public ElementTO(String type, String name) {
@@ -125,6 +123,19 @@ public class ElementTO implements Constants {
 				+ ", creationDate=" + creationDate + ", experationDate=" + experationDate + ", type=" + type
 				+ ", attributes=" + attributes + ", creatorPlayground=" + creatorPlayground + ", creatorEmail="
 				+ creatorEmail + "]";
+	}
+
+	public void setParams(ElementTO newElement) {
+		this.playground = newElement.playground;
+		this.location = newElement.location;
+		this.creationDate = newElement.creationDate;
+		this.experationDate = newElement.experationDate;
+		this.creatorPlayground = newElement.creatorPlayground;
+		this.creatorEmail = newElement.creatorEmail;
+		this.attributes = newElement.attributes;
+		this.id = newElement.id;
+		this.name = newElement.name;
+		this.type = newElement.type;
 	}
 
 }

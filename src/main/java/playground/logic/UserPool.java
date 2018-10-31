@@ -31,4 +31,8 @@ public class UserPool implements Constants {
 		confirmedUser.setRole(REVIEWER);
 		return confirmedUser;
 	}
+
+	public void editUser(String playground, String email, UserTO newUser) {
+		getUser(playground, email).setParams(newUser);
+	}
 }

@@ -7,12 +7,11 @@ public class UserTO implements Constants {
 	private String avatar;
 	private String role;
 	private long points;
-	
-	
+
 	public UserTO() {
-		
+
 	}
-	
+
 	public UserTO(NewUserForm form) {
 		this.email = form.getEmail();
 		this.playground = PLAYGROUND;
@@ -69,13 +68,23 @@ public class UserTO implements Constants {
 	public void setPoints() {
 		if (this.role == MANAGER) {
 			this.points = 0;
-		} else if (this.role == REVIEWER){
+		} else if (this.role == REVIEWER) {
 			this.points = 100;
 		}
 	}
-	
+
 	public void updatePoints(int amount) {
 		this.points += amount;
 	}
-	
+
+	public void setParams(UserTO newUser) {
+		this.email = newUser.email;
+		this.playground = newUser.playground;
+		this.userName = newUser.userName;
+		this.avatar = newUser.avatar;
+		this.role = newUser.role;
+		this.points = newUser.points;
+
+	}
+
 }

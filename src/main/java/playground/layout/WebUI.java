@@ -99,6 +99,7 @@ public class WebUI implements Constants {
 	public void updateElement(@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email, @PathVariable("playground") String playground,
 			@PathVariable("id") String id, @RequestBody ElementTO newElement) {
+		elementpool.updateElement(userPlayground, email, playground, id, newElement);
 	}
 
 	// checked this, working
@@ -127,4 +128,16 @@ public class WebUI implements Constants {
 			@PathVariable("value") Object value) {
 		return elementpool.getAllElementsByAttributeAndItsValue(userPlayground, email, attributeName, value).toArray(new ElementTO[0]);
 	}
+	
+	// Didn't check this
+		@RequestMapping(
+				method = RequestMethod.PUT, 
+				path = "/playground/users/{playground}/{email}", 
+				consumes = MediaType.APPLICATION_JSON_VALUE)
+		public void updateUser(
+				@PathVariable("playground") String playground,
+				@PathVariable("email") String email, 
+				@RequestBody UserTO newUser) {
+			userpool.editUser(playground, email, newUser);
+		}
 }
