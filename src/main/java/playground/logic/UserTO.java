@@ -1,6 +1,6 @@
 package playground.logic;
 
-public class UserTO {
+public class UserTO implements Constants {
 	private String email;
 	private String playground;
 	private String userName;
@@ -15,7 +15,7 @@ public class UserTO {
 	
 	public UserTO(NewUserForm form) {
 		this.email = form.getEmail();
-		this.playground = Constants.PLAYGROUND;
+		this.playground = PLAYGROUND;
 		this.userName = form.getUsername();
 		this.avatar = form.getAvatar();
 		this.role = form.getRole();
@@ -67,9 +67,9 @@ public class UserTO {
 	}
 
 	public void setPoints() {
-		if (this.role == Constants.MANAGER) {
+		if (this.role == MANAGER) {
 			this.points = 0;
-		} else if (this.role == Constants.REVIEWER){
+		} else if (this.role == REVIEWER){
 			this.points = 100;
 		}
 	}

@@ -3,7 +3,7 @@ package playground.logic;
 import java.util.Date;
 import java.util.Map;
 
-public class ElementTO {
+public class ElementTO implements Constants {
 	private String playground;
 	private String id;
 	private Location location;
@@ -16,14 +16,14 @@ public class ElementTO {
 	private String creatorEmail;
 
 	public ElementTO() {
-		this.playground = Constants.PLAYGROUND;
+		this.playground = PLAYGROUND;
 		this.location = new Location(Math.random() * 20, Math.random() * 20);
 		this.creationDate = new Date();
 		this.experationDate = null;
-		this.creatorPlayground = Constants.PLAYGROUND;
-		this.creatorEmail = Constants.MANAGER_MAIL;
+		this.creatorPlayground = PLAYGROUND;
+		this.creatorEmail = MANAGER_MAIL;
 		this.attributes.put("isActive", "True");
-		this.attributes.put("creatorsName", Constants.MANAGER_NAME);
+		this.attributes.put("creatorsName", MANAGER_NAME);
 		this.attributes.put("isAMovie", "False");
 		this.attributes.put("movieName", "Venom 2018");
 		// Maybe you can think about more attributes to add...

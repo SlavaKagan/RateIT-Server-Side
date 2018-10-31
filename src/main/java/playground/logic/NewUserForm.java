@@ -1,6 +1,6 @@
 package playground.logic;
 
-public class NewUserForm extends Constants {
+public class NewUserForm implements Constants {
 	private String email;
 	private String username;
 	private String avatar;
