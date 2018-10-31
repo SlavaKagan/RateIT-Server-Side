@@ -97,4 +97,16 @@ public class WebUI {
 		return elementpool.getAllElementsByDistance(userPlayground, email, Double.parseDouble(x), Double.parseDouble(y),
 				Double.parseDouble(distance)).toArray(new ElementTO[0]);
 	}
+	
+	@RequestMapping(
+			method = RequestMethod.GET,
+			path = "/playground/elements/{userPlayground}/{email}/search/{attributeName}/{value}",
+			produces = MediaType.APPLICATION_JSON_VALUE)
+	public ElementTO[] getAllElementsByAttributeAndItsValue( 
+			@PathVariable("userPlayground") String userPlayground, 
+			@PathVariable("email") String email,
+			@PathVariable("attributeName") String attributeName, 
+			@PathVariable("value") Object value) {
+		return elementpool.getAllElementsByAttributeAndItsValue(userPlayground, email, attributeName, value).toArray(new ElementTO[0]);
+	}
 }

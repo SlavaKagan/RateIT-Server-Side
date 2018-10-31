@@ -74,4 +74,8 @@ public class UserTO implements Constants {
 		}
 	}
 	
+	public void updatePoints(int amount) {
+		this.points += amount;
+	}
+	
 }

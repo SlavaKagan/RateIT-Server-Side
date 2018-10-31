@@ -1,6 +1,7 @@
 package playground.logic;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 public class ElementTO implements Constants {
@@ -22,6 +23,7 @@ public class ElementTO implements Constants {
 		this.experationDate = null;
 		this.creatorPlayground = PLAYGROUND;
 		this.creatorEmail = MANAGER_MAIL;
+		this.attributes = new HashMap<>();
 		this.attributes.put("isActive", "True");
 		this.attributes.put("creatorsName", MANAGER_NAME);
 		this.attributes.put("isAMovie", "False");
