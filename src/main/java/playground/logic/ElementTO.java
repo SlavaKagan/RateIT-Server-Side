@@ -137,5 +137,4 @@ public class ElementTO implements Constants {
 		this.name = newElement.name;
 		this.type = newElement.type;
 	}
-
 }
