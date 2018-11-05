@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import playground.logic.ActivityTO;
 import playground.logic.Constants;
 import playground.logic.ElementTO;
 import playground.logic.ElementsPool;
@@ -48,12 +49,9 @@ public class WebUI implements Constants {
 			@PathVariable("email") String email,
 			@PathVariable("code") String code) throws Exception {
 		UserTO theUser = userpool.getUser(playground, email);
-		String usersCode = userpool.getEmailToCode().get(theUser.getEmail());
-		if (code.equals(usersCode) && theUser.getRole().equals(GUEST)) {
-			userpool.getEmailToCode().put(theUser.getEmail(), "");
+		if (code.equals(TEMPORARY_CODE) && theUser.getRole().equals(GUEST))
 			return userpool.confirmUser(playground, email);
-		}
-		else if (!code.equals(usersCode))
+		else if (!code.equals(TEMPORARY_CODE))
 			throw new Exception("You have entered the wrong confirmation code");
 		else
 			throw new Exception("User is already confirmed");
@@ -157,4 +155,19 @@ public class WebUI implements Constants {
 				@RequestBody UserTO newUser) {
 			userpool.editUser(playground, email, newUser);
 		}
+		
+		@RequestMapping(
+				method= RequestMethod.POST,
+				path = "/playground/activities/{userPlayground}/{email}",
+				produces = MediaType.APPLICATION_JSON_VALUE,
+				consumes = MediaType.APPLICATION_JSON_VALUE
+				)
+		public Object getActivity(
+				@PathVariable("userPlayground") String userPlayground,
+				@PathVariable("email") String email,
+				@RequestBody ActivityTO theActivity) {
+			return theActivity.getAttributes().get("theActivity");
+		}
+		
+		
 }
