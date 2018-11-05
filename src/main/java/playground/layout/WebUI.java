@@ -46,6 +46,7 @@ public class WebUI implements Constants {
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email,
 			@PathVariable("code") String code) throws Exception {
+		validateParamsNotNull(playground,email);
 		UserTO theUser = userpool.getUser(playground, email);
 		if (code.equals(TEMPORARY_CODE) && theUser.getRole().equals(GUEST))
 			return userpool.confirmUser(playground, email);
@@ -61,7 +62,8 @@ public class WebUI implements Constants {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public UserTO getUser(
 			@PathVariable("playground") String playground,
-			@PathVariable("email") String email) {
+			@PathVariable("email") String email) throws Exception {
+		validateParamsNotNull(playground,email);
 		return userpool.getUser(playground, email);
 	}
 	
@@ -74,6 +76,7 @@ public class WebUI implements Constants {
 			@RequestBody ElementTO element,
 			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email) throws Exception {
+		validateParamsNotNull(userPlayground,email);
 		if (!userpool.getUser(userPlayground, email).getRole().equals(MANAGER))
 			throw new Exception("Given user is not Manager");
 		return elementpool.createElement(element.getType(), element.getName());
@@ -87,7 +90,8 @@ public class WebUI implements Constants {
 			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email, 
 			@PathVariable("playground") String playground,
-			@PathVariable("id") String id) {
+			@PathVariable("id") String id) throws Exception {
+		validateParamsNotNull(userPlayground,email,playground,id);
 		return elementpool.getElement(userPlayground, email, playground, id);
 	}
 
@@ -97,7 +101,8 @@ public class WebUI implements Constants {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ElementTO[] getAllElements(
 			@PathVariable("userPlayground") String userPlayground,
-			@PathVariable("email") String email) {
+			@PathVariable("email") String email) throws Exception {
+		validateParamsNotNull(userPlayground,email);
 		return elementpool.getAllElements(userPlayground, email).toArray(new ElementTO[0]);
 	}
 
@@ -106,8 +111,11 @@ public class WebUI implements Constants {
 			path = "/playground/elements/{userPlayground}/{email}/{playground}/{id}", 
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public void updateElement(@PathVariable("userPlayground") String userPlayground,
-			@PathVariable("email") String email, @PathVariable("playground") String playground,
-			@PathVariable("id") String id, @RequestBody ElementTO newElement) {
+			@PathVariable("email") String email, 
+			@PathVariable("playground") String playground,
+			@PathVariable("id") String id, 
+			@RequestBody ElementTO newElement) throws Exception {
+		validateParamsNotNull(playground,email,id);
 		elementpool.updateElement(userPlayground, email, playground, id, newElement);
 	}
 
@@ -120,7 +128,8 @@ public class WebUI implements Constants {
 			@PathVariable("email") String email, 
 			@PathVariable("x") String x, 
 			@PathVariable("y") String y,
-			@PathVariable("distance") String distance) {
+			@PathVariable("distance") String distance) throws Exception {
+		validateParamsNotNull(userPlayground,email,x,y,distance);
 		return elementpool.getAllElementsByDistance(userPlayground, email, Double.parseDouble(x), Double.parseDouble(y),
 				Double.parseDouble(distance)).toArray(new ElementTO[0]);
 	}
@@ -133,7 +142,8 @@ public class WebUI implements Constants {
 			@PathVariable("userPlayground") String userPlayground, 
 			@PathVariable("email") String email,
 			@PathVariable("attributeName") String attributeName, 
-			@PathVariable("value") Object value) {
+			@PathVariable("value") Object value) throws Exception {
+		validateParamsNotNull(userPlayground,email, attributeName);
 		return elementpool.getAllElementsByAttributeAndItsValue(userPlayground, email, attributeName, value).toArray(new ElementTO[0]);
 	}
 	
@@ -144,7 +154,8 @@ public class WebUI implements Constants {
 	public void updateUser(
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email, 
-			@RequestBody UserTO newUser) {
+			@RequestBody UserTO newUser) throws Exception {
+		validateParamsNotNull(playground,email);
 		userpool.editUser(playground, email, newUser);
 	}
 	
@@ -156,12 +167,21 @@ public class WebUI implements Constants {
 	public Object getActivity(
 			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email,
-			@RequestBody ActivityTO theActivity) {
+			@RequestBody ActivityTO theActivity) throws Exception {
+		validateParamsNotNull(userPlayground,email);
 		switch(theActivity.getType()) {
 		case "x":
 			return new UserTO(new NewUserForm("rubykozel@gmail.com","ruby",":-)","Guest"));
 		default:
 			return new UserTO();
 		}
-	}		
+	}
+	
+	private void validateParamsNotNull(String... strings) throws Exception {
+		for(String string : strings) {
+			if ("null".equals(string) || string == null) {
+				throw new Exception("message not found");
+			}
+		}
+	}
 }
