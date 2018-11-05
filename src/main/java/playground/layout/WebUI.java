@@ -77,8 +77,10 @@ public class WebUI implements Constants {
 	public ElementTO createElement(
 			@RequestBody ElementTO element,
 			@PathVariable("userPlayground") String userPlayground,
-			@PathVariable("email") String email) {
-		return element;
+			@PathVariable("email") String email) throws Exception {
+		if (!userpool.getUser(userPlayground, email).getRole().equals(MANAGER))
+			throw new Exception("Given user is not Manager");
+		return elementpool.createElement(element.getType(), element.getName());
 	}
 
 	// Checked this, working, although i don't know what attribute belongs to what
