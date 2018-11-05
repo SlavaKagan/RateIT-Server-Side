@@ -28,7 +28,7 @@ public class WebUI implements Constants {
 
 	}
 
-	// Please check this when you finish with UserTO classhjghjgjhgj
+	// Please check this when you finish with UserTO
 	@RequestMapping(
 			method = RequestMethod.POST, 
 			path = "/playground/users", 
@@ -47,9 +47,13 @@ public class WebUI implements Constants {
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email,
 			@PathVariable("code") String code) throws Exception {
-		if (code.equals(TEMPORARY_CODE) && userpool.getUser(playground, email).getRole().equals(GUEST))
+		UserTO theUser = userpool.getUser(playground, email);
+		String usersCode = userpool.getEmailToCode().get(theUser.getEmail());
+		if (code.equals(usersCode) && theUser.getRole().equals(GUEST)) {
+			userpool.getEmailToCode().put(theUser.getEmail(), "");
 			return userpool.confirmUser(playground, email);
-		else if (!code.equals(TEMPORARY_CODE))
+		}
+		else if (!code.equals(usersCode))
 			throw new Exception("You have entered the wrong confirmation code");
 		else
 			throw new Exception("User is already confirmed");
