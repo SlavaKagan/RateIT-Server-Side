@@ -29,7 +29,6 @@ public class WebUI implements Constants {
 
 	}
 
-	// Please check this when you finish with UserTO
 	@RequestMapping(
 			method = RequestMethod.POST, 
 			path = "/playground/users", 
@@ -39,7 +38,6 @@ public class WebUI implements Constants {
 		return userpool.createUser(userForm);
 	}
 	
-	// Have not checked this
 	@RequestMapping(
 			method = RequestMethod.GET,
 			path = "/playground/users/confirm/{playground}/{email}/{code}",
@@ -57,7 +55,6 @@ public class WebUI implements Constants {
 			throw new Exception("User is already confirmed");
 	}
 
-	// Please check this when you finish with UserTO class
 	@RequestMapping(
 			method = RequestMethod.GET, 
 			path = "/playground/users/login/{playground}/{email}", 
@@ -68,7 +65,6 @@ public class WebUI implements Constants {
 		return userpool.getUser(playground, email);
 	}
 	
-	//have not checked this
 	@RequestMapping(
 			method = RequestMethod.POST, 
 			path = "/playground/elements/{userPlayground}/{email}", 
@@ -83,8 +79,6 @@ public class WebUI implements Constants {
 		return elementpool.createElement(element.getType(), element.getName());
 	}
 
-	// Checked this, working, although i don't know what attribute belongs to what
-	// parameter
 	@RequestMapping(
 			method = RequestMethod.GET, 
 			path = "/playground/elements/{userPlayground}/{email}/{playground}/{id}", 
@@ -97,7 +91,6 @@ public class WebUI implements Constants {
 		return elementpool.getElement(userPlayground, email, playground, id);
 	}
 
-	// Checked this, working
 	@RequestMapping(
 			method = RequestMethod.GET, 
 			path = "/playground/elements/{userPlayground}/{email}/all", 
@@ -108,7 +101,6 @@ public class WebUI implements Constants {
 		return elementpool.getAllElements(userPlayground, email).toArray(new ElementTO[0]);
 	}
 
-	// Didn't check this
 	@RequestMapping(
 			method = RequestMethod.PUT, 
 			path = "/playground/elements/{userPlayground}/{email}/{playground}/{id}", 
@@ -119,7 +111,6 @@ public class WebUI implements Constants {
 		elementpool.updateElement(userPlayground, email, playground, id, newElement);
 	}
 
-	// checked this, working
 	@RequestMapping(
 			method = RequestMethod.GET, 
 			path = "/playground/elements/{userPlayground}/{email}/near/{x}/{y}/{distance}", 
@@ -146,30 +137,31 @@ public class WebUI implements Constants {
 		return elementpool.getAllElementsByAttributeAndItsValue(userPlayground, email, attributeName, value).toArray(new ElementTO[0]);
 	}
 	
-	// Didn't check this
-		@RequestMapping(
-				method = RequestMethod.PUT, 
-				path = "/playground/users/{playground}/{email}", 
-				consumes = MediaType.APPLICATION_JSON_VALUE)
-		public void updateUser(
-				@PathVariable("playground") String playground,
-				@PathVariable("email") String email, 
-				@RequestBody UserTO newUser) {
-			userpool.editUser(playground, email, newUser);
+	@RequestMapping(
+			method = RequestMethod.PUT, 
+			path = "/playground/users/{playground}/{email}", 
+			consumes = MediaType.APPLICATION_JSON_VALUE)
+	public void updateUser(
+			@PathVariable("playground") String playground,
+			@PathVariable("email") String email, 
+			@RequestBody UserTO newUser) {
+		userpool.editUser(playground, email, newUser);
+	}
+	
+	@RequestMapping(
+			method= RequestMethod.POST,
+			path = "/playground/activities/{userPlayground}/{email}",
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE)
+	public Object getActivity(
+			@PathVariable("userPlayground") String userPlayground,
+			@PathVariable("email") String email,
+			@RequestBody ActivityTO theActivity) {
+		switch(theActivity.getType()) {
+		case "x":
+			return new UserTO(new NewUserForm("rubykozel@gmail.com","ruby",":-)","Guest"));
+		default:
+			return new UserTO();
 		}
-		
-		@RequestMapping(
-				method= RequestMethod.POST,
-				path = "/playground/activities/{userPlayground}/{email}",
-				produces = MediaType.APPLICATION_JSON_VALUE,
-				consumes = MediaType.APPLICATION_JSON_VALUE
-				)
-		public Object getActivity(
-				@PathVariable("userPlayground") String userPlayground,
-				@PathVariable("email") String email,
-				@RequestBody ActivityTO theActivity) {
-			return theActivity.getAttributes().get("activityName");
-		}
-		
-		
+	}		
 }

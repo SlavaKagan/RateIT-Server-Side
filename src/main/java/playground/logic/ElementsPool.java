@@ -11,11 +11,8 @@ import org.springframework.stereotype.Component;
 public class ElementsPool {
 
 	private List<ElementTO> elements = new ArrayList<>(
-			Arrays.asList(
-					new ElementTO("Messaging Board", "Messaging Board"),
-					new ElementTO("Movie Panel", "Venom 2018"), 
-					new ElementTO("Movie Panel", "Halloween"))
-			);
+			Arrays.asList(new ElementTO("Messaging Board", "Messaging Board"),
+					new ElementTO("Movie Panel", "Venom 2018"), new ElementTO("Movie Panel", "Halloween")));
 
 	public List<ElementTO> getAllElements() {
 		return elements;
@@ -69,6 +66,6 @@ public class ElementsPool {
 
 	public void updateElement(String userPlayground, String email, String playground, String id, ElementTO newElement) {
 		getElement(userPlayground, email, playground, id).setParams(newElement);
-		
+
 	}
 }

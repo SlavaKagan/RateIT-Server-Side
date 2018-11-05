@@ -25,7 +25,8 @@ public class ActivityTO implements Constants {
 		this.attributes.put("activityName", "Post a Review");
 	}
 
-	public ActivityTO(ElementTO newElement, String type) {	
+	public ActivityTO(ElementTO newElement, String type) {
+		this();
 		this.elementId = newElement.getId();
 		this.elementPlayground = newElement.getPlayground();	
 		this.type = type;
