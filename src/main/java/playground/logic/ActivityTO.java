@@ -30,7 +30,7 @@ public class ActivityTO implements Constants {
 		this.attributes.put("creatorsName", REVIEWER);
 		this.attributes.put("activity", new Object());
 		this.attributes.put("activityName", "Post a Review");
-		this.type = type;
+		this.type = type; 
 	}
 
 	public String getPlayground() {
