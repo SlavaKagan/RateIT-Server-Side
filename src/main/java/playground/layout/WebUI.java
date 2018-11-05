@@ -168,7 +168,7 @@ public class WebUI implements Constants {
 				@PathVariable("userPlayground") String userPlayground,
 				@PathVariable("email") String email,
 				@RequestBody ActivityTO theActivity) {
-			return theActivity.getAttributes().get("theActivity");
+			return theActivity.getAttributes().get("activityName");
 		}
 		
 		

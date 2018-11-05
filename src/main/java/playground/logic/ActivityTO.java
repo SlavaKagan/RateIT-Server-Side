@@ -13,24 +13,22 @@ public class ActivityTO implements Constants {
 	private String playerEmail;
 	private Map<String, Object> attributes;
 
-	public ActivityTO()
-	{
-		
-	}
-	
-	public ActivityTO(ElementTO newElement, String type) {
+	public ActivityTO() {
 		this.playground = PLAYGROUND;
 		this.playerPlayground = REVIEWER;
 		this.playerEmail = PLAYER_MAIL;
-		this.id = playerEmail + playerPlayground;
-		this.elementId = newElement.getId();
-		this.elementPlayground = newElement.getPlayground();
+		this.id = this.playerEmail.hashCode() + "";
 		this.attributes = new HashMap<>();
 		this.attributes.put("isActive", "True");
 		this.attributes.put("creatorsName", REVIEWER);
 		this.attributes.put("activity", new Object());
 		this.attributes.put("activityName", "Post a Review");
-		this.type = type; 
+	}
+
+	public ActivityTO(ElementTO newElement, String type) {	
+		this.elementId = newElement.getId();
+		this.elementPlayground = newElement.getPlayground();	
+		this.type = type;
 	}
 
 	public String getPlayground() {
