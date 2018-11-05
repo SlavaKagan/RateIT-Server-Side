@@ -69,6 +69,19 @@ public class WebUI implements Constants {
 			@PathVariable("email") String email) {
 		return userpool.getUser(playground, email);
 	}
+	
+	//have not checked this
+	@RequestMapping(
+			method = RequestMethod.POST, 
+			path = "/playground/elements/{userPlayground}/{email}", 
+			produces = MediaType.APPLICATION_JSON_VALUE,
+			consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ElementTO createElement(
+			@RequestBody ElementTO element,
+			@PathVariable("userPlayground") String userPlayground,
+			@PathVariable("email") String email) {
+		return element;
+	}
 
 	// Checked this, working, although i don't know what attribute belongs to what
 	// parameter
