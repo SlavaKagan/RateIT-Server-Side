@@ -28,7 +28,7 @@ public class ElementTO implements Constants {
 		this.attributes.put("creatorsName", MANAGER_NAME);
 		this.attributes.put("isAMovie", "False");
 		this.attributes.put("movieName", "Venom 2018");
-		this.id = creatorEmail + creatorPlayground;
+		this.id = this.creatorEmail.hashCode() + "";
 	}
 
 	public ElementTO(String type, String name) {
