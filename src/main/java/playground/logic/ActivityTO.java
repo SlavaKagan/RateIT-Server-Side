@@ -13,6 +13,11 @@ public class ActivityTO implements Constants {
 	private String playerEmail;
 	private Map<String, Object> attributes;
 
+	public ActivityTO()
+	{
+		
+	}
+	
 	public ActivityTO(ElementTO newElement, String type) {
 		this.playground = PLAYGROUND;
 		this.playerPlayground = REVIEWER;
