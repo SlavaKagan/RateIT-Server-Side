@@ -50,10 +50,11 @@ public class WebUI implements Constants {
 		UserTO theUser = userpool.getUser(playground, email);
 		if (code.equals(TEMPORARY_CODE) && theUser.getRole().equals(GUEST))
 			return userpool.confirmUser(playground, email);
-		else if (!code.equals(TEMPORARY_CODE))
-			throw new Exception("You have entered the wrong confirmation code");
-		else
+		if (theUser.getRole().equals(REVIEWER) || theUser.getRole().equals(MANAGER))
 			throw new Exception("User is already confirmed");
+		if (!code.equals(TEMPORARY_CODE))
+			throw new Exception("You have entered the wrong confirmation code");
+		return null;
 	}
 
 	@RequestMapping(
@@ -64,7 +65,11 @@ public class WebUI implements Constants {
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email) throws Exception {
 		validateParamsNotNull(playground,email);
-		return userpool.getUser(playground, email);
+		UserTO user = userpool.getUser(playground, email);
+		if(!user.getRole().equals(GUEST))
+			return user;
+		else
+			throw new Exception("This is an unconfirmed account");
 	}
 	
 	@RequestMapping(
@@ -79,9 +84,11 @@ public class WebUI implements Constants {
 		validateParamsNotNull(userPlayground,email);
 		if (!userpool.getUser(userPlayground, email).getRole().equals(MANAGER))
 			throw new Exception("Given user is not Manager");
-		return elementpool.createElement(element.getType(), element.getName());
+		return elementpool.createElement(element.getType(), element.getName(), userPlayground, email);
 	}
 
+	//TEST FROM HERE//
+	
 	@RequestMapping(
 			method = RequestMethod.GET, 
 			path = "/playground/elements/{userPlayground}/{email}/{playground}/{id}", 

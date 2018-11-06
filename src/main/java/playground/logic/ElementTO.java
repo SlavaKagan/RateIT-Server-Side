@@ -20,21 +20,21 @@ public class ElementTO implements Constants {
 		this.playground = PLAYGROUND;
 		this.location = new Location(Math.random() * 20, Math.random() * 20);
 		this.creationDate = new Date();
-		this.experationDate = null;
-		this.creatorPlayground = PLAYGROUND;
-		this.creatorEmail = MANAGER_MAIL;
+		this.experationDate = null;	
 		this.attributes = new HashMap<>();
 		this.attributes.put("isActive", "True");
 		this.attributes.put("creatorsName", MANAGER_NAME);
 		this.attributes.put("isAMovie", "False");
-		this.attributes.put("movieName", "Venom 2018");
-		this.id = this.creatorEmail.hashCode() + "";
+		this.attributes.put("movieName", "Venom 2018");		
 	}
 
-	public ElementTO(String type, String name) {
+	public ElementTO(String type, String name, String creatorPlayground, String creatorEmail) {
 		this();
 		this.type = type;
 		this.name = name;
+		this.creatorPlayground = creatorPlayground;
+		this.creatorEmail = creatorEmail;
+		this.id = this.creatorEmail.hashCode() + "";
 	}
 
 	public String getPlayground() {
