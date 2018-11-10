@@ -114,7 +114,11 @@ public class WebUI implements Constants {
 			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email) throws Exception {
 		validateParamsNotNull(userPlayground,email);
-		return elementpool.getAllElements(userPlayground, email).toArray(new ElementTO[0]);
+		ElementTO[] element = elementpool.getAllElements(userPlayground, email).toArray(new ElementTO[0]);
+		if (element.length <= 0) {
+			throw new Exception("Creator has no elements it created");
+		}
+		return element;
 	}
 
 	@RequestMapping(
@@ -141,8 +145,11 @@ public class WebUI implements Constants {
 			@PathVariable("y") String y,
 			@PathVariable("distance") String distance) throws Exception {
 		validateParamsNotNull(userPlayground,email,x,y,distance);
-		return elementpool.getAllElementsByDistance(userPlayground, email, Double.parseDouble(x), Double.parseDouble(y),
-				Double.parseDouble(distance)).toArray(new ElementTO[0]);
+		ElementTO[] element = elementpool.getAllElementsByDistance(userPlayground, email, Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(distance)).toArray(new ElementTO[0]);
+		if (element.length <= 0) {
+			throw new Exception("No elements at the distance specified from the (x, y) specified");
+		}
+		return element;
 	}
 	
 	@RequestMapping(
