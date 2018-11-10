@@ -10,7 +10,7 @@ public class ElementTO implements Constants {
 	private Location location;
 	private String name;
 	private Date creationDate;
-	private Date experationDate;
+	private Date expirationDate;
 	private String type;
 	private Map<String, Object> attributes;
 	private String creatorPlayground;
@@ -20,7 +20,7 @@ public class ElementTO implements Constants {
 		this.playground = PLAYGROUND;
 		this.location = new Location(Math.random() * 20, Math.random() * 20);
 		this.creationDate = new Date();
-		this.experationDate = null;	
+		this.expirationDate = null;	
 		this.attributes = new HashMap<>();
 		this.attributes.put("isActive", "True");
 		this.attributes.put("creatorsName", MANAGER_NAME);
@@ -34,7 +34,7 @@ public class ElementTO implements Constants {
 		this.name = name;
 		this.creatorPlayground = creatorPlayground;
 		this.creatorEmail = creatorEmail;
-		this.id = this.creatorEmail.hashCode() + "";
+		setId(hashId() + "");
 	}
 
 	public String getPlayground() {
@@ -51,6 +51,20 @@ public class ElementTO implements Constants {
 
 	public void setId(String id) {
 		this.id = id;
+	}
+	
+	public int hashId() {
+//		int hash = 7;
+//		char val[] = (this.creatorEmail + this.name + this.type).toCharArray();
+//		for (int i = 0; i < val.length; i++) {
+//		    hash *= 31;
+//		    hash += val[i];
+//		}
+		int hash = (this.creatorEmail + this.name + this.type).hashCode();
+		if (hash < 0) {
+			hash *= -1;
+		}
+		return hash;
 	}
 
 	public Location getLocation() {
@@ -77,12 +91,12 @@ public class ElementTO implements Constants {
 		this.creationDate = creationDate;
 	}
 
-	public Date getExperationDate() {
-		return experationDate;
+	public Date getExpirationDate() {
+		return expirationDate;
 	}
 
-	public void setExperationDate(Date experationDate) {
-		this.experationDate = experationDate;
+	public void setExpirationDate(Date expirationDate) {
+		this.expirationDate = expirationDate;
 	}
 
 	public String getType() {
@@ -120,7 +134,7 @@ public class ElementTO implements Constants {
 	@Override
 	public String toString() {
 		return "[playground=" + playground + ", id=" + id + ", location=" + location + ", name=" + name
-				+ ", creationDate=" + creationDate + ", experationDate=" + experationDate + ", type=" + type
+				+ ", creationDate=" + creationDate + ", expirationDate=" + expirationDate + ", type=" + type
 				+ ", attributes=" + attributes + ", creatorPlayground=" + creatorPlayground + ", creatorEmail="
 				+ creatorEmail + "]";
 	}
@@ -129,7 +143,7 @@ public class ElementTO implements Constants {
 		this.playground = newElement.playground;
 		this.location = newElement.location;
 		this.creationDate = newElement.creationDate;
-		this.experationDate = newElement.experationDate;
+		this.expirationDate = newElement.expirationDate;
 		this.creatorPlayground = newElement.creatorPlayground;
 		this.creatorEmail = newElement.creatorEmail;
 		this.attributes = newElement.attributes;

@@ -13,13 +13,11 @@ Scenario: Posting new user unsuccessfully
 	When I POST "/playground/users" with nothing 
 	Then the response is <> 2xx 
 	
-	
 Scenario: Posting new user with given email as null 
 
 	Given the server is up 
 	When I POST "/playground/users" with '{"email": null,"username":"ruby","avatar":":-)","role":"Guest"}' 
 	Then the response is 500 
-	
 	
 #Feature: Confirming a new registered user
 	
@@ -53,12 +51,12 @@ Scenario: Getting a user from the server successfully
 	And theres a registered user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", 
 	When I GET "/playground/users/login/2019A.Kagan/rubykozel@gmail.com" 
 	Then the response is 200 
-	And the outpur is '{"email": "rubykozel@gmail.com","playground": "2019A.Kagan","userName": "ruby","avatar": ":-)","role": "Reviewer","points": 0}' 
+	And the output is '{"email": "rubykozel@gmail.com","playground": "2019A.Kagan","userName": "ruby","avatar": ":-)","role": "Reviewer","points": 0}' 
 	
 Scenario: Getting an unconfirmed user 
 
 	Given the server is up 
-	And theres an uncomfirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", 
+	And theres an unconfirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", 
 	When I GET "/playground/users/login/2019A.Kagan/rubykozel@gmail.com" 
 	Then the response is 500 with message: "This is an unconfirmed account" 
 	
@@ -84,9 +82,21 @@ Scenario: Creating an element without delivering any valid JSON
 	Given the server is up
 	And theres an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Manager"
 	When I POST "/playground/elements/2019A.Kagan/rubykozel@gmail.com" with nothing
-	Then the response is <> 2xx	
+	Then the response is <> 2xx
 	
+#Feature: Get an element
 	
+Scenario: Getting an element successfully
+
+	Given the server is up 
+	And theres an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "1025028332",
+	When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/1025028332"
+	Then the response is 200 
+	And the output is '{"playground": "2019A.Kagan", "id": "1586158061", "location": { "x": 7.864522942236285, "y": 18.057240413622054 }, "name": "Messaging Board", "creationDate": "2018-11-10T15:55:59.394+0000", "expirationDate": null, "type": "Messaging Board", "attributes": { "creatorsName": "Manager", "isActive": "True", "isAMovie": "False", "movieName": "Venom 2018" }, "creatorPlayground": "2019A.Kagan", "creatorEmail": "rubykozel@gmail.com" }' 
 	
-	
-				
+Scenario: Getting an element with wrong id 
+
+	Given the server is up 
+	And theres an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "1025028332", 
+	When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/1586158061" 
+	Then the response is 500 with message: "Element does not exist" 

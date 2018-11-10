@@ -99,7 +99,11 @@ public class WebUI implements Constants {
 			@PathVariable("playground") String playground,
 			@PathVariable("id") String id) throws Exception {
 		validateParamsNotNull(userPlayground,email,playground,id);
-		return elementpool.getElement(userPlayground, email, playground, id);
+		try {
+			return elementpool.getElement(userPlayground, email, playground, id);
+		} catch (Exception e) {
+			throw new Exception("Element does not exist");
+		}
 	}
 
 	@RequestMapping(

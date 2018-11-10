@@ -8,13 +8,13 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ElementsPool {
+public class ElementsPool implements Constants{
 
 	private List<ElementTO> elements = new ArrayList<>(
 			Arrays.asList(
-					new ElementTO("Messaging Board", "Messaging Board", Constants.PLAYGROUND, "rubykozel@gmail.com"),
-					new ElementTO("Movie Panel", "Venom 2018", Constants.PLAYGROUND, "rubykozel@gmail.com"), 
-					new ElementTO("Movie Panel", "Halloween", Constants.PLAYGROUND, "rubykozel@gmail.com")));
+					new ElementTO("Messaging Board", "Messaging Board", PLAYGROUND, "rubykozel@gmail.com"),
+					new ElementTO("Movie Panel", "Venom 2018", PLAYGROUND, "rubykozel@gmail.com"), 
+					new ElementTO("Movie Panel", "Halloween", PLAYGROUND, "rubykozel@gmail.com")));
 
 	public List<ElementTO> getAllElements() {
 		return elements;
