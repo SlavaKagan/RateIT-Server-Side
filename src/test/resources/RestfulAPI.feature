@@ -99,14 +99,14 @@ Scenario: Getting an element is unsuccessful with wrong id
 	Given the server is up 
 	And theres an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "1025028332", 
 	When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/1586158061" 
-	Then the response is 500 with message: "Element does not exist" 
+	Then the response is 404 with message: "Element does not exist" 
 	
 Scenario: Getting an element is unsuccessful with wrong creator email
 
 	Given the server is up 
 	And theres an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "1025028332", 
 	When I GET "/playground/elements/2019A.Kagan/dudidavidov@gmail.com/2019A.Kagan/1025028332" 
-	Then the response is 500 with message: "Element does not exist" 
+	Then the response is 404 with message: "Element does not exist" 
 	
 #Feature: Get all elements made by specific creator email and playground
 	
@@ -116,7 +116,7 @@ Scenario: Getting all elements successfully
 	And there are elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com",
 	When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/all"
 	Then the response is 200 
-	And the output is '[ { "playground": "2019A.Kagan", "id": "1025028332", "location": { "x": Any, "y": Any }, "name": "Messaging Board", "creationDate": Any valid date, "expirationDate": null, "type": "Messaging Board", "attributes": { "creatorsName": "Manager", "isActive": "True", "isAMovie": "False", "movieName": "Venom 2018" }, "creatorPlayground": "2019A.Kagan", "creatorEmail": "rubykozel@gmail.com" }, { "playground": "2019A.Kagan", "id": "1485184136", "location": { "x": Any, "y": Any }, "name": "Venom 2018", "creationDate": Any valid date, "expirationDate": null, "type": "Movie Panel", "attributes": { "creatorsName": "Manager", "isActive": "True", "isAMovie": "False", "movieName": "Venom 2018" }, "creatorPlayground": "2019A.Kagan", "creatorEmail": "rubykozel@gmail.com" }, { "playground": "2019A.Kagan", "id": "1770773541", "location": { "x": Any, "y": Any }, "name": "Halloween", "creationDate": Any valid date, "expirationDate": null, "type": "Movie Panel", "attributes": { "creatorsName": "Manager", "isActive": "True", "isAMovie": "False", "movieName": "Venom 2018" }, "creatorPlayground": "2019A.Kagan", "creatorEmail": "rubykozel@gmail.com" } ]'
+	And the output is '[ { "playground": "2019A.Kagan", "id": "1025028332", "location": { "x": Any, "y": Any }, "name": "Messaging Board", "creationDate": Any valid date, "expirationDate": null, "type": "Messaging Board", "attributes": { "creatorsName": "Manager", "isActive": "True", "isAMovie": "False", "movieName": "Venom 2018" }, "creatorPlayground": "2019A.Kagan", "creatorEmail": "rubykozel@gmail.com" } ...]'
 	
 Scenario: Getting none elements fail, with creator email that has no elements
 
@@ -127,20 +127,20 @@ Scenario: Getting none elements fail, with creator email that has no elements
 	
 #Feature: Get all elements made by specific creator email and playground at max {distance} from ({x},{y})
 	
-Scenario: 
+Scenario: Getting an element with specific distance successfully
 
 	Given the server is up 
-	And there are elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", x: random(), y: random(),
+	And there is an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", x: 5, y: 5,
 	When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/near/0/0/10"
 	Then the response is 200 
-	And the output is 'Any elements that has been generated with max {distance} from the ({x},{y}) that has been generated. show as array of ElementTO[]'
+	And the output is '[ { "playground": "2019A.Kagan", "id": "1025028332", "location": { "x": Any x that its distance from (0,0) is less then 10, "y": Any y that its distance from (0,0) is less then 10 }, "name": Any name, "creationDate": Any valid date, "expirationDate": null, "type": Any type, "attributes": { "creatorsName": "Manager", "isActive": "True", "isAMovie": "False", "movieName": "Venom 2018" }, "creatorPlayground": "2019A.Kagan", "creatorEmail": "rubykozel@gmail.com" } ]'
 	
-Scenario: 
+Scenario: Getting elements when there are no elements in the playground
 
 	Given the server is up 
-	And there are elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", x: random(), y: random(),
+	And there are no elements in the playground,
 	When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/near/0/0/1" 
-	Then the response is 500 with message: "No elements at the distance specified from the (x, y) specified"
+	Then the response is 404 with message: "No elements at the distance specified from the (x, y) specified"
 	
 #Feature: Get elements by attribute's value
 
@@ -150,22 +150,21 @@ Scenario: Get elements by attributes value succesfully
 	And theres are elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", attribute: "isAMovie", value:"False"
 	When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/isAMovie/False"
 	Then the response is 200
-	And the output is '[{"playground":"2019A.Kagan","id":"1025028332","location":{"x":16.527183499578257,"y":10.581854276405153},"name":"Messaging Board","creationDate":"2018-11-10T18:11:59.910+0000","expirationDate":null,"type":"Messaging Board","attributes":{"creatorsName":"Manager","isActive":"True","isAMovie":"False","movieName":"Venom 2018"},"creatorPlayground":"2019A.Kagan","creatorEmail":"rubykozel@gmail.com"},{"playground":"2019A.Kagan","id":"1485184136","location":{"x":16.777177966940798,"y":18.248798078736645},"name":"Venom 2018","creationDate":"2018-11-10T18:11:59.910+0000","expirationDate":null,"type":"Movie Panel","attributes":{"creatorsName":"Manager","isActive":"True","isAMovie":"False","movieName":"Venom 2018"},"creatorPlayground":"2019A.Kagan","creatorEmail":"rubykozel@gmail.com"},{"playground":"2019A.Kagan","id":"1770773541","location":{"x":16.791256975112475,"y":14.730501896801973},"name":"Halloween","creationDate":"2018-11-10T18:11:59.910+0000","expirationDate":null,"type":"Movie Panel","attributes":{"creatorsName":"Manager","isActive":"True","isAMovie":"False","movieName":"Venom 2018"},"creatorPlayground":"2019A.Kagan","creatorEmail":"rubykozel@gmail.com"}]'
+	And the output is '[{"playground":"2019A.Kagan","id":"1025028332","location":{"x": Any x ,"y": Any y },"name": Any name,"creationDate": Any valid date ,"expirationDate":null, "type": any type ,"attributes":{"creatorsName":"Manager","isActive":"True","isAMovie":"False","movieName":"Venom 2018"},"creatorPlayground":"2019A.Kagan","creatorEmail":"rubykozel@gmail.com"} ... ]'
 	
 Scenario: Get elements by null attributes value
 
 	Given the server is up
 	And theres are elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", attribute: "isAMovie", value:"False"
 	When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/null/False"
-	Then the response is 500 with message: "message not found"
+	Then the response is 500 with message: "One of the paramters provided was null"
 		
 Scenario: Get elements by attributes value that does not exist
 
 	Given the server is up
 	And theres are no elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", attribute: "movieName", value:"Venom 1018"
 	When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/movieName/Venom 1018"
-	Then the response is 200
-	And the output is '[]'
+	Then the response is 404 with message "No element was found with key: movieName and value: Venom 1018"
 	
 #Feature: Posting a new activity
 
@@ -180,11 +179,11 @@ Scenario: Post a new activity with null email unsuccessfuly
 
 	Given the server is up
 	When I POST "/playground/activities/2019A.Kagan/null" with '{"elementId": "1025028355","elementPlayground": "2019A.Kagan","type": "x"}'
-	Then the response is 500 with message: "message not found"
+	Then the response is 500 with message: "One of the paramters provided was null"
 
 Scenario: Post a new activity with an empty JSON unsuccessfuly
 
 	Given the server is up
 	When I POST "/playground/activities/2019A.Kagan/rubykozel@gmail.com" with '{}'
-	Then the response is 500 with message: "No message available"
+	Then the response is 500 
 	

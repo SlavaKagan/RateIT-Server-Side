@@ -54,17 +54,7 @@ public class ElementTO implements Constants {
 	}
 	
 	public int hashId() {
-//		int hash = 7;
-//		char val[] = (this.creatorEmail + this.name + this.type).toCharArray();
-//		for (int i = 0; i < val.length; i++) {
-//		    hash *= 31;
-//		    hash += val[i];
-//		}
-		int hash = (this.creatorEmail + this.name + this.type).hashCode();
-		if (hash < 0) {
-			hash *= -1;
-		}
-		return hash;
+		return Math.abs((this.creatorEmail + this.name + this.type).hashCode());
 	}
 
 	public Location getLocation() {

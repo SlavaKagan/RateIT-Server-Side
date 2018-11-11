@@ -1,11 +1,14 @@
 package playground.layout;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import playground.logic.ActivityTO;
@@ -51,9 +54,9 @@ public class WebUI implements Constants {
 		if (code.equals(TEMPORARY_CODE) && theUser.getRole().equals(GUEST))
 			return userpool.confirmUser(playground, email);
 		if (theUser.getRole().equals(REVIEWER) || theUser.getRole().equals(MANAGER))
-			throw new Exception("User is already confirmed");
+			throw new ConfirmationException("User is already confirmed");
 		if (!code.equals(TEMPORARY_CODE))
-			throw new Exception("You have entered the wrong confirmation code");
+			throw new ConfirmationException("You have entered the wrong confirmation code");
 		return null;
 	}
 
@@ -69,7 +72,7 @@ public class WebUI implements Constants {
 		if(!user.getRole().equals(GUEST))
 			return user;
 		else
-			throw new Exception("This is an unconfirmed account");
+			throw new ConfirmationException("This is an unconfirmed account");
 	}
 	
 	@RequestMapping(
@@ -86,8 +89,6 @@ public class WebUI implements Constants {
 			throw new Exception("Given user is not Manager");
 		return elementpool.createElement(element.getType(), element.getName(), userPlayground, email);
 	}
-
-	//TEST FROM HERE//
 	
 	@RequestMapping(
 			method = RequestMethod.GET, 
@@ -102,7 +103,7 @@ public class WebUI implements Constants {
 		try {
 			return elementpool.getElement(userPlayground, email, playground, id);
 		} catch (Exception e) {
-			throw new Exception("Element does not exist");
+			throw new ElementNotFoundException("Element does not exist");
 		}
 	}
 
@@ -116,7 +117,7 @@ public class WebUI implements Constants {
 		validateParamsNotNull(userPlayground,email);
 		ElementTO[] element = elementpool.getAllElements(userPlayground, email).toArray(new ElementTO[0]);
 		if (element.length <= 0) {
-			throw new Exception("Creator has no elements it created");
+			throw new ElementNotFoundException("Creator " + email + " has no elements it created");
 		}
 		return element;
 	}
@@ -145,10 +146,10 @@ public class WebUI implements Constants {
 			@PathVariable("y") String y,
 			@PathVariable("distance") String distance) throws Exception {
 		validateParamsNotNull(userPlayground,email,x,y,distance);
-		ElementTO[] element = elementpool.getAllElementsByDistance(userPlayground, email, Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(distance)).toArray(new ElementTO[0]);
-		if (element.length <= 0) {
-			throw new Exception("No elements at the distance specified from the (x, y) specified");
-		}
+		ElementTO[] element = elementpool
+				.getAllElementsByDistance(userPlayground, email, Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(distance)).toArray(new ElementTO[0]);
+		if (element.length <= 0)			
+			throw new ElementNotFoundException("No elements at the distance specified from the (x, y) specified");
 		return element;
 	}
 	
@@ -162,7 +163,10 @@ public class WebUI implements Constants {
 			@PathVariable("attributeName") String attributeName, 
 			@PathVariable("value") Object value) throws Exception {
 		validateParamsNotNull(userPlayground,email, attributeName);
-		return elementpool.getAllElementsByAttributeAndItsValue(userPlayground, email, attributeName, value).toArray(new ElementTO[0]);
+		ElementTO[] elements = elementpool.getAllElementsByAttributeAndItsValue(userPlayground, email, attributeName, value).toArray(new ElementTO[0]);
+		if (elements.length <= 0)			
+			throw new ElementNotFoundException("No elements at the distance specified from the (x, y) specified");
+		return elements;
 	}
 	
 	@RequestMapping(
@@ -195,11 +199,16 @@ public class WebUI implements Constants {
 		}
 	}
 	
+	@ExceptionHandler
+	@ResponseStatus(HttpStatus.NOT_FOUND)
+	public ErrorMessage handleException(NotFoundExceptions e) {
+		String msg = e.getMessage();
+		return new ErrorMessage(msg == null ? "There's no specified message for this exception" : msg);
+	}
+	
 	private void validateParamsNotNull(String... strings) throws Exception {
-		for(String string : strings) {
-			if ("null".equals(string) || string == null) {
-				throw new Exception("message not found");
-			}
-		}
+		for(String string : strings) 
+			if ("null".equals(string) || string == null)
+				throw new Exception("One of the paramters provided was null");					
 	}
 }
