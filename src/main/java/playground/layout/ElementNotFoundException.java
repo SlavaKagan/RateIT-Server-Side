@@ -23,10 +23,5 @@ public class ElementNotFoundException extends Exception implements NotFoundExcep
 	public ElementNotFoundException(Throwable cause) {
 		super(cause);
 	}
-	
-	@Override
-	public String getMessage() {
-		return super.getMessage();
-	}
 
 }

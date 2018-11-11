@@ -1,5 +1,8 @@
 package playground.layout;
 
+import java.lang.reflect.Field;
+import java.util.stream.Stream;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -26,7 +29,7 @@ public class WebUI implements Constants {
 	private ElementsPool elementpool;
 
 	@Autowired
-	public void setUserPool(UserPool userpool, ElementsPool elementpool) {
+	public void setPools(UserPool userpool, ElementsPool elementpool) {
 		this.userpool = userpool;
 		this.elementpool = elementpool;
 
@@ -37,7 +40,7 @@ public class WebUI implements Constants {
 			path = "/playground/users", 
 			produces = MediaType.APPLICATION_JSON_VALUE, 
 			consumes = MediaType.APPLICATION_JSON_VALUE)
-	public UserTO createUser(@RequestBody NewUserForm userForm) {
+	public UserTO createUser(@RequestBody NewUserForm userForm) throws IllegalArgumentException, IllegalAccessException, Exception {
 		return userpool.createUser(userForm);
 	}
 	
@@ -68,7 +71,12 @@ public class WebUI implements Constants {
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email) throws Exception {
 		validateParamsNotNull(playground,email);
-		UserTO user = userpool.getUser(playground, email);
+		UserTO user;
+		try {
+			user = userpool.getUser(playground, email);
+		} catch(Exception e) {
+			throw new ConfirmationException("This is an unregistered account");
+		}
 		if(!user.getRole().equals(GUEST))
 			return user;
 		else
@@ -199,7 +207,10 @@ public class WebUI implements Constants {
 		}
 	}
 	
-	@ExceptionHandler
+	@ExceptionHandler({
+		ElementNotFoundException.class, 
+		ConfirmationException.class
+		})
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ErrorMessage handleException(NotFoundExceptions e) {
 		String msg = e.getMessage();

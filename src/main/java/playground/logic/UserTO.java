@@ -25,7 +25,8 @@ public class UserTO implements Constants {
 		return email;
 	}
 
-	public void setEmail(String email) {
+	public void setEmail(String email) throws Exception {
+		validateNull(email);
 		this.email = email;
 	}
 
@@ -33,7 +34,8 @@ public class UserTO implements Constants {
 		return playground;
 	}
 
-	public void setPlayground(String playground) {
+	public void setPlayground(String playground) throws Exception {
+		validateNull(playground);
 		this.playground = playground;
 	}
 
@@ -41,7 +43,8 @@ public class UserTO implements Constants {
 		return userName;
 	}
 
-	public void setUserName(String userName) {
+	public void setUserName(String userName) throws Exception {
+		validateNull(userName);
 		this.userName = userName;
 	}
 
@@ -49,7 +52,8 @@ public class UserTO implements Constants {
 		return avatar;
 	}
 
-	public void setAvatar(String avatar) {
+	public void setAvatar(String avatar) throws Exception {
+		validateNull(avatar);
 		this.avatar = avatar;
 	}
 
@@ -57,7 +61,8 @@ public class UserTO implements Constants {
 		return role;
 	}
 
-	public void setRole(String role) {
+	public void setRole(String role) throws Exception {
+		validateNull(role);
 		this.role = role;
 	}
 
@@ -75,6 +80,11 @@ public class UserTO implements Constants {
 
 	public void updatePoints(int amount) {
 		this.points += amount;
+	}
+	
+	private void validateNull(String string) throws Exception {
+		if ("null".equals(string) || string == null)
+			throw new Exception("One of the paramters provided was null");
 	}
 
 	public void setParams(UserTO newUser) {

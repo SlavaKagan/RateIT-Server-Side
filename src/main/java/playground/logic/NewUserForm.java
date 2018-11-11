@@ -24,7 +24,8 @@ public class NewUserForm implements Constants {
 		return email;
 	}
 
-	public void setEmail(String email) {
+	public void setEmail(String email) throws Exception {
+		validateNull(email);
 		this.email = email;
 	}
 
@@ -32,7 +33,8 @@ public class NewUserForm implements Constants {
 		return username;
 	}
 
-	public void setUsername(String username) {
+	public void setUsername(String username) throws Exception {
+		validateNull(username);
 		this.username = username;
 	}
 
@@ -40,7 +42,8 @@ public class NewUserForm implements Constants {
 		return avatar;
 	}
 
-	public void setAvatar(String avatar) {
+	public void setAvatar(String avatar) throws Exception {
+		validateNull(avatar);
 		this.avatar = avatar;
 	}
 
@@ -48,8 +51,14 @@ public class NewUserForm implements Constants {
 		return role;
 	}
 
-	public void setRole(String role) {
+	public void setRole(String role) throws Exception {
+		validateNull(role);
 		this.role = role;
+	}
+	
+	private void validateNull(String string) throws Exception {
+		if ("null".equals(string) || string == null)
+			throw new Exception("One of the paramters provided was null");
 	}
 
 	@Override

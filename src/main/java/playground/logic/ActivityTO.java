@@ -13,11 +13,11 @@ public class ActivityTO implements Constants {
 	private String playerEmail;
 	private Map<String, Object> attributes;
 
-	public ActivityTO() {
+	public ActivityTO() throws Exception {
 		this.playground = PLAYGROUND;
 		this.playerPlayground = REVIEWER;
 		this.playerEmail = PLAYER_MAIL;
-		this.id = this.playerEmail.hashCode() + "";
+		setId(hashId() + ""); 
 		this.attributes = new HashMap<>();
 		this.attributes.put("isActive", "True");
 		this.attributes.put("creatorsName", REVIEWER);
@@ -25,7 +25,7 @@ public class ActivityTO implements Constants {
 		this.attributes.put("activityName", "Post a Review");
 	}
 
-	public ActivityTO(ElementTO newElement, String type) {
+	public ActivityTO(ElementTO newElement, String type) throws Exception {
 		this();
 		this.elementId = newElement.getId();
 		this.elementPlayground = newElement.getPlayground();	
@@ -36,7 +36,8 @@ public class ActivityTO implements Constants {
 		return playground;
 	}
 
-	public void setPlayground(String playground) {
+	public void setPlayground(String playground) throws Exception {
+		validateNull(playground);
 		this.playground = playground;
 	}
 
@@ -44,15 +45,21 @@ public class ActivityTO implements Constants {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(String id) throws Exception {
+		validateNull(id);
 		this.id = id;
+	}
+	
+	public int hashId() {
+		return Math.abs((this.playerEmail + this.elementId).hashCode());
 	}
 
 	public String getElementPlayground() {
 		return elementPlayground;
 	}
 
-	public void setElementPlayground(String elementPlayground) {
+	public void setElementPlayground(String elementPlayground) throws Exception {
+		validateNull(elementPlayground);
 		this.elementPlayground = elementPlayground;
 	}
 
@@ -60,7 +67,8 @@ public class ActivityTO implements Constants {
 		return elementId;
 	}
 
-	public void setElementId(String elementId) {
+	public void setElementId(String elementId) throws Exception {
+		validateNull(elementId);
 		this.elementId = elementId;
 	}
 
@@ -68,7 +76,8 @@ public class ActivityTO implements Constants {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(String type) throws Exception {
+		validateNull(type);
 		this.type = type;
 	}
 
@@ -76,7 +85,8 @@ public class ActivityTO implements Constants {
 		return playerPlayground;
 	}
 
-	public void setPlayerPlayground(String playerPlayground) {
+	public void setPlayerPlayground(String playerPlayground) throws Exception {
+		validateNull(playerPlayground);
 		this.playerPlayground = playerPlayground;
 	}
 
@@ -84,7 +94,8 @@ public class ActivityTO implements Constants {
 		return playerEmail;
 	}
 
-	public void setPlayerEmail(String playerEmail) {
+	public void setPlayerEmail(String playerEmail) throws Exception {
+		validateNull(playerEmail);
 		this.playerEmail = playerEmail;
 	}
 
@@ -113,5 +124,10 @@ public class ActivityTO implements Constants {
 		this.playerPlayground = newActivity.playerPlayground;
 		this.playerEmail = newActivity.playerEmail;
 		this.attributes = newActivity.attributes;
+	}
+	
+	private void validateNull(String string) throws Exception {
+		if ("null".equals(string) || string == null)
+			throw new Exception("One of the paramters provided was null");
 	}
 }

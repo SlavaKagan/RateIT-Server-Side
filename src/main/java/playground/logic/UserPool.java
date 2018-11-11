@@ -34,7 +34,7 @@ public class UserPool implements Constants {
 				.findFirst().get();
 	}
 
-	public UserTO confirmUser(String playground, String email) {
+	public UserTO confirmUser(String playground, String email) throws Exception {
 		UserTO confirmedUser = getUser(playground, email);
 		confirmedUser.setRole(REVIEWER);
 		return confirmedUser;

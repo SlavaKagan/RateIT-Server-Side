@@ -28,7 +28,7 @@ public class ElementTO implements Constants {
 		this.attributes.put("movieName", "Venom 2018");		
 	}
 
-	public ElementTO(String type, String name, String creatorPlayground, String creatorEmail) {
+	public ElementTO(String type, String name, String creatorPlayground, String creatorEmail) throws Exception {
 		this();
 		this.type = type;
 		this.name = name;
@@ -41,7 +41,8 @@ public class ElementTO implements Constants {
 		return playground;
 	}
 
-	public void setPlayground(String playground) {
+	public void setPlayground(String playground) throws Exception {
+		validateNull(playground);
 		this.playground = playground;
 	}
 
@@ -49,7 +50,8 @@ public class ElementTO implements Constants {
 		return id;
 	}
 
-	public void setId(String id) {
+	public void setId(String id) throws Exception {
+		validateNull(id);
 		this.id = id;
 	}
 	
@@ -61,7 +63,9 @@ public class ElementTO implements Constants {
 		return location;
 	}
 
-	public void setLocation(Location location) {
+	public void setLocation(Location location) throws Exception {
+		validateNull(location.getX() + "");
+		validateNull(location.getY() + "");
 		this.location = location;
 	}
 
@@ -69,7 +73,8 @@ public class ElementTO implements Constants {
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(String name) throws Exception {
+		validateNull(name);
 		this.name = name;
 	}
 
@@ -77,7 +82,8 @@ public class ElementTO implements Constants {
 		return creationDate;
 	}
 
-	public void setCreationDate(Date creationDate) {
+	public void setCreationDate(Date creationDate) throws Exception {
+		validateNull(creationDate.toString());
 		this.creationDate = creationDate;
 	}
 
@@ -85,7 +91,8 @@ public class ElementTO implements Constants {
 		return expirationDate;
 	}
 
-	public void setExpirationDate(Date expirationDate) {
+	public void setExpirationDate(Date expirationDate) throws Exception {
+		validateNull(expirationDate.toString());
 		this.expirationDate = expirationDate;
 	}
 
@@ -93,7 +100,8 @@ public class ElementTO implements Constants {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(String type) throws Exception {
+		validateNull(type);
 		this.type = type;
 	}
 
@@ -109,7 +117,8 @@ public class ElementTO implements Constants {
 		return creatorPlayground;
 	}
 
-	public void setCreatorPlayground(String creatorPlayground) {
+	public void setCreatorPlayground(String creatorPlayground) throws Exception {
+		validateNull(creatorPlayground);
 		this.creatorPlayground = creatorPlayground;
 	}
 
@@ -117,7 +126,8 @@ public class ElementTO implements Constants {
 		return creatorEmail;
 	}
 
-	public void setCreatorEmail(String creatorEmail) {
+	public void setCreatorEmail(String creatorEmail) throws Exception {
+		validateNull(creatorEmail);
 		this.creatorEmail = creatorEmail;
 	}
 
@@ -140,5 +150,10 @@ public class ElementTO implements Constants {
 		this.id = newElement.id;
 		this.name = newElement.name;
 		this.type = newElement.type;
+	}
+	
+	private void validateNull(String string) throws Exception {
+		if ("null".equals(string) || string == null)
+			throw new Exception("One of the paramters provided was null");
 	}
 }

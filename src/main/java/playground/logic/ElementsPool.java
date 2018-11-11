@@ -1,7 +1,6 @@
 package playground.logic;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -10,11 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ElementsPool implements Constants{
 
-	private List<ElementTO> elements = new ArrayList<>(
-			Arrays.asList(
-					new ElementTO("Messaging Board", "Messaging Board", PLAYGROUND, "rubykozel@gmail.com"),
-					new ElementTO("Movie Panel", "Venom 2018", PLAYGROUND, "rubykozel@gmail.com"), 
-					new ElementTO("Movie Panel", "Halloween", PLAYGROUND, "rubykozel@gmail.com")));
+	private List<ElementTO> elements = new ArrayList<>();
 
 	public List<ElementTO> getAllElements() {
 		return elements;
@@ -28,7 +23,7 @@ public class ElementsPool implements Constants{
 		this.elements = elements;
 	}
 
-	public ElementTO createElement(String type, String name, String userPlayground, String email) {
+	public ElementTO createElement(String type, String name, String userPlayground, String email) throws Exception {
 		ElementTO element = new ElementTO(type, name, userPlayground, email);
 		elements.add(element);
 		return element;
