@@ -66,7 +66,29 @@ Scenario: Getting an unregistered user # PASSED
 	And there are no accounts
 	When I GET "/playground/users/login/2019A.Kagan/rubykozel@gmail.com" 
 	Then the response is 500 with message: "This is an unregistered account"
+
+#Feature: Change the details of the user
 	
+Scenario: Change the user email succesfully # PASSED
+
+	Given the server is up 
+	And theres a user with playground: "2019A.Kagan", email: "slava@gmail.com", code: "1234" 
+	When I PUT "/playground/users/2019A.Kagan/slava@gmail.com" with '{"email":"sla@gmail.com","playground": "2019A.Kagan","userName": "slava","avatar": "mn1","role": "Reviewer","points": 0}'
+	Then the response is 200 
+	
+Scenario: Change mail of unregistered user # PASSED
+
+	Given the server is up 
+	And there is an unregistered user with playground: "2019A.Kagan", email: "yossi1@gmail.com", code: "1234" 
+	When I PUT "/playground/users/2019A.Kagan/yossi1@gmail.com" with '{"email":"ori@gmail.com","playground": "2019A.Kagan","username": "yossi","avatar": "mn1","role": "Guest","points": 0}'
+	Then the response is 404 with message: "This is an unregistered account"
+	
+Scenario: Change the user email to null # PASSED
+	
+	Given the server is up 
+	And theres a user with playground: "2019A.Kagan", email: "slava@gmail.com", code: "1234" 
+	When I PUT "/playground/users/2019A.Kagan/slava@gmail.com" with '{"email":null,"playground": "2019A.Kagan","username": "slava","avatar": "mn1","role": "Reviewer","points": 0}'		
+	Then the response is 400 with error: "Bad Request"
 	
 #Feature: Creating an element
 	
@@ -99,7 +121,23 @@ Scenario: Creating an element with email as null # PASSED
 	When I POST "/playground/elements/2019A.Kagan/rubykozel@gmail.com" with '{"type": null, "name":"Messaging Board"}'
 	Then the response is 500 with message: "JSON parse error: One of the paramters provided was null"
 		
+
+#Feature: Change the Details of an element
+
+Scenario: Change the id of the element # PASSED
 	
+	Given the server is up
+	And theres an element with playground: "2019A.Kagan", email: "roee@gmail.com", playground: "2019A.Kagan", id: "517788786",
+	When I PUT "/playground/elements/2019A.Kagan/roee@gmail.com/2019A.Kagan/517788786" with '{"playground": "2019A.Kagan","id": "765","location": {"x": 3.6830377111762047,"y": 8.3868617407449,"name": "Messaging Board","creationDate": "2018-11-11T19:19:18.786+0000","expirationDate": "2018-11-12T19:19:18.786+0000","type": "Messaging Board","attributes": {"creatorsName": "Manager","isActive": "True","isAMovie": "False","movieName": "Venom 2018"},"creatorPlayground": "2019A.Kagan","creatorEmail": "roee@gmail.com"}'
+	Then the reponse is "200 OK"
+	
+Scenario: Trying to change some attribute with null # PASSED
+	
+	Given the server is up
+	And theres an element with playground: "2019A.Kagan", email: "roee@gmail.com", playground: "2019A.Kagan", id: "567",
+	When I PUT "/playground/elements/2019A.Kagan/roee@gmail.com/2019A.Kagan/567" with '{creationdate:null}'
+	Then the reponse is 500 with message: "JSON parse error: One of the paramters provided was null"
+
 #Feature: Get an element by specific playground, creator email and id
 	
 Scenario: Getting an element successfully # PASSED

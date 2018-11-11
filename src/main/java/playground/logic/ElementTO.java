@@ -92,7 +92,6 @@ public class ElementTO implements Constants {
 	}
 
 	public void setExpirationDate(Date expirationDate) throws Exception {
-		validateNull(expirationDate.toString());
 		this.expirationDate = expirationDate;
 	}
 

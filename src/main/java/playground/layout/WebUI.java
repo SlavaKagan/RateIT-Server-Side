@@ -1,8 +1,5 @@
 package playground.layout;
 
-import java.lang.reflect.Field;
-import java.util.stream.Stream;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -140,7 +137,11 @@ public class WebUI implements Constants {
 			@PathVariable("id") String id, 
 			@RequestBody ElementTO newElement) throws Exception {
 		validateParamsNotNull(playground,email,id);
-		elementpool.updateElement(userPlayground, email, playground, id, newElement);
+		try {
+			elementpool.updateElement(userPlayground, email, playground, id,newElement);
+		} catch (Exception e) {
+			throw new ElementNotFoundException("Element does not exist");
+		}
 	}
 
 	@RequestMapping(
@@ -173,7 +174,7 @@ public class WebUI implements Constants {
 		validateParamsNotNull(userPlayground,email, attributeName);
 		ElementTO[] elements = elementpool.getAllElementsByAttributeAndItsValue(userPlayground, email, attributeName, value).toArray(new ElementTO[0]);
 		if (elements.length <= 0)			
-			throw new ElementNotFoundException("No elements at the distance specified from the (x, y) specified");
+			throw new ElementNotFoundException("No element was found with key: " + attributeName + " and value: " + value);
 		return elements;
 	}
 	
@@ -186,7 +187,11 @@ public class WebUI implements Constants {
 			@PathVariable("email") String email, 
 			@RequestBody UserTO newUser) throws Exception {
 		validateParamsNotNull(playground,email);
-		userpool.editUser(playground, email, newUser);
+		try {
+			userpool.editUser(playground, email, newUser);
+		} catch (Exception e ) {
+			throw new ConfirmationException("This is an unregistered account");
+		}
 	}
 	
 	@RequestMapping(
