@@ -9,6 +9,8 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
+import playground.layout.ElementTO;
+
 @Service
 public class ElementServiceStub implements Constants, ElementService {
 
@@ -35,8 +37,10 @@ public class ElementServiceStub implements Constants, ElementService {
 		this.elements = elements;
 	}
 
-	public void createElement(String type, String name, String userPlayground, String email) throws Exception {
-		ElementEntity element = new ElementEntity(type, name, userPlayground, email);
+	public void createElement(ElementTO elementTO,String userPlayground, String email) throws Exception {
+		ElementEntity element = elementTO.toEntity();
+		element.setCreatorEmail(email);
+		element.setCreatorPlayground(userPlayground);
 		addElement(element);
 	}
 

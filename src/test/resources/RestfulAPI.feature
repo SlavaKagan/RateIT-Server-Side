@@ -1,19 +1,19 @@
 Feature: Posting new user 
 
-Scenario: Posting new user successfully # PASSED
+Scenario: Posting new user successfully # PASSED #Automated
 
 	Given the server is up 
 	When I POST "/playground/users" with '{"email":"rubykozel@gmail.com", "username":"ruby", "avatar":":-)", "role":"Guest"}' 
 	Then the response is 200 ok 
 	And the output is '{"email": "rubykozel@gmail.com", "playground": "2019A.Kagan", "userName": "ruby", "avatar": ":-)", "role": "Guest", "points": 0}' 
 	
-Scenario: Posting new user unsuccessfully # PASSED
+Scenario: Posting new user unsuccessfully # PASSED #Automated
 
 	Given the server is up 
 	When I POST "/playground/users" with nothing 
 	Then the response is <> 2xx 
 	
-Scenario: Posting new user with given email as null # PASSED
+Scenario: Posting new user with given email as null # PASSED #Automated
 
 	Given the server is up 
 	When I POST "/playground/users" with '{"email": null,"username":"ruby","avatar":":-)","role":"Guest"}' 
@@ -21,7 +21,7 @@ Scenario: Posting new user with given email as null # PASSED
 	
 #Feature: Confirming a new registered user
 	
-Scenario: Confirming a new registered user successfully # PASSED
+Scenario: Confirming a new registered user successfully # PASSED #Automated
 
 	Given the server is up 
 	And theres a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", code: "1234" 
@@ -29,14 +29,14 @@ Scenario: Confirming a new registered user successfully # PASSED
 	Then the response is 200 
 	And the output is '{"email": "rubykozel@gmail.com", "playground": "2019A.Kagan", "userName": "ruby", "avatar": ":-)", "role": "Reviewer", "points": 0}' 
 	
-Scenario: Confirming a new registered user unsuccessfully with different code # PASSED
+Scenario: Confirming a new registered user unsuccessfully with different code # PASSED #Automated
 
 	Given the server is up 
 	And theres an unconfirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", code: "1234" 
 	When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/1235" 
 	Then the response is 500 with message: "You have entered the wrong confirmation code" 
 	
-Scenario: Confirming an existing user # PASSED
+Scenario: Confirming an existing user # PASSED #Automated
 
 	Given the server is up 
 	And theres a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Reviewer" 
@@ -45,7 +45,7 @@ Scenario: Confirming an existing user # PASSED
 	
 #Feature: Logging into the server
 	
-Scenario: Getting a user from the server successfully # PASSED
+Scenario: Getting a user from the server successfully # PASSED #Automated
 
 	Given the server is up 
 	And theres a registered user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", 
@@ -53,14 +53,14 @@ Scenario: Getting a user from the server successfully # PASSED
 	Then the response is 200 
 	And the output is '{"email": "rubykozel@gmail.com","playground": "2019A.Kagan","userName": "ruby","avatar": ":-)","role": "Reviewer","points": 0}' 
 	
-Scenario: Getting an unconfirmed user # PASSED
+Scenario: Getting an unconfirmed user # PASSED #Automated
 
 	Given the server is up 
 	And theres an unconfirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", 
 	When I GET "/playground/users/login/2019A.Kagan/rubykozel@gmail.com" 
 	Then the response is 500 with message: "This is an unconfirmed account"
 	
-Scenario: Getting an unregistered user # PASSED
+Scenario: Getting an unregistered user # PASSED #Automated
 	
 	Given the server is up 
 	And there are no accounts
@@ -92,7 +92,7 @@ Scenario: Change the user email to null # PASSED
 	
 #Feature: Creating an element
 	
-Scenario: Creating an element successfully # PASSED
+Scenario: Creating an element successfully # PASSED #Automated
 
 	Given the server is up 
 	And theres an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Manager" 
@@ -100,21 +100,21 @@ Scenario: Creating an element successfully # PASSED
 	Then the response is 200 
 	And the output is '{"playground": "2019A.Kagan","id": Any ID ,"location": {"x": Any X,"y": Any Y},"name": "Messaging Board","creationDate": Any valid date ,"experationDate": null,"type": "Messaging Board","attributes": {"creatorsName": "Manager","isActive": "True","isAMovie": "False","movieName": "Venom 2018"},"creatorPlayground": "2019A.Kagan","creatorEmail": "rubykozel@gmail.com"}'
 	
-Scenario: Creating an element with a user that is not a manager # PASSED
+Scenario: Creating an element with a user that is not a manager # PASSED #Automated
 
 	Given the server is up
 	And theres an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Reviewer",
 	When I POST "/playground/elements/2019A.Kagan/rubykozel@gmail.com" with '{"type":"Messaging Board", "name":"Messaging Board"}'
 	Then the response is 500
 	
-Scenario: Creating an element without delivering any valid JSON # PASSED
+Scenario: Creating an element without delivering any valid JSON # PASSED #Automated
 	
 	Given the server is up
 	And theres an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Manager"
 	When I POST "/playground/elements/2019A.Kagan/rubykozel@gmail.com" with nothing
 	Then the response is <> 2xx
 	
-Scenario: Creating an element with email as null # PASSED
+Scenario: Creating an element with email as null # PASSED #Automated
 	
 	Given the server is up
 	And theres an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Manager"

@@ -24,12 +24,12 @@ import playground.logic.UserServiceStub;
 public class WebUI implements Constants {
 
 	private UserServiceStub userservice;
-	private ElementServiceStub elementervice;
+	private ElementServiceStub elementservice;
 
 	@Autowired
 	public void setPools(UserServiceStub userservice, ElementServiceStub elementervice) {
 		this.userservice = userservice;
-		this.elementervice = elementervice;
+		this.elementservice = elementervice;
 
 	}
 
@@ -77,7 +77,10 @@ public class WebUI implements Constants {
 			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email) throws Exception {
 		validateParamsNotNull(userPlayground,email);
-		return null;
+		if(userservice.getAllUsers().get(email).getRole() != Constants.MANAGER)
+			throw new ConfirmationException("User is not a manager!");
+		elementservice.createElement(element, userPlayground, email);
+		return new ElementTO(elementservice.getAllElements().get(element.getId()));
 	}
 	
 	@RequestMapping(
@@ -90,7 +93,7 @@ public class WebUI implements Constants {
 			@PathVariable("playground") String playground,
 			@PathVariable("id") String id) throws Exception {
 		validateParamsNotNull(userPlayground,email,playground,id);
-		return new ElementTO(elementervice.getElement(userPlayground, email, playground, id));
+		return new ElementTO(elementservice.getElement(userPlayground, email, playground, id));
 
 	}
 
@@ -102,7 +105,7 @@ public class WebUI implements Constants {
 			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email) throws Exception {
 		validateParamsNotNull(userPlayground,email);
-		ElementTO[] element = elementervice.getAllElements(userPlayground, email).toArray(new ElementTO[0]);
+		ElementTO[] element = elementservice.getAllElements(userPlayground, email).toArray(new ElementTO[0]);
 		if (element.length <= 0) {
 			throw new ElementNotFoundException("Creator " + email + " has no elements it created");
 		}
@@ -119,7 +122,7 @@ public class WebUI implements Constants {
 			@PathVariable("id") String id, 
 			@RequestBody ElementTO newElement) throws Exception {
 		validateParamsNotNull(playground,email,id);
-		elementervice.updateElement(userPlayground, email, playground, id,newElement.toEntity());
+		elementservice.updateElement(userPlayground, email, playground, id,newElement.toEntity());
 	}
 
 	@RequestMapping(
@@ -133,7 +136,7 @@ public class WebUI implements Constants {
 			@PathVariable("y") String y,
 			@PathVariable("distance") String distance) throws Exception {
 		validateParamsNotNull(userPlayground,email,x,y,distance);
-		ElementTO[] element = elementervice
+		ElementTO[] element = elementservice
 				.getAllElementsByDistance(userPlayground, email, Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(distance)).toArray(new ElementTO[0]);
 		if (element.length <= 0)			
 			throw new ElementNotFoundException("No elements at the distance specified from the (x, y) specified");
@@ -150,7 +153,7 @@ public class WebUI implements Constants {
 			@PathVariable("attributeName") String attributeName, 
 			@PathVariable("value") Object value) throws Exception {
 		validateParamsNotNull(userPlayground,email, attributeName);
-		ElementTO[] elements = elementervice.getAllElementsByAttributeAndItsValue(userPlayground, email, attributeName, value).toArray(new ElementTO[0]);
+		ElementTO[] elements = elementservice.getAllElementsByAttributeAndItsValue(userPlayground, email, attributeName, value).toArray(new ElementTO[0]);
 		if (elements.length <= 0)			
 			throw new ElementNotFoundException("No element was found with key: " + attributeName + " and value: " + value);
 		return elements;

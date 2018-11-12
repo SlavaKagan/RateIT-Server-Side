@@ -2,10 +2,12 @@ package playground.logic;
 
 import java.util.List;
 
+import playground.layout.ElementTO;
+
 public interface ElementService {
 	public void addElement(ElementEntity element);
 
-	public void createElement(String type, String name, String userPlayground, String email) throws Exception;
+	public void createElement(ElementTO elementTO, String userPlayground, String email) throws Exception;
 
 	public ElementEntity getElement(String userPlayground, String email, String playground, String id) throws ElementNotFoundException;
 
