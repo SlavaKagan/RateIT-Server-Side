@@ -27,18 +27,15 @@ public class UserServiceStub implements Constants, UserService {
 	}
 
 	public UserEntity getUser(String playground, String email) throws ConfirmationException {
-		UserEntity userEntity = users
-				.values()
-				.stream()
-				.filter(user -> user.getEmail().equals(email) && user.getPlayground().equals(playground))
-				.findFirst()
-				.get();
-		if(userEntity == null)
-			throw new ConfirmationException("This is an unregistered account");		
-		else if(!userEntity.getRole().equals(GUEST))
-			return userEntity;
-		else
+		UserEntity user = users.get(email);
+		if(user == null)
+			throw new ConfirmationException("This is an unregistered account");
+		else if (!user.getPlayground().equals(playground))
+			throw new ConfirmationException("There's no such user in the specified playground");		
+		else if(user.getRole().equals(GUEST))
 			throw new ConfirmationException("This is an unconfirmed account");
+		else
+			return user;
 	}
 
 	public UserEntity confirmUser(String playground, String email, String code) throws Exception {
@@ -65,5 +62,10 @@ public class UserServiceStub implements Constants, UserService {
 		for (int i = 0; i < 6; i++)
 			code += text.charAt((int) (Math.random() * text.length()));
 		return code;
+	}
+
+	@Override
+	public void cleanup() {
+		this.users.clear();
 	}
 }

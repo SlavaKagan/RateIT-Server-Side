@@ -10,4 +10,6 @@ public interface UserService {
 	
 	public void editUser(String playground, String email, UserEntity newUser) throws ConfirmationException;
 
+	public void cleanup();
+
 }
