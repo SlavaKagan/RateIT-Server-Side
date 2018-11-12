@@ -21,7 +21,7 @@ import playground.logic.UserService;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class WebUITestUsers {
-	
+
 	@Autowired
 	private UserService service;
 
@@ -37,35 +37,171 @@ public class WebUITestUsers {
 		this.restTemplate = new RestTemplate();
 		this.url = "http://localhost:" + port + "/playground/users/";
 		form = new NewUserForm("rubykozel@gmail.com", "ruby", ":-)", "Guest");
-		System.err.println(this.url);
 	}
 
 	@Before
 	public void setup() {
-		
+
 	}
 
 	@After
 	public void teardown() {
 		this.service.cleanup();
 	}
-	
+
 	@Test
 	public void testServerInitializesProperly() throws Exception {
-		
+
 	}
 
 	@Test
 	public void testConfirmingANewRegisteredUserSuccessfully() throws Exception {
+		/*
+		 	Given the server is up 
+			And theres a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", code: "1234"
+		 */
 		service.createUser(form);
 
+		// When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/1234"
 		UserTO actualUser = this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class,
 				Constants.PLAYGROUND, "rubykozel@gmail.com", 1234);
 		
+		/*
+		 	Then the response is 200 
+			And the output is 
+			{
+				"email": "rubykozel@gmail.com",
+				"playground": "2019A.Kagan", 
+				"userName": "ruby", 
+				"avatar": ":-)", 
+				"role": "Reviewer", 
+				"points": 0
+			}
+		 */
 		assertThat(actualUser)
 			.isNotNull()
-			.extracting("role")
-			.containsExactly(Constants.REVIEWER);
+			.extracting(
+					"email",
+					"playground",
+					"userName",
+					"avatar",
+					"role",
+					"points")
+			.containsExactly(
+					"rubykozel@gmail.com",
+					Constants.PLAYGROUND,
+					"ruby",
+					":-)",
+					Constants.REVIEWER,
+					0L);
+	}
+
+	@Test(expected = Exception.class)
+	public void testConfirmingANewRegisteredUserUnsuccessfullyWithDifferentCode() throws Exception {
+		/*
+		 	Given the server is up 
+			And theres an unconfirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", code: "1234"
+		 */
+		service.createUser(form);
+		
+		//	When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/1235"
+		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class, Constants.PLAYGROUND,
+				"rubykozel@gmail.com", 1235);
+		
+		// Then the response is 500
+	}
+
+	@Test(expected = Exception.class)
+	public void testConfirmingAnExistingUser() throws Exception {
+		
+		/*
+		 	Given the server is up 
+			And theres a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Reviewer"
+		 */
+		service.createUser(form);
+		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
+		
+		// When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/Any_Code"
+		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class, Constants.PLAYGROUND,
+				"rubykozel@gmail.com", 1111);
+		
+		// Then the response is 500
+	}
+
+	@Test
+	public void testGettingAUserFromTheServerSuccessfully() throws Exception {
+		
+		/*
+		 	Given the server is up 
+			And theres a registered user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", 
+		 */
+		service.createUser(form);
+		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
+		
+		// When I GET "/playground/users/login/2019A.Kagan/rubykozel@gmail.com"
+		UserTO actualUser = this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
+				Constants.PLAYGROUND, form.getEmail());
+		
+		/*
+		 	Then the response is 200 
+			And the output is 
+			{
+				"email": "rubykozel@gmail.com",
+				"playground": "2019A.Kagan",
+				"userName": "ruby",
+				"avatar": ":-)",
+				"role": "Reviewer",
+				"points": 0
+			}
+		 */
+		assertThat(actualUser)
+			.isNotNull()
+			.extracting(
+					"email",
+					"playground",
+					"userName",
+					"avatar",
+					"role",
+					"points")
+			.containsExactly(
+					"rubykozel@gmail.com",
+					Constants.PLAYGROUND,
+					"ruby",
+					":-)",
+					Constants.REVIEWER,
+					0L); //0L for long value
+	}
+	
+	@Test(expected = Exception.class)
+	public void testGettingAnUnconfirmedUser() throws Exception {
+		/*
+		 	Given the server is up 
+			And there's an unconfirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", 
+		 */
+		service.createUser(form);
+		
+		// When I GET "/playground/users/login/2019A.Kagan/rubykozel@gmail.com" 
+		this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
+				Constants.PLAYGROUND, form.getEmail());
+		
+		// Then the response is 500
+	}
+	
+	@Test(expected = Exception.class)
+	public void testGettingAnUnregisteredUser() throws Exception {
+		/*
+		 	Given the server is up 
+			And there are no accounts 
+		 */
+		
+		/* No account was inserted */
+		
+		
+		// When I GET "/playground/users/login/2019A.Kagan/rubykozel@gmail.com"
+		this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
+				Constants.PLAYGROUND, form.getEmail());
+		
+		// Then the response is 500
 	}
 
 }
