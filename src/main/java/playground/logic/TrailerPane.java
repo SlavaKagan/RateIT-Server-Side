@@ -31,7 +31,6 @@ public class TrailerPane extends BorderPane {
 		Search result = getResult(searchQuery);
 		this.setLeft(this.getYouTubeVideo(parts[0], result));
 		this.setCenter(this.getPoster(result));
-
 	}
 
 	public String[] getVideo(String term) {

@@ -56,7 +56,7 @@ public class WebUITestUsers {
 	}
 
 	@Test
-	public void testConfirmingANewRegisteredUserSuccessfully() {
+	public void testConfirmingANewRegisteredUserSuccessfully() throws Exception {
 		service.createUser(form);
 
 		UserTO actualUser = this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class,
