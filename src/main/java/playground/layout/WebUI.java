@@ -17,6 +17,7 @@ import playground.logic.ElementNotFoundException;
 import playground.logic.ElementServiceStub;
 import playground.logic.NewUserForm;
 import playground.logic.NotFoundExceptions;
+import playground.logic.UserEntity;
 import playground.logic.UserServiceStub;
 
 @RestController
@@ -38,7 +39,8 @@ public class WebUI implements Constants {
 			produces = MediaType.APPLICATION_JSON_VALUE, 
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public UserTO createUser(@RequestBody NewUserForm userForm) throws IllegalArgumentException, IllegalAccessException, Exception {
-		return null;
+		userservice.createUser(userForm);
+		return new UserTO(userservice.getAllUsers().get(userForm.getEmail()));
 	}
 	
 	@RequestMapping(

@@ -39,8 +39,10 @@ public class UserServiceStub implements Constants, UserService {
 	}
 
 	public UserEntity confirmUser(String playground, String email, String code) throws Exception {
-		UserEntity confirmedUser = getUser(playground, email);
-		if (code.equals(TEMPORARY_CODE) && confirmedUser.getRole().equals(GUEST))
+		UserEntity confirmedUser = users.get(email);
+		if(!confirmedUser.getPlayground().equals(playground))
+			throw new ConfirmationException("There's no such user in the specified playground");
+		else if (code.equals(TEMPORARY_CODE) && confirmedUser.getRole().equals(GUEST))
 			confirmedUser.setRole(REVIEWER);		
 		else if (confirmedUser.getRole().equals(REVIEWER) || confirmedUser.getRole().equals(MANAGER))
 			throw new ConfirmationException("User is already confirmed");
@@ -56,13 +58,13 @@ public class UserServiceStub implements Constants, UserService {
 		user.setParams(newUser);
 	}
 
-	private String generateRandomCode() {
-		String text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-		String code = "";
-		for (int i = 0; i < 6; i++)
-			code += text.charAt((int) (Math.random() * text.length()));
-		return code;
-	}
+//	private String generateRandomCode() {
+//		String text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+//		String code = "";
+//		for (int i = 0; i < 6; i++)
+//			code += text.charAt((int) (Math.random() * text.length()));
+//		return code;
+//	}
 
 	@Override
 	public void cleanup() {
