@@ -1,4 +1,8 @@
-package playground.logic;
+package playground.layout;
+
+import playground.logic.Constants;
+import playground.logic.NewUserForm;
+import playground.logic.UserEntity;
 
 public class UserTO implements Constants {
 	private String email;
@@ -18,15 +22,26 @@ public class UserTO implements Constants {
 		this.userName = form.getUsername();
 		this.avatar = form.getAvatar();
 		this.role = form.getRole();
-		setPoints();
+		setStartingPoints();
+	}
+	
+	public UserTO(UserEntity user) {
+		this();
+		if(user != null ) {
+			this.email = user.getEmail();
+			this.playground = user.getPlayground();
+			this.userName = user.getUserName();
+			this.avatar = user.getAvatar();
+			this.role = user.getRole();
+			this.points = user.getPoints();
+		}
 	}
 
 	public String getEmail() {
 		return email;
 	}
 
-	public void setEmail(String email) throws Exception {
-		validateNull(email);
+	public void setEmail(String email) {
 		this.email = email;
 	}
 
@@ -34,8 +49,7 @@ public class UserTO implements Constants {
 		return playground;
 	}
 
-	public void setPlayground(String playground) throws Exception {
-		validateNull(playground);
+	public void setPlayground(String playground) {
 		this.playground = playground;
 	}
 
@@ -43,8 +57,7 @@ public class UserTO implements Constants {
 		return userName;
 	}
 
-	public void setUserName(String userName) throws Exception {
-		validateNull(userName);
+	public void setUserName(String userName) {
 		this.userName = userName;
 	}
 
@@ -52,8 +65,7 @@ public class UserTO implements Constants {
 		return avatar;
 	}
 
-	public void setAvatar(String avatar) throws Exception {
-		validateNull(avatar);
+	public void setAvatar(String avatar) {
 		this.avatar = avatar;
 	}
 
@@ -61,8 +73,7 @@ public class UserTO implements Constants {
 		return role;
 	}
 
-	public void setRole(String role) throws Exception {
-		validateNull(role);
+	public void setRole(String role) {
 		this.role = role;
 	}
 
@@ -70,21 +81,20 @@ public class UserTO implements Constants {
 		return points;
 	}
 
-	public void setPoints() {
+	public void setStartingPoints() {
 		if (this.role == MANAGER) {
 			this.points = 0;
 		} else if (this.role == REVIEWER) {
 			this.points = 100;
 		}
 	}
+	
+	public void setPoints(long points) {
+		this.points = points;
+	}
 
 	public void updatePoints(int amount) {
 		this.points += amount;
-	}
-	
-	private void validateNull(String string) throws Exception {
-		if ("null".equals(string) || string == null)
-			throw new Exception("One of the paramters provided was null");
 	}
 
 	public void setParams(UserTO newUser) {
@@ -95,6 +105,17 @@ public class UserTO implements Constants {
 		this.role = newUser.role;
 		this.points = newUser.points;
 
+	}
+
+	public UserEntity toEntity() throws Exception {
+		UserEntity rv = new UserEntity();
+		rv.setAvatar(this.avatar);
+		rv.setEmail(this.email);
+		rv.setPlayground(this.playground);
+		rv.setPoints(this.points);
+		rv.setRole(this.role);
+		
+		return rv;
 	}
 
 }

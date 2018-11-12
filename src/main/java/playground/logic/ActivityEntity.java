@@ -3,7 +3,9 @@ package playground.logic;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ActivityTO implements Constants {
+import playground.logic.Constants;
+
+public class ActivityEntity implements Constants {
 	private String playground;
 	private String id;
 	private String elementPlayground;
@@ -13,7 +15,7 @@ public class ActivityTO implements Constants {
 	private String playerEmail;
 	private Map<String, Object> attributes;
 
-	public ActivityTO() throws Exception {
+	public ActivityEntity() throws Exception {
 		this.playground = PLAYGROUND;
 		this.playerPlayground = REVIEWER;
 		this.playerEmail = PLAYER_MAIL;
@@ -25,7 +27,7 @@ public class ActivityTO implements Constants {
 		this.attributes.put("activityName", "Post a Review");
 	}
 
-	public ActivityTO(ElementTO newElement, String type) throws Exception {
+	public ActivityEntity(ElementEntity newElement, String type) throws Exception {
 		this();
 		this.elementId = newElement.getId();
 		this.elementPlayground = newElement.getPlayground();	
@@ -115,7 +117,7 @@ public class ActivityTO implements Constants {
 
 	}
 
-	public void setParams(ActivityTO newActivity) {
+	public void setParams(ActivityEntity newActivity) {
 		this.playground = newActivity.playground;
 		this.id = newActivity.id;
 		this.elementPlayground = newActivity.elementPlayground;

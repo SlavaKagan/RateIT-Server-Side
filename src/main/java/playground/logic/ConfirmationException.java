@@ -1,4 +1,4 @@
-package playground.layout;
+package playground.logic;
 
 public class ConfirmationException extends Exception implements NotFoundExceptions {
 	private static final long serialVersionUID = 734874520333059751L;

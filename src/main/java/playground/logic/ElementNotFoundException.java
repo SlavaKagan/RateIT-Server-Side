@@ -1,4 +1,4 @@
-package playground.layout;
+package playground.logic;
 
 public class ElementNotFoundException extends Exception implements NotFoundExceptions {
 	private static final long serialVersionUID = -7658111359713339073L;

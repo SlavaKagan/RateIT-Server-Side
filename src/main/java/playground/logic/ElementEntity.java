@@ -4,7 +4,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ElementTO implements Constants {
+import playground.logic.Constants;
+import playground.logic.Location;
+
+public class ElementEntity implements Constants {
 	private String playground;
 	private String id;
 	private Location location;
@@ -16,7 +19,7 @@ public class ElementTO implements Constants {
 	private String creatorPlayground;
 	private String creatorEmail;
 
-	public ElementTO() {
+	public ElementEntity() {
 		this.playground = PLAYGROUND;
 		this.location = new Location(Math.random() * 20, Math.random() * 20);
 		this.creationDate = new Date();
@@ -28,7 +31,7 @@ public class ElementTO implements Constants {
 		this.attributes.put("movieName", "Venom 2018");		
 	}
 
-	public ElementTO(String type, String name, String creatorPlayground, String creatorEmail) throws Exception {
+	public ElementEntity(String type, String name, String creatorPlayground, String creatorEmail) {
 		this();
 		this.type = type;
 		this.name = name;
@@ -41,8 +44,7 @@ public class ElementTO implements Constants {
 		return playground;
 	}
 
-	public void setPlayground(String playground) throws Exception {
-		validateNull(playground);
+	public void setPlayground(String playground) {
 		this.playground = playground;
 	}
 
@@ -50,8 +52,7 @@ public class ElementTO implements Constants {
 		return id;
 	}
 
-	public void setId(String id) throws Exception {
-		validateNull(id);
+	public void setId(String id) {
 		this.id = id;
 	}
 	
@@ -63,9 +64,7 @@ public class ElementTO implements Constants {
 		return location;
 	}
 
-	public void setLocation(Location location) throws Exception {
-		validateNull(location.getX() + "");
-		validateNull(location.getY() + "");
+	public void setLocation(Location location) {
 		this.location = location;
 	}
 
@@ -73,8 +72,7 @@ public class ElementTO implements Constants {
 		return name;
 	}
 
-	public void setName(String name) throws Exception {
-		validateNull(name);
+	public void setName(String name) {
 		this.name = name;
 	}
 
@@ -82,8 +80,7 @@ public class ElementTO implements Constants {
 		return creationDate;
 	}
 
-	public void setCreationDate(Date creationDate) throws Exception {
-		validateNull(creationDate.toString());
+	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
 
@@ -91,7 +88,7 @@ public class ElementTO implements Constants {
 		return expirationDate;
 	}
 
-	public void setExpirationDate(Date expirationDate) throws Exception {
+	public void setExpirationDate(Date expirationDate) {
 		this.expirationDate = expirationDate;
 	}
 
@@ -99,8 +96,7 @@ public class ElementTO implements Constants {
 		return type;
 	}
 
-	public void setType(String type) throws Exception {
-		validateNull(type);
+	public void setType(String type) {
 		this.type = type;
 	}
 
@@ -116,8 +112,7 @@ public class ElementTO implements Constants {
 		return creatorPlayground;
 	}
 
-	public void setCreatorPlayground(String creatorPlayground) throws Exception {
-		validateNull(creatorPlayground);
+	public void setCreatorPlayground(String creatorPlayground) {
 		this.creatorPlayground = creatorPlayground;
 	}
 
@@ -125,8 +120,7 @@ public class ElementTO implements Constants {
 		return creatorEmail;
 	}
 
-	public void setCreatorEmail(String creatorEmail) throws Exception {
-		validateNull(creatorEmail);
+	public void setCreatorEmail(String creatorEmail) {
 		this.creatorEmail = creatorEmail;
 	}
 
@@ -138,7 +132,7 @@ public class ElementTO implements Constants {
 				+ creatorEmail + "]";
 	}
 
-	public void setParams(ElementTO newElement) {
+	public void setParams(ElementEntity newElement) {
 		this.playground = newElement.playground;
 		this.location = newElement.location;
 		this.creationDate = newElement.creationDate;
@@ -149,10 +143,5 @@ public class ElementTO implements Constants {
 		this.id = newElement.id;
 		this.name = newElement.name;
 		this.type = newElement.type;
-	}
-	
-	private void validateNull(String string) throws Exception {
-		if ("null".equals(string) || string == null)
-			throw new Exception("One of the paramters provided was null");
 	}
 }

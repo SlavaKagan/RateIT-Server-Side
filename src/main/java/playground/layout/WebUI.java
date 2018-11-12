@@ -11,24 +11,24 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import playground.logic.ActivityTO;
+import playground.logic.ConfirmationException;
 import playground.logic.Constants;
-import playground.logic.ElementTO;
-import playground.logic.ElementsPool;
+import playground.logic.ElementNotFoundException;
+import playground.logic.ElementServiceStub;
 import playground.logic.NewUserForm;
-import playground.logic.UserPool;
-import playground.logic.UserTO;
+import playground.logic.NotFoundExceptions;
+import playground.logic.UserServiceStub;
 
 @RestController
 public class WebUI implements Constants {
 
-	private UserPool userpool;
-	private ElementsPool elementpool;
+	private UserServiceStub userservice;
+	private ElementServiceStub elementervice;
 
 	@Autowired
-	public void setPools(UserPool userpool, ElementsPool elementpool) {
-		this.userpool = userpool;
-		this.elementpool = elementpool;
+	public void setPools(UserServiceStub userservice, ElementServiceStub elementervice) {
+		this.userservice = userservice;
+		this.elementervice = elementervice;
 
 	}
 
@@ -38,7 +38,7 @@ public class WebUI implements Constants {
 			produces = MediaType.APPLICATION_JSON_VALUE, 
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public UserTO createUser(@RequestBody NewUserForm userForm) throws IllegalArgumentException, IllegalAccessException, Exception {
-		return userpool.createUser(userForm);
+		return null;
 	}
 	
 	@RequestMapping(
@@ -50,14 +50,7 @@ public class WebUI implements Constants {
 			@PathVariable("email") String email,
 			@PathVariable("code") String code) throws Exception {
 		validateParamsNotNull(playground,email);
-		UserTO theUser = userpool.getUser(playground, email);
-		if (code.equals(TEMPORARY_CODE) && theUser.getRole().equals(GUEST))
-			return userpool.confirmUser(playground, email);
-		if (theUser.getRole().equals(REVIEWER) || theUser.getRole().equals(MANAGER))
-			throw new ConfirmationException("User is already confirmed");
-		if (!code.equals(TEMPORARY_CODE))
-			throw new ConfirmationException("You have entered the wrong confirmation code");
-		return null;
+		return new UserTO(userservice.confirmUser(playground, email, code));
 	}
 
 	@RequestMapping(
@@ -68,16 +61,8 @@ public class WebUI implements Constants {
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email) throws Exception {
 		validateParamsNotNull(playground,email);
-		UserTO user;
-		try {
-			user = userpool.getUser(playground, email);
-		} catch(Exception e) {
-			throw new ConfirmationException("This is an unregistered account");
-		}
-		if(!user.getRole().equals(GUEST))
-			return user;
-		else
-			throw new ConfirmationException("This is an unconfirmed account");
+		return new UserTO(userservice.getUser(playground, email));
+		
 	}
 	
 	@RequestMapping(
@@ -90,9 +75,7 @@ public class WebUI implements Constants {
 			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email) throws Exception {
 		validateParamsNotNull(userPlayground,email);
-		if (!userpool.getUser(userPlayground, email).getRole().equals(MANAGER))
-			throw new Exception("Given user is not Manager");
-		return elementpool.createElement(element.getType(), element.getName(), userPlayground, email);
+		return null;
 	}
 	
 	@RequestMapping(
@@ -105,11 +88,8 @@ public class WebUI implements Constants {
 			@PathVariable("playground") String playground,
 			@PathVariable("id") String id) throws Exception {
 		validateParamsNotNull(userPlayground,email,playground,id);
-		try {
-			return elementpool.getElement(userPlayground, email, playground, id);
-		} catch (Exception e) {
-			throw new ElementNotFoundException("Element does not exist");
-		}
+		return new ElementTO(elementervice.getElement(userPlayground, email, playground, id));
+
 	}
 
 	@RequestMapping(
@@ -120,7 +100,7 @@ public class WebUI implements Constants {
 			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email) throws Exception {
 		validateParamsNotNull(userPlayground,email);
-		ElementTO[] element = elementpool.getAllElements(userPlayground, email).toArray(new ElementTO[0]);
+		ElementTO[] element = elementervice.getAllElements(userPlayground, email).toArray(new ElementTO[0]);
 		if (element.length <= 0) {
 			throw new ElementNotFoundException("Creator " + email + " has no elements it created");
 		}
@@ -137,11 +117,7 @@ public class WebUI implements Constants {
 			@PathVariable("id") String id, 
 			@RequestBody ElementTO newElement) throws Exception {
 		validateParamsNotNull(playground,email,id);
-		try {
-			elementpool.updateElement(userPlayground, email, playground, id,newElement);
-		} catch (Exception e) {
-			throw new ElementNotFoundException("Element does not exist");
-		}
+		elementervice.updateElement(userPlayground, email, playground, id,newElement.toEntity());
 	}
 
 	@RequestMapping(
@@ -155,7 +131,7 @@ public class WebUI implements Constants {
 			@PathVariable("y") String y,
 			@PathVariable("distance") String distance) throws Exception {
 		validateParamsNotNull(userPlayground,email,x,y,distance);
-		ElementTO[] element = elementpool
+		ElementTO[] element = elementervice
 				.getAllElementsByDistance(userPlayground, email, Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(distance)).toArray(new ElementTO[0]);
 		if (element.length <= 0)			
 			throw new ElementNotFoundException("No elements at the distance specified from the (x, y) specified");
@@ -172,7 +148,7 @@ public class WebUI implements Constants {
 			@PathVariable("attributeName") String attributeName, 
 			@PathVariable("value") Object value) throws Exception {
 		validateParamsNotNull(userPlayground,email, attributeName);
-		ElementTO[] elements = elementpool.getAllElementsByAttributeAndItsValue(userPlayground, email, attributeName, value).toArray(new ElementTO[0]);
+		ElementTO[] elements = elementervice.getAllElementsByAttributeAndItsValue(userPlayground, email, attributeName, value).toArray(new ElementTO[0]);
 		if (elements.length <= 0)			
 			throw new ElementNotFoundException("No element was found with key: " + attributeName + " and value: " + value);
 		return elements;
@@ -187,11 +163,7 @@ public class WebUI implements Constants {
 			@PathVariable("email") String email, 
 			@RequestBody UserTO newUser) throws Exception {
 		validateParamsNotNull(playground,email);
-		try {
-			userpool.editUser(playground, email, newUser);
-		} catch (Exception e ) {
-			throw new ConfirmationException("This is an unregistered account");
-		}
+		userservice.editUser(playground, email, newUser.toEntity());
 	}
 	
 	@RequestMapping(
