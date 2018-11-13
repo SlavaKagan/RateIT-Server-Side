@@ -53,7 +53,72 @@ public class WebUITestUsers {
 	public void testServerInitializesProperly() throws Exception {
 
 	}
-
+	
+	@Test
+	public void testPostingNewUserSuccessfully() throws Exception {
+		/*
+		  	Given the server is up 
+			When I POST "/playground/users" with '{"email":"rubykozel@gmail.com", "username":"ruby", "avatar":":-)", "role":"Guest"}' 
+		 */
+		
+		UserTO actualUser = this.restTemplate.postForObject(url, form, UserTO.class);
+		
+		/*
+		 	Then the response is 200 ok 
+			And the output is 
+			{
+				"email": "rubykozel@gmail.com",
+				"playground": "2019A.Kagan",
+				"userName": "ruby",
+				"avatar": ":-)", 
+				"role": "Guest", 
+				"points": 0
+			}
+		 */
+		
+		assertThat(actualUser)
+		.isNotNull()
+		.extracting(
+				"email",
+				"playground",
+				"userName",
+				"avatar",
+				"role",
+				"points")
+		.containsExactly(
+				"rubykozel@gmail.com",
+				Constants.PLAYGROUND,
+				"ruby",
+				":-)",
+				Constants.GUEST,
+				0L);
+	}
+	
+	@Test(expected = Exception.class)
+	public void testPostingNewUserUnsuccessfully() throws Exception {
+		/*
+		  	Given the server is up 
+			When I POST "/playground/users" with nothing 
+		 */
+		
+		this.restTemplate.postForObject(url, null, UserTO.class);
+		
+		// Then the response is <> 2xx
+	}
+	
+	@Test(expected = Exception.class)
+	public void testPostingNewUserWithGivenEmailAsNull() throws Exception {
+		/*
+		  	Given the server is up 
+			When I POST "/playground/users" with '{"email": null,"username":"ruby","avatar":":-)","role":"Guest"}' 
+		 */
+		
+		form.setEmail(null);
+		this.restTemplate.postForObject(url, form, UserTO.class);
+		
+		// Then the response is 500
+	}
+	
 	@Test
 	public void testConfirmingANewRegisteredUserSuccessfully() throws Exception {
 		/*
