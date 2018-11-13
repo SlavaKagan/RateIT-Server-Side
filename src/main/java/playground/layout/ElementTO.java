@@ -30,6 +30,7 @@ public class ElementTO implements Constants {
 		this.attributes.put("creatorsName", MANAGER_NAME);
 		this.attributes.put("isAMovie", "False");
 		this.attributes.put("movieName", "Venom 2018");
+		setId(hashId()+"");
 	}
 
 	public ElementTO(ElementEntity element) {
@@ -48,7 +49,7 @@ public class ElementTO implements Constants {
 		}
 	}
 
-	public ElementTO(String type, String name, String creatorPlayground, String creatorEmail) {
+	public ElementTO(String type, String name, String creatorPlayground, String creatorEmail) throws Exception {
 		this();
 		this.type = type;
 		this.name = name;

@@ -109,6 +109,7 @@ public class UserTO implements Constants {
 
 	public UserEntity toEntity() throws Exception {
 		UserEntity rv = new UserEntity();
+		rv.setUserName(this.userName);
 		rv.setAvatar(this.avatar);
 		rv.setEmail(this.email);
 		rv.setPlayground(this.playground);

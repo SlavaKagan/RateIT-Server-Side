@@ -148,7 +148,7 @@ public class WebUITestElements {
 		 	}
 		 */
 		
-		ElementTO actualElement = this.restTemplate
+		this.restTemplate
 				.postForObject(url + "/{userPlayground}/{email}", 
 						new ElementTO("Messaging Board","Messaging Board",Constants.PLAYGROUND,EMAIL), 
 						ElementTO.class, Constants.PLAYGROUND,EMAIL);
@@ -160,7 +160,7 @@ public class WebUITestElements {
 	public void testCreatingAnElementWithoutDeliveringAnyValidJSON() throws Exception {
 		/*
 		  	Given the server is up
-			And theres an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Manager"
+			And there's an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Manager"
 		 */
 		userservice.createUser(form);
 		
@@ -171,8 +171,7 @@ public class WebUITestElements {
 		//Then the response is <> 2xx
 	}
 	
-	// Currently not passing, the response is 200 with a valid element
-	// Where should the logic of checking for null values be?
+	
 	@Test(expected = Exception.class)
 	public void testCreatingAnElementWithEmailAsNull() throws Exception {
 		/*
@@ -181,32 +180,87 @@ public class WebUITestElements {
 		 */
 		userservice.createUser(form);
 		
-		//When I POST "/playground/elements/2019A.Kagan/rubykozel@gmail.com" with '{"type": null, "name":"Messaging Board"}'
+		//When I POST "/playground/elements/2019A.Kagan/null" with 
+		/*
+		  {
+		  	"type":"Messaging Board", 
+		  	"name":"Messaging Board"
+		  }
+		 */
 		
 		this.restTemplate
 		.postForObject(url + "/{userPlayground}/{email}", 
-				new ElementTO(null,"Messaging Board",Constants.PLAYGROUND,EMAIL), 
-				ElementTO.class, Constants.PLAYGROUND,EMAIL);
+				new ElementTO("Messaging Board","Messaging Board",Constants.PLAYGROUND,EMAIL), 
+				ElementTO.class, Constants.PLAYGROUND, null);
 		
 		//Then the response is 500 with 
 	}
+	
+	public void testCreatingAnElementWithEmptyJSON() throws Exception {
+		
+		/*
+		 * Given the server is up
+	And theres an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Manager"
+	
+	
+		 */
+		
+		userservice.createUser(form);
+		
+		//When I POST "/playground/elements/2019A.Kagan/rubykozel@gmail.com" with '{}'
+		
+		ElementTO actualElement = this.restTemplate.postForObject(url + "/{userPlayground}/{email}", 
+				new ElementTO(null, null, Constants.PLAYGROUND,EMAIL),
+				ElementTO.class, Constants.PLAYGROUND, null);
+		
+		/*
+		  	Then the response is 200
+			And the output is 
+			{
+			    "playground": "2019A.Kagan",
+			    "id": "2061451755",
+			    "location": {
+			        "x": 18.098741207560337,
+			        "y": 19.362210903012883
+			    },
+			    "name": null,
+			    "creationDate": "2018-11-13T16:01:50.518+0000",
+			    "expirationDate": null,
+			    "type": null,
+			    "attributes": {
+			        "creatorsName": "Manager",
+			        "isActive": "True",
+			        "isAMovie": "False",
+			        "movieName": "Venom 2018"
+			    },
+			    "creatorPlayground": "2019A.Kagan",
+			    "creatorEmail": "rubykozel@gmail.com"
+			}
+		 */
+		
+		assertThat(actualElement)
+		.isNotNull()
+		.extracting(
+				"playground",
+				"id",
+				"location",
+				"name",
+				"creationDate",
+				"expirationDate",
+				"type",
+				"attributes",
+				"creatorPlayground",
+				"creatorEmail")
+		.containsExactly(
+				Constants.PLAYGROUND,
+				actualElement.getId(),
+				actualElement.getLocation(),
+				null,
+				actualElement.getCreationDate(),
+				actualElement.getExpirationDate(),
+				null,
+				actualElement.getAttributes(),
+				Constants.PLAYGROUND,
+				EMAIL);
+	}
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
