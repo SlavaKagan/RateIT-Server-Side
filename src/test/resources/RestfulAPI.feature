@@ -118,9 +118,17 @@ Scenario: Creating an element with email as null # PASSED #Automated
 	
 	Given the server is up
 	And theres an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Manager"
-	When I POST "/playground/elements/2019A.Kagan/rubykozel@gmail.com" with '{"type": null, "name":"Messaging Board"}'
+	When I POST "/playground/elements/2019A.Kagan/null" with '{"type": "Messaging Board", "name":"Messaging Board"}'
 	Then the response is 500 with message: "JSON parse error: One of the paramters provided was null"
-		
+	
+Scenario: Creating an element with empty JSON # PASSED #Automated
+	
+	Given the server is up
+	And theres an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Manager"
+	When I POST "/playground/elements/2019A.Kagan/rubykozel@gmail.com" with '{}'
+	Then the response is 200
+	And the output is '{"playground":"2019A.Kagan","id":"2061451755","location":{"x":18.098741207560337,"y":19.362210903012883},"name":null,"creationDate":"2018-11-13T16:01:50.518+0000","expirationDate":null,"type":null,"attributes":{"creatorsName":"Manager","isActive":"True","isAMovie":"False","movieName":"Venom 2018"},"creatorPlayground":"2019A.Kagan","creatorEmail":"rubykozel@gmail.com"}'
+				
 
 #Feature: Change the Details of an element
 

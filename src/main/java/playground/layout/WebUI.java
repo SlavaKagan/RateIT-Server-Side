@@ -77,7 +77,7 @@ public class WebUI implements Constants {
 			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email) throws Exception {
 		validateParamsNotNull(userPlayground,email);
-		if(userservice.getAllUsers().get(email).getRole() != Constants.MANAGER)
+		if(!userservice.getAllUsers().get(email).getRole().equals(Constants.MANAGER))
 			throw new ConfirmationException("User is not a manager!");
 		elementservice.createElement(element, userPlayground, email);
 		return new ElementTO(elementservice.getAllElements().get(element.getId()));
