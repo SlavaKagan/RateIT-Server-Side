@@ -273,16 +273,36 @@ public class WebUITestElements {
 		ElementTO newElement= new ElementTO();
 		elementservice.createElement(newElement, Constants.PLAYGROUND, EMAIL);
 		
-		//When I PUT "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/2061451755" with '{"playground": "2019A.Kagan","id": "765","location": {"x": 3.6830377111762047,"y": 8.3868617407449,"name": "Messaging Board","creationDate": "2018-11-11T19:19:18.786+0000","expirationDate": "2018-11-12T19:19:18.786+0000","type": "Messaging Board","attributes": {"creatorsName": "Manager","isActive": "True","isAMovie": "False","movieName": "Venom 2018"},"creatorPlayground": "2019A.Kagan","creatorEmail": "rubykozel@gmail.com"}'
-		
-		oldId=newElement.getId();
+		/* When I PUT "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/2061451755" with 
+		 	{
+		 		"playground": "2019A.Kagan",
+		 		"id": "765",
+		 		"location": {
+		 			"x": Any valid x,
+		 			"y": Any valid y,
+		 		},
+		 		"name": "Messaging Board",
+		 		"creationDate": Any valid date,
+		 		"expirationDate": null or any valid date,
+		 		"type": "Messaging Board",
+		 		"attributes": {
+		 			"creatorsName": "Manager",
+		 			"isActive": "True",
+		 			"isAMovie": "False",
+		 			"movieName": "Venom 2018"
+		 		},
+		 		"creatorPlayground": "2019A.Kagan",
+		 		"creatorEmail": "rubykozel@gmail.com"
+		 	}
+		*/
+		oldId = newElement.getId();
 		newElement.setId("765");
 		
 		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", newElement, Constants.PLAYGROUND,EMAIL,Constants.PLAYGROUND,oldId);
 		//Then the reponse is "200 OK"
 	}
 	
-	@Test //(expected = Exception.class)
+	@Test (expected = Exception.class)
 	public void testTryingToChangeSomeAttributeWithNull() throws Exception{
 	/*
 		Given the server is up
@@ -292,12 +312,34 @@ public class WebUITestElements {
 		ElementTO newElement= new ElementTO("Messaging Board","Messaging Board",Constants.PLAYGROUND,EMAIL);
 		elementservice.createElement(newElement, Constants.PLAYGROUND, form.getEmail());
 		
-		//When I PUT "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/567" with '{id:null}'
+		/* When I PUT "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/567" with
+		  	{
+		 		"playground": "2019A.Kagan",
+		 		"id": null,
+		 		"location": {
+		 			"x": Any valid x,
+		 			"y": Any valid y,
+		 		},
+		 		"name": "Messaging Board",
+		 		"creationDate": Any valid date,
+		 		"expirationDate": null or any valid date,
+		 		"type": "Messaging Board",
+		 		"attributes": {
+		 			"creatorsName": "Manager",
+		 			"isActive": "True",
+		 			"isAMovie": "False",
+		 			"movieName": "Venom 2018"
+		 		},
+		 		"creatorPlayground": "2019A.Kagan",
+		 		"creatorEmail": "rubykozel@gmail.com"
+		 	}
+		*/
 		
-		oldId=newElement.getId();
+		oldId = newElement.getId();
 		newElement.setId(null);
 		
 		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", newElement, Constants.PLAYGROUND,EMAIL,Constants.PLAYGROUND,oldId);
+		
 		//Then the reponse is 500 with message
 	}
 }

@@ -38,6 +38,8 @@ public class ElementServiceStub implements Constants, ElementService {
 	}
 
 	public void createElement(ElementTO elementTO,String userPlayground, String email) throws Exception {
+		if(elementTO.getId() == null)
+			throw new Exception("Id of element can't be null");
 		ElementEntity element = elementTO.toEntity();
 		element.setCreatorEmail(email);
 		element.setCreatorPlayground(userPlayground);
@@ -83,7 +85,9 @@ public class ElementServiceStub implements Constants, ElementService {
 	}
 
 	public void updateElement(String userPlayground, String email, String playground, String id,
-			ElementEntity newElement) throws ElementNotFoundException {
+			ElementEntity newElement) throws Exception {
+		if(newElement.getId() == null)
+			throw new Exception("Id of element can't be null");
 		ElementEntity element = getElement(userPlayground, email, playground, id);
 		if (element == null)
 			throw new ElementNotFoundException("Element does not exist");

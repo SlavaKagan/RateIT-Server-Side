@@ -276,7 +276,16 @@ public class WebUITestUsers {
 		service.createUser(form);
 		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
 
-		// When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with '{"email":"ruby@gmail.com","playground": "2019A.Kagan","userName": "ruby","avatar": ":-)","role": "Reviewer","points": 0}'		
+		/* When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with
+		 	{
+		 		"email":"ruby@gmail.com",
+		 		"playground": "2019A.Kagan",
+		 		"userName": "ruby",
+		 		"avatar": ":-)",
+		 		"role": "Reviewer",
+		 		"points": 0
+		 	}		
+		 */
 		UserTO newUser= new UserTO(form);
 		newUser.setEmail("ruby@gmail.com");
 		
@@ -291,12 +300,22 @@ public class WebUITestUsers {
 	 	And there is an unregistered user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", 
 	 */
 		
-		//When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with '{"email":"ruby@gmail.com","playground": "2019A.Kagan","userName": "ruby","avatar": ":-)","role": "Guest","points": 0}'
-
+		/*When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with 
+		 	{
+		 		"email":"ruby@gmail.com",
+		 		"playground": "2019A.Kagan",
+		 		"userName": "ruby",
+		 		"avatar": ":-)",
+		 		"role": "Guest",
+		 		"points": 0
+		 	}
+		
+		*/
 		UserTO newUser= new UserTO(form);
 		newUser.setEmail("ruby@gmail.com");
 		
 		this.restTemplate.put(url + "{playground}/{email}", newUser, Constants.PLAYGROUND,"rubykozel@gmail.com");
+		
 		//Then the response is 404 with message: "This is an unregistered account"
 	}
 	
@@ -309,8 +328,17 @@ public class WebUITestUsers {
 		service.createUser(form);
 		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
 		
-		//When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with '{"email":null,"playground": "2019A.Kagan","username": "ruby","avatar": ":-)","role": "Reviewer","points": 0}'		
+		/* When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with 
+		 	{
+		 		"email":null,
+		 		"playground": "2019A.Kagan",
+		 		"username": "ruby",
+		 		"avatar": ":-)",
+		 		"role": "Reviewer",
+		 		"points": 0
+		 	}		
 		
+		*/
 		UserTO newUser= new UserTO(form);
 		newUser.setEmail(null);
 		

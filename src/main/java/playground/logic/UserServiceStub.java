@@ -21,7 +21,7 @@ public class UserServiceStub implements Constants, UserService {
 		return users;
 	}
 
-	public void createUser(NewUserForm form) {
+	public void createUser(NewUserForm form) throws Exception {
 		UserEntity user = new UserEntity(form);
 		this.users.put(user.getEmail(), user);
 	}
@@ -51,7 +51,9 @@ public class UserServiceStub implements Constants, UserService {
 		return confirmedUser;
 	}
 
-	public void editUser(String playground, String email, UserEntity newUser) throws ConfirmationException {
+	public void editUser(String playground, String email, UserEntity newUser) throws Exception {
+		if(newUser.getEmail() == null)
+			throw new Exception("Email of user can't be null");
 		UserEntity user = getUser(playground, email);
 		if(user == null)
 			throw new ConfirmationException("This is an unregistered account");

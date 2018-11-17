@@ -20,7 +20,7 @@ public interface ElementService {
 			String attributeName, Object value);
 
 	public void updateElement(String userPlayground, String email, String playground, String id,
-			ElementEntity newElement) throws ElementNotFoundException;
+			ElementEntity newElement) throws ElementNotFoundException, Exception;
 
 	public void cleanup();
 
