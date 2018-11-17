@@ -194,12 +194,12 @@ public class WebUITestElements {
 		//Then the response is 500 with 
 	}
 	
-	
+	@Test
 	public void testCreatingAnElementWithEmptyJSON() throws Exception {
 		
 		/*
 		 * Given the server is up
-	And theres an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Manager"
+		   And theres an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Manager"
 	
 	
 		 */
@@ -207,23 +207,22 @@ public class WebUITestElements {
 		userservice.createUser(form);
 		
 		//When I POST "/playground/elements/2019A.Kagan/rubykozel@gmail.com" with '{}'
-		
 		ElementTO actualElement = this.restTemplate.postForObject(url + "/{userPlayground}/{email}", 
 				new ElementTO(null, null, Constants.PLAYGROUND,EMAIL),
-				ElementTO.class, Constants.PLAYGROUND, null);
+				ElementTO.class, Constants.PLAYGROUND, "rubykozel@gmail.com");
 		
 		/*
 		  	Then the response is 200
 			And the output is 
 			{
 			    "playground": "2019A.Kagan",
-			    "id": "2061451755",
+			    "id": Any valid id,
 			    "location": {
-			        "x": 18.098741207560337,
-			        "y": 19.362210903012883
+			        "x": Any x,
+			        "y": Any y
 			    },
 			    "name": null,
-			    "creationDate": "2018-11-13T16:01:50.518+0000",
+			    "creationDate": Any valid date,
 			    "expirationDate": null,
 			    "type": null,
 			    "attributes": {
