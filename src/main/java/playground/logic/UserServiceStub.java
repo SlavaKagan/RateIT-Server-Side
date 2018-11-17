@@ -55,7 +55,8 @@ public class UserServiceStub implements Constants, UserService {
 		UserEntity user = getUser(playground, email);
 		if(user == null)
 			throw new ConfirmationException("This is an unregistered account");
-		user.setParams(newUser);
+		this.users.remove(email);
+		this.users.put(newUser.getEmail(), newUser);
 	}
 
 //	private String generateRandomCode() {

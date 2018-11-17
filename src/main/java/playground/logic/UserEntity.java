@@ -93,15 +93,4 @@ public class UserEntity implements Constants {
 		if ("null".equals(string) || string == null)
 			throw new Exception("One of the paramters provided was null");
 	}
-
-	public void setParams(UserEntity newUser) {
-		this.email = newUser.email;
-		this.playground = newUser.playground;
-		this.userName = newUser.userName;
-		this.avatar = newUser.avatar;
-		this.role = newUser.role;
-		this.points = newUser.points;
-
-	}
-
 }

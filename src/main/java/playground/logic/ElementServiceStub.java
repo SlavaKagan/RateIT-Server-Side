@@ -87,8 +87,8 @@ public class ElementServiceStub implements Constants, ElementService {
 		ElementEntity element = getElement(userPlayground, email, playground, id);
 		if (element == null)
 			throw new ElementNotFoundException("Element does not exist");
-		element.setParams(newElement);
-
+		this.elements.remove(id);
+		this.elements.put(newElement.getId(), newElement);
 	}
 
 	@Override

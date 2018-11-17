@@ -97,16 +97,6 @@ public class UserTO implements Constants {
 		this.points += amount;
 	}
 
-	public void setParams(UserTO newUser) {
-		this.email = newUser.email;
-		this.playground = newUser.playground;
-		this.userName = newUser.userName;
-		this.avatar = newUser.avatar;
-		this.role = newUser.role;
-		this.points = newUser.points;
-
-	}
-
 	public UserEntity toEntity() throws Exception {
 		UserEntity rv = new UserEntity();
 		rv.setUserName(this.userName);
@@ -115,7 +105,6 @@ public class UserTO implements Constants {
 		rv.setPlayground(this.playground);
 		rv.setPoints(this.points);
 		rv.setRole(this.role);
-		
 		return rv;
 	}
 

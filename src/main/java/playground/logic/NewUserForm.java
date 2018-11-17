@@ -65,5 +65,4 @@ public class NewUserForm implements Constants {
 	public String toString() {
 		return "NewUserForm [email=" + email + ", username=" + username + ", avatar=" + avatar + ", role=" + role + "]";
 	}
-
 }

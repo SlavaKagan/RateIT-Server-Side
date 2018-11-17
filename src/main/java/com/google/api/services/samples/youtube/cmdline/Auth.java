@@ -18,13 +18,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.List;
-
 /**
  * Shared class used by every sample. Contains methods for authorizing a user
  * and caching credentials.
  */
 public class Auth {
-
 	/**
 	 * Define a global instance of the HTTP transport.
 	 */
@@ -40,7 +38,6 @@ public class Auth {
 	 * OAuth tokens will be stored.
 	 */
 	private static final String CREDENTIALS_DIRECTORY = ".oauth-credentials";
-
 	/**
 	 * Authorizes the installed application to access user's protected data.
 	 *

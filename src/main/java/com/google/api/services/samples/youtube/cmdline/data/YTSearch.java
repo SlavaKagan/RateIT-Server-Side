@@ -11,7 +11,6 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
-
 package com.google.api.services.samples.youtube.cmdline.data;
 
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
@@ -39,7 +38,6 @@ import java.util.Properties;
  * @author Jeremy Walker
  */
 public class YTSearch {
-
 	/**
 	 * Define a global variable that identifies the name of a file that contains the
 	 * developer's API key.
@@ -85,7 +83,6 @@ public class YTSearch {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
 	}
 
 	public ArrayList<String> getSearchResultIDAndNamesList(String term) {

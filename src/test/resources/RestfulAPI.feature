@@ -1,5 +1,4 @@
 Feature: Posting new user 
-
 Scenario: Posting new user successfully # PASSED #Automated
 
 	Given the server is up 
@@ -76,19 +75,19 @@ Scenario: Change the user email succesfully # PASSED
 	When I PUT "/playground/users/2019A.Kagan/slava@gmail.com" with '{"email":"sla@gmail.com","playground": "2019A.Kagan","userName": "slava","avatar": "mn1","role": "Reviewer","points": 0}'
 	Then the response is 200 
 	
-Scenario: Change mail of unregistered user # PASSED
+Scenario: Change email of unregistered user # PASSED
 
 	Given the server is up 
 	And there is an unregistered user with playground: "2019A.Kagan", email: "yossi1@gmail.com", code: "1234" 
 	When I PUT "/playground/users/2019A.Kagan/yossi1@gmail.com" with '{"email":"ori@gmail.com","playground": "2019A.Kagan","username": "yossi","avatar": "mn1","role": "Guest","points": 0}'
-	Then the response is 404 with message: "This is an unregistered account"
+	Then the response is with message: "This is an unregistered account"
 	
 Scenario: Change the user email to null # PASSED
 	
 	Given the server is up 
 	And theres a user with playground: "2019A.Kagan", email: "slava@gmail.com", code: "1234" 
 	When I PUT "/playground/users/2019A.Kagan/slava@gmail.com" with '{"email":null,"playground": "2019A.Kagan","username": "slava","avatar": "mn1","role": "Reviewer","points": 0}'		
-	Then the response is 400 with error: "Bad Request"
+	Then the response is 500
 	
 #Feature: Creating an element
 	

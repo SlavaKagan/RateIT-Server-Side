@@ -116,17 +116,6 @@ public class ActivityTO implements Constants {
 				+ ", playerEmail=" + playerEmail + ", attributes=" + attributes + "]";
 
 	}
-
-	public void setParams(ActivityTO newActivity) {
-		this.playground = newActivity.playground;
-		this.id = newActivity.id;
-		this.elementPlayground = newActivity.elementPlayground;
-		this.elementId = newActivity.elementId;
-		this.type = newActivity.type;
-		this.playerPlayground = newActivity.playerPlayground;
-		this.playerEmail = newActivity.playerEmail;
-		this.attributes = newActivity.attributes;
-	}
 	
 	private void validateNull(String string) throws Exception {
 		if ("null".equals(string) || string == null)

@@ -163,20 +163,6 @@ public class ElementTO implements Constants {
 		rv.setLocation(this.location);
 		rv.setPlayground(this.playground);
 		
-		return rv;
-		
-	}
-
-	public void setParams(ElementTO newElement) {
-		this.playground = newElement.playground;
-		this.location = newElement.location;
-		this.creationDate = newElement.creationDate;
-		this.expirationDate = newElement.expirationDate;
-		this.creatorPlayground = newElement.creatorPlayground;
-		this.creatorEmail = newElement.creatorEmail;
-		this.attributes = newElement.attributes;
-		this.id = newElement.id;
-		this.name = newElement.name;
-		this.type = newElement.type;
+		return rv;	
 	}
 }

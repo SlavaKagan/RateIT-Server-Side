@@ -17,7 +17,6 @@ import playground.logic.ElementNotFoundException;
 import playground.logic.ElementServiceStub;
 import playground.logic.NewUserForm;
 import playground.logic.NotFoundExceptions;
-import playground.logic.UserEntity;
 import playground.logic.UserServiceStub;
 
 @RestController
@@ -63,8 +62,7 @@ public class WebUI implements Constants {
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email) throws Exception {
 		validateParamsNotNull(playground,email);
-		return new UserTO(userservice.getUser(playground, email));
-		
+		return new UserTO(userservice.getUser(playground, email));	
 	}
 	
 	@RequestMapping(
