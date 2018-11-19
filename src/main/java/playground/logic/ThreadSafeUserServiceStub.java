@@ -22,8 +22,7 @@ public class ThreadSafeUserServiceStub implements Constants, UserService {
 		return users;
 	}
 
-	public void createUser(NewUserForm form) throws Exception {
-		UserEntity user = new UserEntity(form);
+	public void createUser(UserEntity user) throws Exception {
 		this.users.put(user.getEmail(), user);
 	}
 	

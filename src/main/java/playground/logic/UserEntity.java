@@ -14,12 +14,12 @@ public class UserEntity implements Constants {
 
 	}
 
-	public UserEntity(NewUserForm form) {
-		this.email = form.getEmail();
-		this.playground = PLAYGROUND;
-		this.userName = form.getUsername();
-		this.avatar = form.getAvatar();
-		this.role = form.getRole();
+	public UserEntity(String email, String playground, String userName, String avatar, String role) {
+		this.email = email;
+		this.playground = playground;
+		this.userName = userName;
+		this.avatar = avatar;
+		this.role = role;
 		setStartingPoints();
 	}
 

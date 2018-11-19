@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import playground.logic.ConfirmationException;
 import playground.logic.Constants;
 import playground.logic.ElementNotFoundException;
-import playground.logic.NewUserForm;
 import playground.logic.ThreadSafeElementServiceStub;
 import playground.logic.NotFoundExceptions;
 import playground.logic.ThreadSafeUserServiceStub;
@@ -38,7 +37,8 @@ public class WebUI implements Constants {
 			produces = MediaType.APPLICATION_JSON_VALUE, 
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public UserTO createUser(@RequestBody NewUserForm userForm) throws IllegalArgumentException, IllegalAccessException, Exception {
-		userservice.createUser(userForm);
+		UserTO user = new UserTO(userForm);
+		userservice.createUser(user.toEntity());
 		return new UserTO(userservice.getAllUsers().get(userForm.getEmail()));
 	}
 	

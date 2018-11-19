@@ -2,7 +2,7 @@ package playground.logic;
 
 public interface UserService {
 	
-	public void createUser(NewUserForm form) throws Exception;
+	public void createUser(UserEntity userEntity) throws Exception;
 	
 	public UserEntity getUser(String email);
 	

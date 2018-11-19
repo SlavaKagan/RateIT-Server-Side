@@ -23,7 +23,6 @@ import playground.logic.Constants;
 import playground.logic.ElementEntity;
 import playground.logic.ElementService;
 import playground.logic.Location;
-import playground.logic.NewUserForm;
 import playground.logic.UserService;
 
 
@@ -38,6 +37,7 @@ public class WebUITestElements {
 	private RestTemplate restTemplate;
 	private String url;
 	private NewUserForm form;
+	private UserTO user;
 	public static final String EMAIL = "rubykozel@gmail.com";
 	
 	@LocalServerPort
@@ -50,6 +50,7 @@ public class WebUITestElements {
 		this.restTemplate = new RestTemplate();
 		this.url = "http://localhost:" + port + "/playground/elements";
 		form = new NewUserForm(EMAIL, "ruby", ":-)", "Manager");
+		user = new UserTO(form);
 		jacksonMapper = new ObjectMapper();
 	}
 	
@@ -99,7 +100,7 @@ public class WebUITestElements {
 	@Test
 	public void testCreatingAnElementSuccessfully() throws Exception {
 		//Given
-		userservice.createUser(form);
+		userservice.createUser(user.toEntity());
 		
 		//When
 		ElementTO elementToPost = jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\"}", ElementTO.class);
@@ -138,8 +139,8 @@ public class WebUITestElements {
 	@Test(expected = Exception.class)
 	public void testCreatingAnElementWithAUserThatIsNotAManager() throws Exception {
 		// Given
-		form.setRole(Constants.REVIEWER);
-		userservice.createUser(form);
+		user.setRole(Constants.REVIEWER);
+		userservice.createUser(user.toEntity());
 
 		// When
 		ElementTO elementToPost = jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\"}", ElementTO.class);
@@ -161,7 +162,7 @@ public class WebUITestElements {
 	@Test(expected = Exception.class)
 	public void testCreatingAnElementWithoutDeliveringAnyValidJSON() throws Exception {
 		// Given
-		userservice.createUser(form);
+		userservice.createUser(user.toEntity());
 		
 		// When
 		this.restTemplate.postForObject(url + "/{userPlayground}/{email}", 
@@ -185,7 +186,7 @@ public class WebUITestElements {
 	@Test(expected = Exception.class)
 	public void testCreatingAnElementWithEmailAsNull() throws Exception {
 		// Given
-		userservice.createUser(form);
+		userservice.createUser(user.toEntity());
 		
 		// When
 		ElementTO elementToPost = jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\"}", ElementTO.class);
@@ -206,7 +207,7 @@ public class WebUITestElements {
 	@Test(expected = Exception.class)
 	public void testCreatingAnElementWithEmptyJSON() throws Exception {
 		// Given
-		userservice.createUser(form);
+		userservice.createUser(user.toEntity());
 		
 		// When
 		this.restTemplate.postForObject(url + "/{userPlayground}/{email}",
@@ -221,7 +222,7 @@ public class WebUITestElements {
 	 	Given the server is up
 		And theres an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "2061451755",
 	*/
-		userservice.createUser(form);
+		userservice.createUser(user.toEntity());
 		ElementTO newElement= new ElementTO();
 		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, EMAIL);
 		
@@ -260,7 +261,7 @@ public class WebUITestElements {
 		Given the server is up
 		And there is an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "567",
 	*/
-		userservice.createUser(form);
+		userservice.createUser(user.toEntity());
 		ElementTO newElement= new ElementTO("Messaging Board","Messaging Board",Constants.PLAYGROUND,EMAIL, new HashMap<>());
 		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, form.getEmail());
 		
@@ -299,7 +300,7 @@ public class WebUITestElements {
 	public void getElementsByAttributesValueSuccessfully() throws Exception {
 		// Given the server is up - do nothing
 		// And there are elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", attribute: "isAMovie", value:"False"
-		userservice.createUser(form);
+		userservice.createUser(user.toEntity());
 		Map<String, Object> attributes = new HashMap<>();
 		attributes.put("isAMovie", "False");
 		ElementTO newElement = new ElementTO();

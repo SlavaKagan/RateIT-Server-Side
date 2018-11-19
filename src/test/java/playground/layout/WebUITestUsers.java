@@ -17,7 +17,6 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import playground.logic.Constants;
-import playground.logic.NewUserForm;
 import playground.logic.UserEntity;
 import playground.logic.UserService;
 
@@ -29,6 +28,7 @@ public class WebUITestUsers {
 	private RestTemplate restTemplate;
 	private String url;
 	private NewUserForm form;
+	private UserTO user;
 	
 	private ObjectMapper jacksonMapper;
 
@@ -40,6 +40,7 @@ public class WebUITestUsers {
 		this.restTemplate = new RestTemplate();
 		this.url = "http://localhost:" + port + "/playground/users/";
 		form = new NewUserForm("rubykozel@gmail.com", "ruby", ":-)", "Guest");
+		user = new UserTO(form);
 		jacksonMapper = new ObjectMapper();
 	}
 
@@ -157,7 +158,7 @@ public class WebUITestUsers {
 	@Test
 	public void testConfirmingANewRegisteredUserSuccessfully() throws Exception {
 		// Given
-		service.createUser(form);
+		service.createUser(user.toEntity());
 		
 		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class,
@@ -190,7 +191,7 @@ public class WebUITestUsers {
 	@Test(expected = Exception.class)
 	public void testConfirmingANewRegisteredUserUnsuccessfullyWithDifferentCode() throws Exception {
 		// Given
-		service.createUser(form);
+		service.createUser(user.toEntity());
 		
 		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class, Constants.PLAYGROUND,
@@ -207,7 +208,7 @@ public class WebUITestUsers {
 	@Test(expected = Exception.class)
 	public void testConfirmingAnExistingUser() throws Exception {
 		// Given
-		service.createUser(form);
+		service.createUser(user.toEntity());
 		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
 		
 		// When
@@ -234,7 +235,7 @@ public class WebUITestUsers {
 	@Test
 	public void testGettingARegisteredUserFromTheServerSuccessfully() throws Exception {
 		// Given
-		service.createUser(form);
+		service.createUser(user.toEntity());
 		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
 		
 		// When
@@ -265,7 +266,7 @@ public class WebUITestUsers {
 	@Test(expected = Exception.class)
 	public void testGettingAnUnconfirmedUser() throws Exception {
 		// Given
-		service.createUser(form);
+		service.createUser(user.toEntity());
 		
 		// When 
 		this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
@@ -296,7 +297,7 @@ public class WebUITestUsers {
 	 	Given the server is up 
 		And there is a confirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", 
 	 */
-		service.createUser(form);
+		service.createUser(user.toEntity());
 		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
 
 		/* When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with
@@ -348,7 +349,7 @@ public class WebUITestUsers {
 		Given the server is up
 		And theres a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com",
 	*/
-		service.createUser(form);
+		service.createUser(user.toEntity());
 		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
 		
 		/* When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with 
