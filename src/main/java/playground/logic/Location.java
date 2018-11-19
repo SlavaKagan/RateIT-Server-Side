@@ -1,4 +1,4 @@
-package playground.layout;
+package playground.logic;
 
 public class Location {
 	private double x;

@@ -8,8 +8,6 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
-import playground.layout.NewUserForm;
-
 @Service
 public class ThreadSafeUserServiceStub implements Constants, UserService {
 

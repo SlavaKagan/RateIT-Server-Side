@@ -1,6 +1,5 @@
 package playground.logic;
 
-import playground.layout.NewUserForm;
 import playground.logic.Constants;
 
 public class UserEntity implements Constants {

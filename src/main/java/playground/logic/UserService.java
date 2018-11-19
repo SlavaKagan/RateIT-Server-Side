@@ -1,7 +1,5 @@
 package playground.logic;
 
-import playground.layout.NewUserForm;
-
 public interface UserService {
 	
 	public void createUser(NewUserForm form) throws Exception;

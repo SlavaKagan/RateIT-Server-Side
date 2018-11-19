@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import playground.logic.ConfirmationException;
 import playground.logic.Constants;
 import playground.logic.ElementNotFoundException;
+import playground.logic.NewUserForm;
 import playground.logic.ThreadSafeElementServiceStub;
 import playground.logic.NotFoundExceptions;
 import playground.logic.ThreadSafeUserServiceStub;

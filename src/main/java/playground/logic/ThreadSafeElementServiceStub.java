@@ -12,8 +12,6 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
-import playground.layout.Location;
-
 @Service
 public class ThreadSafeElementServiceStub implements Constants, ElementService {
 

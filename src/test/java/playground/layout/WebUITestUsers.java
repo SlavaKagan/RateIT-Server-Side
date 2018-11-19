@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import playground.logic.Constants;
+import playground.logic.NewUserForm;
 import playground.logic.UserEntity;
 import playground.logic.UserService;
 

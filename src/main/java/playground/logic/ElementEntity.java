@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import playground.layout.Location;
 import playground.logic.Constants;
 
 public class ElementEntity implements Constants {

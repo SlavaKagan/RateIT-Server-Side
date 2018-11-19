@@ -22,6 +22,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import playground.logic.Constants;
 import playground.logic.ElementEntity;
 import playground.logic.ElementService;
+import playground.logic.Location;
+import playground.logic.NewUserForm;
 import playground.logic.UserService;
 
 

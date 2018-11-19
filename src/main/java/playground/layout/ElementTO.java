@@ -6,6 +6,7 @@ import java.util.Map;
 
 import playground.logic.Constants;
 import playground.logic.ElementEntity;
+import playground.logic.Location;
 
 public class ElementTO implements Constants {
 	private String playground;
