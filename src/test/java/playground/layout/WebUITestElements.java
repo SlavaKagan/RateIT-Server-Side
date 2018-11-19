@@ -1,6 +1,9 @@
 package playground.layout;
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.annotation.PostConstruct;
 
 import org.junit.After;
@@ -340,5 +343,29 @@ public class WebUITestElements {
 		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", newElement, Constants.PLAYGROUND,EMAIL,Constants.PLAYGROUND,oldId);
 		
 		//Then the reponse is 500 with message
+	}
+	
+	@Test
+	public void getElementsByAttributesValueSuccessfully() throws Exception {
+		// Given the server is up - do nothing
+		// And there are elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", attribute: "isAMovie", value:"False"
+		userservice.createUser(form);
+		Map<String, Object> attributes = new HashMap<>();
+		attributes.put("isAMovie", "False");
+		ElementTO newElement = new ElementTO();
+		newElement.setAttributes(attributes);
+		elementservice.createElement(newElement, Constants.PLAYGROUND, EMAIL);
+
+//		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/isAMovie/False"
+		String userPlayground = "2019A.Kagan";
+		String attributeName = "isAMovie";
+		String value = "False";
+		ActivityTO actualActivity = this.restTemplate.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", ActivityTO.class, userPlayground, EMAIL, attributeName, value);
+//		Then the response is 200
+		
+//		And the output is '[{"playground":"2019A.Kagan","id":"1025028332","location":{"x": Any x ,"y": Any y },"name": Any name,"creationDate": Any valid date ,"expirationDate":null, "type": any type ,"attributes":{"creatorsName":"Manager","isActive":"True","isAMovie":"False","movieName":"Venom 2018"},"creatorPlayground":"2019A.Kagan","creatorEmail":"rubykozel@gmail.com"} ... ]'
+		assertThat(actualActivity)
+		.isNotNull(); //TODO
+
 	}
 }
