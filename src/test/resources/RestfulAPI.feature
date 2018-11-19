@@ -4,7 +4,7 @@ Scenario: Posting new user successfully # PASSED #Automated
 	Given the server is up 
 	When I POST "/playground/users" with '{"email":"rubykozel@gmail.com", "username":"ruby", "avatar":":-)", "role":"Guest"}' 
 	Then the response is 200 ok 
-	And the output is '{"email": "rubykozel@gmail.com", "playground": "2019A.Kagan", "userName": "ruby", "avatar": ":-)", "role": "Guest", "points": 0}' 
+	And the database contains the user : '{"email": "rubykozel@gmail.com", "playground": "2019A.Kagan", "userName": "ruby", "avatar": ":-)", "role": "Guest", "points": 0}' 
 	
 Scenario: Posting new user unsuccessfully # PASSED #Automated
 
@@ -16,7 +16,7 @@ Scenario: Posting new user with given email as null # PASSED #Automated
 
 	Given the server is up 
 	When I POST "/playground/users" with '{"email": null,"username":"ruby","avatar":":-)","role":"Guest"}' 
-	Then the response is 500 with message: "JSON parse error: One of the paramters provided was null"
+	Then the response is 500
 	
 #Feature: Confirming a new registered user
 	
@@ -26,25 +26,25 @@ Scenario: Confirming a new registered user successfully # PASSED #Automated
 	And theres a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", code: "1234" 
 	When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/1234" 
 	Then the response is 200 
-	And the output is '{"email": "rubykozel@gmail.com", "playground": "2019A.Kagan", "userName": "ruby", "avatar": ":-)", "role": "Reviewer", "points": 0}' 
+	And the database contains the user: '{"email": "rubykozel@gmail.com", "playground": "2019A.Kagan", "userName": "ruby", "avatar": ":-)", "role": "Reviewer", "points": 0}' 
 	
 Scenario: Confirming a new registered user unsuccessfully with different code # PASSED #Automated
 
 	Given the server is up 
 	And theres an unconfirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", code: "1234" 
 	When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/1235" 
-	Then the response is 500 with message: "You have entered the wrong confirmation code" 
+	Then the response is 500 
 	
 Scenario: Confirming an existing user # PASSED #Automated
 
 	Given the server is up 
 	And theres a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Reviewer" 
 	When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/Any_Code" 
-	Then the response is 500 with message: "User is already confirmed" 
+	Then the response is 500 
 	
 #Feature: Logging into the server
 	
-Scenario: Getting a user from the server successfully # PASSED #Automated
+Scenario: Getting a registered user from the server successfully # PASSED #Automated
 
 	Given the server is up 
 	And theres a registered user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", 
@@ -97,7 +97,7 @@ Scenario: Creating an element successfully # PASSED #Automated
 	And theres an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Manager" 
 	When I POST "/playground/elements/2019A.Kagan/rubykozel@gmail.com" with '{"type":"Messaging Board", "name":"Messaging Board"}' 
 	Then the response is 200 
-	And the output is '{"playground": "2019A.Kagan","id": Any ID ,"location": {"x": Any X,"y": Any Y},"name": "Messaging Board","creationDate": Any valid date ,"experationDate": null,"type": "Messaging Board","attributes": {"creatorsName": "Manager","isActive": "True","isAMovie": "False","movieName": "Venom 2018"},"creatorPlayground": "2019A.Kagan","creatorEmail": "rubykozel@gmail.com"}'
+	And the database containts the element '{"playground": "2019A.Kagan","name": "Messaging Board", "experationDate": null,"type": "Messaging Board","creatorPlayground": "2019A.Kagan","creatorEmail": "rubykozel@gmail.com"}'
 	
 Scenario: Creating an element with a user that is not a manager # PASSED #Automated
 
@@ -118,15 +118,14 @@ Scenario: Creating an element with email as null # PASSED #Automated
 	Given the server is up
 	And theres an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Manager"
 	When I POST "/playground/elements/2019A.Kagan/null" with '{"type": "Messaging Board", "name":"Messaging Board"}'
-	Then the response is 500 with message: "JSON parse error: One of the paramters provided was null"
+	Then the response is 500
 	
 Scenario: Creating an element with empty JSON # PASSED #Automated
 	
 	Given the server is up
 	And theres an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Manager"
 	When I POST "/playground/elements/2019A.Kagan/rubykozel@gmail.com" with '{}'
-	Then the response is 200
-	And the output is '{"playground":"2019A.Kagan","id":"2061451755","location":{"x":18.098741207560337,"y":19.362210903012883},"name":null,"creationDate":"2018-11-13T16:01:50.518+0000","expirationDate":null,"type":null,"attributes":{"creatorsName":"Manager","isActive":"True","isAMovie":"False","movieName":"Venom 2018"},"creatorPlayground":"2019A.Kagan","creatorEmail":"rubykozel@gmail.com"}'
+	Then the response is 500
 				
 
 #Feature: Change the Details of an element

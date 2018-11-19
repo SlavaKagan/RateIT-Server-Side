@@ -1,5 +1,7 @@
 package playground.logic;
 
+import java.util.Date;
+
 public interface Constants {
 	public static final String PLAYGROUND = "2019A.Kagan";
 	public static final String[] elementTypes = { "Messaging Board", "Movie Panel" };
@@ -10,4 +12,5 @@ public interface Constants {
 	public static final String REVIEWER = "Reviewer";
 	public static final String GUEST = "Guest";
 	public static final String TEMPORARY_CODE = "1234";
+	public static final Date DEFAULT_DATE = new Date(1);
 }

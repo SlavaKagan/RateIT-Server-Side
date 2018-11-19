@@ -14,8 +14,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import playground.logic.Constants;
-import playground.logic.NewUserForm;
+import playground.logic.UserEntity;
 import playground.logic.UserService;
 
 @RunWith(SpringRunner.class)
@@ -26,6 +28,8 @@ public class WebUITestUsers {
 	private RestTemplate restTemplate;
 	private String url;
 	private NewUserForm form;
+	
+	private ObjectMapper jacksonMapper;
 
 	@LocalServerPort
 	private int port;
@@ -35,6 +39,7 @@ public class WebUITestUsers {
 		this.restTemplate = new RestTemplate();
 		this.url = "http://localhost:" + port + "/playground/users/";
 		form = new NewUserForm("rubykozel@gmail.com", "ruby", ":-)", "Guest");
+		jacksonMapper = new ObjectMapper();
 	}
 
 	@Before
@@ -46,225 +51,242 @@ public class WebUITestUsers {
 	public void teardown() {
 		this.service.cleanup();
 	}
-
+	
+	/**
+	 * Given nothing
+	 * When nothing
+	 * Then the server is loading properly
+	 * @throws Exception
+	 */
 	@Test
 	public void testServerInitializesProperly() throws Exception {
 
 	}
 	
+	/**
+	 * 	Given the server is up 
+		When I POST "/playground/users" with 
+		{
+			"email":"rubykozel@gmail.com",
+			"username":"ruby", 
+			"avatar":":-)", 
+			"role":"Guest"
+		}
+	 	Then the response is 200 OK
+	 	And the database contains the user:
+	 	{
+			"email": "rubykozel@gmail.com",
+			"playground": "2019A.Kagan",
+			"userName": "ruby",
+			"avatar": ":-)", 
+			"role": "Guest", 
+			"points": 0
+		}
+	 * @throws Exception
+	 */
 	@Test
 	public void testPostingNewUserSuccessfully() throws Exception {
-		/*
-		  	Given the server is up 
-			When I POST "/playground/users" with '{"email":"rubykozel@gmail.com", "username":"ruby", "avatar":":-)", "role":"Guest"}' 
-		 */
+		// Given 
 		
-		UserTO actualUser = this.restTemplate.postForObject(url, form, UserTO.class);
+		/*nothing*/
 		
-		/*
-		 	Then the response is 200 ok 
-			And the output is 
-			{
-				"email": "rubykozel@gmail.com",
-				"playground": "2019A.Kagan",
-				"userName": "ruby",
-				"avatar": ":-)", 
-				"role": "Guest", 
-				"points": 0
-			}
-		 */
-		
-		assertThat(actualUser)
-		.isNotNull()
-		.extracting(
-				"email",
-				"playground",
-				"userName",
-				"avatar",
-				"role",
-				"points")
-		.containsExactly(
-				"rubykozel@gmail.com",
-				Constants.PLAYGROUND,
-				"ruby",
-				":-)",
-				Constants.GUEST,
-				0L);
-	}
-	
-	@Test(expected = Exception.class)
-	public void testPostingNewUserUnsuccessfully() throws Exception {
-		/*
-		  	Given the server is up 
-			When I POST "/playground/users" with nothing 
-		 */
-		
-		this.restTemplate.postForObject(url, null, UserTO.class);
-		
-		// Then the response is <> 2xx
-	}
-	
-	@Test(expected = Exception.class)
-	public void testPostingNewUserWithGivenEmailAsNull() throws Exception {
-		/*
-		  	Given the server is up 
-			When I POST "/playground/users" with '{"email": null,"username":"ruby","avatar":":-)","role":"Guest"}' 
-		 */
-		
-		form.setEmail(null);
+		// When
 		this.restTemplate.postForObject(url, form, UserTO.class);
 		
-		// Then the response is 500
+		UserEntity actualUserInDb = this.service.getUser(form.getEmail());
+		
+		// Then
+		assertThat(jacksonMapper.writeValueAsString(actualUserInDb))
+		.isNotNull()
+		.isEqualTo(
+				"{"
+				+ "\"email\":\"rubykozel@gmail.com\","
+				+ "\"playground\":\"2019A.Kagan\","
+				+ "\"userName\":\"ruby\","
+				+ "\"avatar\":\":-)\","
+				+ "\"role\":\"Guest\","
+				+ "\"points\":0"
+				+ "}");
 	}
 	
+	
+	/**
+	 * 	Given the server is up 
+		When I POST "/playground/users" with nothing
+	 	Then the response is <> 2xx
+	 * @throws Exception
+	 */
+	@Test(expected = Exception.class)
+	public void testPostingNewUserUnsuccessfully() throws Exception {	
+		//	When
+		this.restTemplate.postForObject(url, null, UserTO.class); 
+	}
+	
+	
+	/**
+	 * 	Given the server is up 
+		When I POST "/playground/users" with '{"email": null,"username":"ruby","avatar":":-)","role":"Guest"}' 
+	 	Then the response is 500
+	 * @throws Exception
+	 */
+	@Test(expected = Exception.class)
+	public void testPostingNewUserWithGivenEmailAsNull() throws Exception {
+		// When
+		form.setEmail(null);
+		this.restTemplate.postForObject(url, form, UserTO.class);
+	}
+	
+	
+	/**
+	 * 	Given the server is up 
+		And theres a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", code: "1234"
+		When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/1234"
+		Then the response is 200 
+		And the database contains the user 
+		{
+			"email": "rubykozel@gmail.com",
+			"playground": "2019A.Kagan", 
+			"userName": "ruby", 
+			"avatar": ":-)", 
+			"role": "Reviewer", 
+			"points": 0
+		}
+	 * @throws Exception
+	 */
 	@Test
 	public void testConfirmingANewRegisteredUserSuccessfully() throws Exception {
-		/*
-		 	Given the server is up 
-			And theres a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", code: "1234"
-		 */
+		// Given
 		service.createUser(form);
-
-		// When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/1234"
-		UserTO actualUser = this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class,
+		
+		// When
+		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class,
 				Constants.PLAYGROUND, "rubykozel@gmail.com", 1234);
 		
-		/*
-		 	Then the response is 200 
-			And the output is 
-			{
-				"email": "rubykozel@gmail.com",
-				"playground": "2019A.Kagan", 
-				"userName": "ruby", 
-				"avatar": ":-)", 
-				"role": "Reviewer", 
-				"points": 0
-			}
-		 */
-		assertThat(actualUser)
-			.isNotNull()
-			.extracting(
-					"email",
-					"playground",
-					"userName",
-					"avatar",
-					"role",
-					"points")
-			.containsExactly(
-					"rubykozel@gmail.com",
-					Constants.PLAYGROUND,
-					"ruby",
-					":-)",
-					Constants.REVIEWER,
-					0L);
+		
+		
+		// Then
+		UserEntity actualUserInDb = this.service.getUser(form.getEmail());
+		
+		assertThat(jacksonMapper.writeValueAsString(actualUserInDb))
+		.isNotNull()
+		.isEqualTo(
+				"{"
+				+ "\"email\":\"rubykozel@gmail.com\","
+				+ "\"playground\":\"2019A.Kagan\","
+				+ "\"userName\":\"ruby\","
+				+ "\"avatar\":\":-)\","
+				+ "\"role\":\"Reviewer\","
+				+ "\"points\":0"
+				+ "}");
 	}
-
+	
+	/**
+	 * 	Given the server is up 
+		And theres an unconfirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", code: "1234"
+		When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/1235"
+	 * @throws Exception
+	 */
 	@Test(expected = Exception.class)
 	public void testConfirmingANewRegisteredUserUnsuccessfullyWithDifferentCode() throws Exception {
-		/*
-		 	Given the server is up 
-			And theres an unconfirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", code: "1234"
-		 */
+		// Given
 		service.createUser(form);
 		
-		//	When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/1235"
+		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class, Constants.PLAYGROUND,
 				"rubykozel@gmail.com", 1235);
-		
-		// Then the response is 500
 	}
-
+	
+	/**
+	 * 	Given the server is up 
+		And there's a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Reviewer"
+	 	When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/Any_Code"
+	 	Then the response is 500
+	 * @throws Exception
+	 */
 	@Test(expected = Exception.class)
 	public void testConfirmingAnExistingUser() throws Exception {
-		
-		/*
-		 	Given the server is up 
-			And theres a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Reviewer"
-		 */
+		// Given
 		service.createUser(form);
 		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
 		
-		// When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/Any_Code"
+		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class, Constants.PLAYGROUND,
-				"rubykozel@gmail.com", 1111);
-		
-		// Then the response is 500
+				"rubykozel@gmail.com", 1111); 
 	}
-
+	
+	/**
+	 * 	Given the server is up 
+		And theres a registered user with playground: "2019A.Kagan", email: "rubykozel@gmail.com"
+	 	When I GET "/playground/users/login/2019A.Kagan/rubykozel@gmail.com"
+	 	Then the response is 200 
+		And the output is 
+		{
+			"email": "rubykozel@gmail.com",
+			"playground": "2019A.Kagan",
+			"userName": "ruby",
+			"avatar": ":-)",
+			"role": "Reviewer",
+			"points": 0
+		}
+	 * @throws Exception
+	 */
 	@Test
-	public void testGettingAUserFromTheServerSuccessfully() throws Exception {
-		
-		/*
-		 	Given the server is up 
-			And theres a registered user with playground: "2019A.Kagan", email: "rubykozel@gmail.com"
-		 */
+	public void testGettingARegisteredUserFromTheServerSuccessfully() throws Exception {
+		// Given
 		service.createUser(form);
 		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
 		
-		// When I GET "/playground/users/login/2019A.Kagan/rubykozel@gmail.com"
+		// When
 		UserTO actualUser = this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
 				Constants.PLAYGROUND, form.getEmail());
-		
-		/*
-		 	Then the response is 200 
-			And the output is 
-			{
-				"email": "rubykozel@gmail.com",
-				"playground": "2019A.Kagan",
-				"userName": "ruby",
-				"avatar": ":-)",
-				"role": "Reviewer",
-				"points": 0
-			}
-		 */
-		assertThat(actualUser)
+
+		// Then
+		assertThat(jacksonMapper.writeValueAsString(actualUser))
 			.isNotNull()
-			.extracting(
-					"email",
-					"playground",
-					"userName",
-					"avatar",
-					"role",
-					"points")
-			.containsExactly(
-					"rubykozel@gmail.com",
-					Constants.PLAYGROUND,
-					"ruby",
-					":-)",
-					Constants.REVIEWER,
-					0L); //0L for long value
+			.isEqualTo(
+					"{"
+					+ "\"email\":\"rubykozel@gmail.com\","
+					+ "\"playground\":\"2019A.Kagan\","
+					+ "\"userName\":\"ruby\","
+					+ "\"avatar\":\":-)\","
+					+ "\"role\":\"Reviewer\","
+					+ "\"points\":0"
+					+ "}");
 	}
 	
+	/**
+	 * 	Given the server is up 
+		And there's an unconfirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com" 
+	 	When I GET "/playground/users/login/2019A.Kagan/rubykozel@gmail.com" 
+	 	Then the response is 500
+	 * @throws Exception
+	 */
 	@Test(expected = Exception.class)
 	public void testGettingAnUnconfirmedUser() throws Exception {
-		/*
-		 	Given the server is up 
-			And there's an unconfirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com" 
-		 */
+		// Given
 		service.createUser(form);
 		
-		// When I GET "/playground/users/login/2019A.Kagan/rubykozel@gmail.com" 
+		// When 
 		this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
 				Constants.PLAYGROUND, form.getEmail());
-		
-		// Then the response is 500
 	}
 	
+	/**
+	 * 	Given the server is up 
+		And there are no accounts 
+		When I GET "/playground/users/login/2019A.Kagan/rubykozel@gmail.com"
+		Then the response is 500
+	 * @throws Exception
+	 */
 	@Test(expected = Exception.class)
 	public void testGettingAnUnregisteredUser() throws Exception {
-		/*
-		 	Given the server is up 
-			And there are no accounts 
-		 */
+		// Given
 		
-		/* No account was inserted */
+		/* nothing */
 		
-		
-		// When I GET "/playground/users/login/2019A.Kagan/rubykozel@gmail.com"
+		// When
 		this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
 				Constants.PLAYGROUND, form.getEmail());
-		
-		// Then the response is 500
 	}
 	
 	@Test

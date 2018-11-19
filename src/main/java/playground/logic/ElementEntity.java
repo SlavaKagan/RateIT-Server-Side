@@ -4,8 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import playground.layout.Location;
 import playground.logic.Constants;
-import playground.logic.Location;
 
 public class ElementEntity implements Constants {
 	private String playground;
@@ -22,21 +22,20 @@ public class ElementEntity implements Constants {
 	public ElementEntity() {
 		this.playground = PLAYGROUND;
 		this.location = new Location(Math.random() * 20, Math.random() * 20);
-		this.creationDate = new Date();
-		this.expirationDate = null;	
+		this.creationDate = DEFAULT_DATE;
+		this.expirationDate = null;
 		this.attributes = new HashMap<>();
-		this.attributes.put("isActive", "True");
-		this.attributes.put("creatorsName", MANAGER_NAME);
-		this.attributes.put("isAMovie", "False");
-		this.attributes.put("movieName", "Venom 2018");		
+		setId(hashId() + "");
 	}
 
-	public ElementEntity(String type, String name, String creatorPlayground, String creatorEmail) {
+	public ElementEntity(String type, String name, String creatorPlayground, String creatorEmail,
+			Map<String, Object> attributes) {
 		this();
 		this.type = type;
 		this.name = name;
 		this.creatorPlayground = creatorPlayground;
 		this.creatorEmail = creatorEmail;
+		this.attributes = attributes;
 		setId(hashId() + "");
 	}
 
@@ -55,7 +54,7 @@ public class ElementEntity implements Constants {
 	public void setId(String id) {
 		this.id = id;
 	}
-	
+
 	public int hashId() {
 		return Math.abs((this.creatorEmail + this.name + this.type).hashCode());
 	}

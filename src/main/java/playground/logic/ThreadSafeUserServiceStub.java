@@ -1,5 +1,6 @@
 package playground.logic;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -7,14 +8,16 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
+import playground.layout.NewUserForm;
+
 @Service
-public class UserServiceStub implements Constants, UserService {
+public class ThreadSafeUserServiceStub implements Constants, UserService {
 
 	private Map<String, UserEntity> users;
 	
 	@PostConstruct
 	public void init() {
-		users = new HashMap<>();
+		users = Collections.synchronizedMap(new HashMap<>());
 	}
 
 	public Map<String, UserEntity> getAllUsers() {
@@ -25,8 +28,13 @@ public class UserServiceStub implements Constants, UserService {
 		UserEntity user = new UserEntity(form);
 		this.users.put(user.getEmail(), user);
 	}
+	
+	@Override
+	public UserEntity getUser(String email) {
+		return users.get(email);
+	}
 
-	public UserEntity getUser(String playground, String email) throws ConfirmationException {
+	public UserEntity getRegisteredUser(String playground, String email) throws ConfirmationException {
 		UserEntity user = users.get(email);
 		if(user == null)
 			throw new ConfirmationException("This is an unregistered account");
@@ -54,7 +62,7 @@ public class UserServiceStub implements Constants, UserService {
 	public void editUser(String playground, String email, UserEntity newUser) throws Exception {
 		if(newUser.getEmail() == null)
 			throw new Exception("Email of user can't be null");
-		UserEntity user = getUser(playground, email);
+		UserEntity user = getRegisteredUser(playground, email);
 		if(user == null)
 			throw new ConfirmationException("This is an unregistered account");
 		this.users.remove(email);

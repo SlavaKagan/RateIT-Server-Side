@@ -14,19 +14,18 @@ import org.springframework.web.bind.annotation.RestController;
 import playground.logic.ConfirmationException;
 import playground.logic.Constants;
 import playground.logic.ElementNotFoundException;
-import playground.logic.ElementServiceStub;
-import playground.logic.NewUserForm;
+import playground.logic.ThreadSafeElementServiceStub;
 import playground.logic.NotFoundExceptions;
-import playground.logic.UserServiceStub;
+import playground.logic.ThreadSafeUserServiceStub;
 
 @RestController
 public class WebUI implements Constants {
 
-	private UserServiceStub userservice;
-	private ElementServiceStub elementservice;
+	private ThreadSafeUserServiceStub userservice;
+	private ThreadSafeElementServiceStub elementservice;
 
 	@Autowired
-	public void setPools(UserServiceStub userservice, ElementServiceStub elementervice) {
+	public void setPools(ThreadSafeUserServiceStub userservice, ThreadSafeElementServiceStub elementervice) {
 		this.userservice = userservice;
 		this.elementservice = elementervice;
 
@@ -62,7 +61,7 @@ public class WebUI implements Constants {
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email) throws Exception {
 		validateParamsNotNull(playground,email);
-		return new UserTO(userservice.getUser(playground, email));	
+		return new UserTO(userservice.getRegisteredUser(playground, email));	
 	}
 	
 	@RequestMapping(
@@ -77,7 +76,7 @@ public class WebUI implements Constants {
 		validateParamsNotNull(userPlayground,email);
 		if(!userservice.getAllUsers().get(email).getRole().equals(Constants.MANAGER))
 			throw new ConfirmationException("User is not a manager!");
-		elementservice.createElement(element, userPlayground, email);
+		elementservice.createElement(element.toEntity(), userPlayground, email);
 		return new ElementTO(elementservice.getAllElements().get(element.getId()));
 	}
 	

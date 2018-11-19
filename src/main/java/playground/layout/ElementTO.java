@@ -6,7 +6,6 @@ import java.util.Map;
 
 import playground.logic.Constants;
 import playground.logic.ElementEntity;
-import playground.logic.Location;
 
 public class ElementTO implements Constants {
 	private String playground;
@@ -23,14 +22,10 @@ public class ElementTO implements Constants {
 	public ElementTO() {
 		this.playground = PLAYGROUND;
 		this.location = new Location(Math.random() * 20, Math.random() * 20);
-		this.creationDate = new Date();
+		this.creationDate = DEFAULT_DATE;
 		this.expirationDate = null;
 		this.attributes = new HashMap<>();
-		this.attributes.put("isActive", "True");
-		this.attributes.put("creatorsName", MANAGER_NAME);
-		this.attributes.put("isAMovie", "False");
-		this.attributes.put("movieName", "Venom 2018");
-		setId(hashId()+"");
+		setId(hashId() + "");
 	}
 
 	public ElementTO(ElementEntity element) {
@@ -49,12 +44,14 @@ public class ElementTO implements Constants {
 		}
 	}
 
-	public ElementTO(String type, String name, String creatorPlayground, String creatorEmail) throws Exception {
+	public ElementTO(String type, String name, String creatorPlayground, String creatorEmail,
+			Map<String, Object> attributes) throws Exception {
 		this();
 		this.type = type;
 		this.name = name;
 		this.creatorPlayground = creatorPlayground;
 		this.creatorEmail = creatorEmail;
+		this.attributes = attributes;
 		setId(hashId() + "");
 	}
 
@@ -98,7 +95,7 @@ public class ElementTO implements Constants {
 		return creationDate;
 	}
 
-	public void setCreationDate(Date creationDate){
+	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
 
@@ -149,7 +146,7 @@ public class ElementTO implements Constants {
 				+ ", attributes=" + attributes + ", creatorPlayground=" + creatorPlayground + ", creatorEmail="
 				+ creatorEmail + "]";
 	}
-	
+
 	public ElementEntity toEntity() {
 		ElementEntity rv = new ElementEntity();
 		rv.setAttributes(this.attributes);
@@ -162,7 +159,7 @@ public class ElementTO implements Constants {
 		rv.setName(this.name);
 		rv.setLocation(this.location);
 		rv.setPlayground(this.playground);
-		
-		return rv;	
+
+		return rv;
 	}
 }

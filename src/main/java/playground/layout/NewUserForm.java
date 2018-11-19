@@ -1,4 +1,6 @@
-package playground.logic;
+package playground.layout;
+
+import playground.logic.Constants;
 
 public class NewUserForm implements Constants {
 	private String email;

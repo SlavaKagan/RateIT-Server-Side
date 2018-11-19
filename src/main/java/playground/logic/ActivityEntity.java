@@ -111,7 +111,7 @@ public class ActivityEntity implements Constants {
 
 	@Override
 	public String toString() {
-		return "ActivityTO [playground=" + playground + ", id=" + id + ", elementPlayground=" + elementPlayground
+		return "ActivityEntity [playground=" + playground + ", id=" + id + ", elementPlayground=" + elementPlayground
 				+ ", elementId=" + elementId + ", type=" + type + ", playerPlayground=" + playerPlayground
 				+ ", playerEmail=" + playerEmail + ", attributes=" + attributes + "]";
 

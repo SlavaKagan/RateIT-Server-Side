@@ -5,7 +5,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ActivityServiceStub implements Constants, ActivityService {
+public class ThreadSafeActivityServiceStub implements Constants, ActivityService {
 	private Map<String, ActivityEntity> activities;
 
 	@Override

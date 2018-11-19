@@ -1,10 +1,14 @@
 package playground.logic;
 
+import playground.layout.NewUserForm;
+
 public interface UserService {
 	
 	public void createUser(NewUserForm form) throws Exception;
 	
-	public UserEntity getUser(String playground, String email) throws ConfirmationException;
+	public UserEntity getUser(String email);
+	
+	public UserEntity getRegisteredUser(String playground, String email) throws ConfirmationException;
 	
 	public UserEntity confirmUser(String playground, String email, String code) throws Exception;
 	

@@ -1,7 +1,7 @@
 package playground.logic;
 
+import playground.layout.NewUserForm;
 import playground.logic.Constants;
-import playground.logic.NewUserForm;
 
 public class UserEntity implements Constants {
 	private String email;
