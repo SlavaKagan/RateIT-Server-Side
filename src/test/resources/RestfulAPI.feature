@@ -71,21 +71,21 @@ Scenario: Getting an unregistered user # PASSED #Automated
 Scenario: Change the user email succesfully # PASSED
 
 	Given the server is up 
-	And theres a user with playground: "2019A.Kagan", email: "slava@gmail.com", code: "1234" 
+	And theres a user with playground: "2019A.Kagan", email: "slava@gmail.com", 
 	When I PUT "/playground/users/2019A.Kagan/slava@gmail.com" with '{"email":"sla@gmail.com","playground": "2019A.Kagan","userName": "slava","avatar": "mn1","role": "Reviewer","points": 0}'
 	Then the response is 200 
 	
 Scenario: Change email of unregistered user # PASSED
 
 	Given the server is up 
-	And there is an unregistered user with playground: "2019A.Kagan", email: "yossi1@gmail.com", code: "1234" 
+	And there is an unregistered user with playground: "2019A.Kagan", email: "yossi1@gmail.com", 
 	When I PUT "/playground/users/2019A.Kagan/yossi1@gmail.com" with '{"email":"ori@gmail.com","playground": "2019A.Kagan","username": "yossi","avatar": "mn1","role": "Guest","points": 0}'
 	Then the response is with message: "This is an unregistered account"
 	
 Scenario: Change the user email to null # PASSED
 	
 	Given the server is up 
-	And theres a user with playground: "2019A.Kagan", email: "slava@gmail.com", code: "1234" 
+	And theres a user with playground: "2019A.Kagan", email: "slava@gmail.com",
 	When I PUT "/playground/users/2019A.Kagan/slava@gmail.com" with '{"email":null,"playground": "2019A.Kagan","username": "slava","avatar": "mn1","role": "Reviewer","points": 0}'		
 	Then the response is 500
 	
@@ -142,7 +142,7 @@ Scenario: Trying to change some attribute with null # PASSED
 	
 	Given the server is up
 	And theres an element with playground: "2019A.Kagan", email: "roee@gmail.com", playground: "2019A.Kagan", id: "567",
-	When I PUT "/playground/elements/2019A.Kagan/roee@gmail.com/2019A.Kagan/567" with '{creationdate:null}'
+	When I PUT "/playground/elements/2019A.Kagan/roee@gmail.com/2019A.Kagan/567" with '{id:null}'
 	Then the reponse is 500 with message: "JSON parse error: One of the paramters provided was null"
 
 #Feature: Get an element by specific playground, creator email and id
