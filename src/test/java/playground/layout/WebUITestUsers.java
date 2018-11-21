@@ -23,8 +23,10 @@ import playground.logic.UserService;
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class WebUITestUsers {
+	
 	@Autowired
 	private UserService service;
+	
 	private RestTemplate restTemplate;
 	private String url;
 	private NewUserForm form;
@@ -243,6 +245,7 @@ public class WebUITestUsers {
 				Constants.PLAYGROUND, form.getEmail());
 
 		// Then
+
 		assertThat(jacksonMapper.writeValueAsString(actualUser))
 			.isNotNull()
 			.isEqualTo(
@@ -287,8 +290,30 @@ public class WebUITestUsers {
 		/* nothing */
 		
 		// When
-		this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
+		UserTO user = this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
 				Constants.PLAYGROUND, form.getEmail());
+	}
+	
+	
+	/*Given the server is up 
+	
+	And theres an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "1025028332",
+	
+	When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/1025028332"
+	
+	Then the response is 200 
+	
+	And the output is 
+	'{"playground": "2019A.Kagan", "id": "1586158061", "location": { "x": Any, "y": Any }, 
+		"name": "Messaging Board", "creationDate": Any valid date, "expirationDate": null, 
+			"type": "Messaging Board", "attributes": { "creatorsName": "Manager", "isActive": "True", 
+				"isAMovie": "False", "movieName": "Venom 2018" }, "creatorPlayground": "2019A.Kagan", 
+					"creatorEmail": "rubykozel@gmail.com" }'*/
+	public void testGettingAnElementSuccessfully() throws Exception {
+		service.createUser(user.toEntity());
+		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
+		
+	this.restTemplate.getForObject(url + "{playground}/{email}/{userPlayground}/{id}", ElementTO.class, Constants.PLAYGROUND, "rubykozel@gmail.com", Constants.PLAYGROUND, "1025028332");
 	}
 	
 	@Test
@@ -310,11 +335,12 @@ public class WebUITestUsers {
 		 		"points": 0
 		 	}		
 		 */
-		UserTO newUser= new UserTO(form);
+		UserTO newUser = new UserTO(form);
 		newUser.setEmail("ruby@gmail.com");
 		
 		this.restTemplate.put(url + "{playground}/{email}", newUser, Constants.PLAYGROUND,"rubykozel@gmail.com");
 	 	//Then the response is 200 
+		
 	}
 	
 	@Test(expected = Exception.class)
