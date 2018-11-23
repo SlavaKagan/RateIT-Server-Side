@@ -2,7 +2,6 @@ package playground.layout;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import javax.annotation.PostConstruct;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -13,9 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import playground.logic.Constants;
 import playground.logic.UserEntity;
 import playground.logic.UserService;
@@ -239,11 +236,12 @@ public class WebUITestUsers {
 		// Given
 		service.createUser(user.toEntity());
 		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
-		
+				
 		// When
+		
 		UserTO actualUser = this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
 				Constants.PLAYGROUND, form.getEmail());
-
+		
 		// Then
 
 		assertThat(jacksonMapper.writeValueAsString(actualUser))
@@ -290,8 +288,10 @@ public class WebUITestUsers {
 		/* nothing */
 		
 		// When
+		@SuppressWarnings("unused")
 		UserTO user = this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
 				Constants.PLAYGROUND, form.getEmail());
+		//Then the response is 500
 	}
 	
 	
@@ -322,9 +322,10 @@ public class WebUITestUsers {
 	 	Given the server is up 
 		And there is a confirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", 
 	 */
-		service.createUser(user.toEntity());
-		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
 
+		service.createUser(user.toEntity());
+		
+						
 		/* When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with
 		 	{
 		 		"email":"ruby@gmail.com",
@@ -335,12 +336,25 @@ public class WebUITestUsers {
 		 		"points": 0
 		 	}		
 		 */
-		UserTO newUser = new UserTO(form);
-		newUser.setEmail("ruby@gmail.com");
+		
+		UserTO newUser = new UserTO(service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234"));
 		
 		this.restTemplate.put(url + "{playground}/{email}", newUser, Constants.PLAYGROUND,"rubykozel@gmail.com");
-	 	//Then the response is 200 
+		newUser.setEmail("ruby@gmail.com");
 		
+		//Then the response is 200 
+		
+		assertThat(jacksonMapper.writeValueAsString(newUser))
+		.isNotNull()
+		.isEqualTo(
+				"{"
+				+ "\"email\":\"ruby@gmail.com\","
+				+ "\"playground\":\"2019A.Kagan\","
+				+ "\"userName\":\"ruby\","
+				+ "\"avatar\":\":-)\","
+				+ "\"role\":\"Reviewer\","
+				+ "\"points\":0"
+				+ "}");
 	}
 	
 	@Test(expected = Exception.class)
@@ -361,10 +375,11 @@ public class WebUITestUsers {
 		 	}
 		
 		*/
+		
 		UserTO newUser= new UserTO(form);
-		newUser.setEmail("ruby@gmail.com");
 		
 		this.restTemplate.put(url + "{playground}/{email}", newUser, Constants.PLAYGROUND,"rubykozel@gmail.com");
+		newUser.setEmail("ruby@gmail.com");
 		
 		//Then the response is 404 with message: "This is an unregistered account"
 	}
@@ -376,7 +391,7 @@ public class WebUITestUsers {
 		And theres a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com",
 	*/
 		service.createUser(user.toEntity());
-		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
+		
 		
 		/* When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with 
 		 	{
@@ -389,10 +404,10 @@ public class WebUITestUsers {
 		 	}		
 		
 		*/
-		UserTO newUser= new UserTO(form);
-		newUser.setEmail(null);
+		UserTO newUser= new UserTO(service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234"));
 		
 		this.restTemplate.put(url + "{playground}/{email}", newUser, Constants.PLAYGROUND,"rubykozel@gmail.com");
+		newUser.setEmail(null);
 		//Then the response is 500 with null exception
 	}
 }
