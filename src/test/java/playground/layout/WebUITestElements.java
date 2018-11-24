@@ -218,7 +218,7 @@ public class WebUITestElements {
 		And theres an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "2061451755",
 	*/
 		userservice.createUser(user.toEntity());
-		ElementTO newElement= new ElementTO();
+		ElementTO newElement= jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\"}", ElementTO.class);
 		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, EMAIL);
 		
 		/* When I PUT "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/2061451755" with 

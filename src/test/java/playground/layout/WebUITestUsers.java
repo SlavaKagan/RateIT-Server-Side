@@ -339,8 +339,8 @@ public class WebUITestUsers {
 		
 		UserTO newUser = new UserTO(service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234"));
 		
-		this.restTemplate.put(url + "{playground}/{email}", newUser, Constants.PLAYGROUND,"rubykozel@gmail.com");
 		newUser.setUserName("rubson");
+		this.restTemplate.put(url + "{playground}/{email}", newUser, Constants.PLAYGROUND,"rubykozel@gmail.com");
 		
 		//Then the response is 200 
 		
