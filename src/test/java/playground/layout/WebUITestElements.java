@@ -1,11 +1,8 @@
 package playground.layout;
 import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -16,9 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import playground.logic.Constants;
 import playground.logic.ElementEntity;
 import playground.logic.ElementService;
@@ -217,7 +212,7 @@ public class WebUITestElements {
 	}
 	
 	@Test
-	public void testChangeTheIdOfTheElement() throws Exception{
+	public void testChangeTheNameOfTheElement() throws Exception{
 	/*
 	 	Given the server is up
 		And theres an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "2061451755",
@@ -229,12 +224,12 @@ public class WebUITestElements {
 		/* When I PUT "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/2061451755" with 
 		 	{
 		 		"playground": "2019A.Kagan",
-		 		"id": "765",
+		 		"id": "2061451755",
 		 		"location": {
 		 			"x": Any valid x,
 		 			"y": Any valid y,
 		 		},
-		 		"name": "Messaging Board",
+		 		"name": "MyBoard",
 		 		"creationDate": Any valid date,
 		 		"expirationDate": null or any valid date,
 		 		"type": "Messaging Board",
@@ -248,15 +243,30 @@ public class WebUITestElements {
 		 		"creatorEmail": "rubykozel@gmail.com"
 		 	}
 		*/
-		String oldId = newElement.getId();
-		newElement.setId("765");
 		
-		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", newElement, Constants.PLAYGROUND,EMAIL,Constants.PLAYGROUND,oldId);
+		newElement.setName("MyBoard");
+		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", newElement, Constants.PLAYGROUND,EMAIL,Constants.PLAYGROUND,newElement.getId());
 		//Then the reponse is "200 OK"
+		
+		
+		assertThat(jacksonMapper.writeValueAsString(newElement))
+		.isNotNull()
+		.isEqualTo(jacksonMapper.writeValueAsString(
+				jacksonMapper.readValue(""
+						+ "{"
+						+ "\"playground\": \"2019A.Kagan\","
+						+ "\"name\": \"MyBoard\","
+						+ "\"expirationDate\": null,"
+						+ "\"type\": \"Messaging Board\","
+						+ "\"location\": {\"x\":0,\"y\":0},"
+						+ "\"creatorPlayground\":\"2019A.Kagan\","
+						+ "\"creatorEmail\":\"rubykozel@gmail.com\""
+						+ "}", ElementEntity.class)));
+		
 	}
 	
 	@Test (expected = Exception.class)
-	public void testTryingToChangeSomeAttributeWithNull() throws Exception{
+	public void testTryingToChangeTypeNameWithNull() throws Exception{
 	/*
 		Given the server is up
 		And there is an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "567",
@@ -288,15 +298,14 @@ public class WebUITestElements {
 		 	}
 		*/
 		
-		String oldId = newElement.getId();
-		newElement.setId(null);
+		newElement.setType(null);
 		
-		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", newElement, Constants.PLAYGROUND,EMAIL,Constants.PLAYGROUND,oldId);
+		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", newElement, Constants.PLAYGROUND,EMAIL,Constants.PLAYGROUND,newElement.getId());
 		
 		//Then the reponse is 500 with message
 	}
 	
-	@Test
+	/*@Test
 	public void getElementsByAttributesValueSuccessfully() throws Exception {
 		// Given the server is up - do nothing
 		// And there are elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", attribute: "isAMovie", value:"False"
@@ -318,5 +327,5 @@ public class WebUITestElements {
 		assertThat(actualActivity)
 		.isNotNull(); //TODO
 
-	}
+	}*/
 }

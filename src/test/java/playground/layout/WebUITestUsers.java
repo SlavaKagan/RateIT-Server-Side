@@ -317,7 +317,7 @@ public class WebUITestUsers {
 	}
 	
 	@Test
-	public void testChangeTheUserEmailSuccesfully() throws Exception {
+	public void testChangeTheUserNameSuccesfully() throws Exception {
 	/*
 	 	Given the server is up 
 		And there is a confirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", 
@@ -328,9 +328,9 @@ public class WebUITestUsers {
 						
 		/* When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with
 		 	{
-		 		"email":"ruby@gmail.com",
+		 		"email":"rubykozel@gmail.com",
 		 		"playground": "2019A.Kagan",
-		 		"userName": "ruby",
+		 		"userName": "rubson",
 		 		"avatar": ":-)",
 		 		"role": "Reviewer",
 		 		"points": 0
@@ -340,7 +340,7 @@ public class WebUITestUsers {
 		UserTO newUser = new UserTO(service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234"));
 		
 		this.restTemplate.put(url + "{playground}/{email}", newUser, Constants.PLAYGROUND,"rubykozel@gmail.com");
-		newUser.setEmail("ruby@gmail.com");
+		newUser.setUserName("rubson");
 		
 		//Then the response is 200 
 		
@@ -348,9 +348,9 @@ public class WebUITestUsers {
 		.isNotNull()
 		.isEqualTo(
 				"{"
-				+ "\"email\":\"ruby@gmail.com\","
+				+ "\"email\":\"rubykozel@gmail.com\","
 				+ "\"playground\":\"2019A.Kagan\","
-				+ "\"userName\":\"ruby\","
+				+ "\"userName\":\"rubson\","
 				+ "\"avatar\":\":-)\","
 				+ "\"role\":\"Reviewer\","
 				+ "\"points\":0"
@@ -358,7 +358,7 @@ public class WebUITestUsers {
 	}
 	
 	@Test(expected = Exception.class)
-	public void testChangeEmailOfUnregisteredUser() throws Exception {
+	public void testChangeUserNameOfUnregisteredUser() throws Exception {
 	/*
 	 	Given the server is up
 	 	And there is an unregistered user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", 
@@ -368,7 +368,7 @@ public class WebUITestUsers {
 		 	{
 		 		"email":"ruby@gmail.com",
 		 		"playground": "2019A.Kagan",
-		 		"userName": "ruby",
+		 		"userName": "omer",
 		 		"avatar": ":-)",
 		 		"role": "Guest",
 		 		"points": 0
@@ -377,15 +377,15 @@ public class WebUITestUsers {
 		*/
 		
 		UserTO newUser= new UserTO(form);
-		
+		newUser.setUserName("omer");
+
 		this.restTemplate.put(url + "{playground}/{email}", newUser, Constants.PLAYGROUND,"rubykozel@gmail.com");
-		newUser.setEmail("ruby@gmail.com");
 		
 		//Then the response is 404 with message: "This is an unregistered account"
 	}
 	
 	@Test(expected = Exception.class)
-	public void testChangeTheUserEmailToNull() throws Exception {
+	public void testChangeTheUserAvatarToNull() throws Exception {
 	/*
 		Given the server is up
 		And theres a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com",
@@ -395,9 +395,9 @@ public class WebUITestUsers {
 		
 		/* When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with 
 		 	{
-		 		"email":null,
+		 		"email":rubykozel@gmail.com,
 		 		"playground": "2019A.Kagan",
-		 		"username": "ruby",
+		 		"username": null,
 		 		"avatar": ":-)",
 		 		"role": "Reviewer",
 		 		"points": 0
@@ -406,8 +406,9 @@ public class WebUITestUsers {
 		*/
 		UserTO newUser= new UserTO(service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234"));
 		
+		newUser.setAvatar(null);
 		this.restTemplate.put(url + "{playground}/{email}", newUser, Constants.PLAYGROUND,"rubykozel@gmail.com");
-		newUser.setEmail(null);
+		
 		//Then the response is 500 with null exception
 	}
 }
