@@ -215,16 +215,16 @@ public class WebUITestElements {
 	public void testChangeTheNameOfTheElement() throws Exception{
 	/*
 	 	Given the server is up
-		And theres an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "2061451755",
+		And theres an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "someID",
 	*/
 		userservice.createUser(user.toEntity());
-		ElementTO newElement= jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\"}", ElementTO.class);
+		ElementTO newElement= jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\", \"creatorPlayground\": \"2019A.Kagan\", \"creatorEmail\": \"rubykozel@gmail.com\"}", ElementTO.class);
 		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, EMAIL);
 		
-		/* When I PUT "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/2061451755" with 
+		/* When I PUT "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/someID" with 
 		 	{
 		 		"playground": "2019A.Kagan",
-		 		"id": "2061451755",
+		 		"id": "Any valid ID",
 		 		"location": {
 		 			"x": Any valid x,
 		 			"y": Any valid y,
@@ -243,11 +243,13 @@ public class WebUITestElements {
 		 		"creatorEmail": "rubykozel@gmail.com"
 		 	}
 		*/
-		
+
 		newElement.setName("MyBoard");
+		newElement.setLocation(new Location(0,0)); // For testing purposes
+
 		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", newElement, Constants.PLAYGROUND,EMAIL,Constants.PLAYGROUND,newElement.getId());
+
 		//Then the reponse is "200 OK"
-		
 		
 		assertThat(jacksonMapper.writeValueAsString(newElement))
 		.isNotNull()
@@ -272,8 +274,8 @@ public class WebUITestElements {
 		And there is an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "567",
 	*/
 		userservice.createUser(user.toEntity());
-		ElementTO newElement= new ElementTO("Messaging Board","Messaging Board",Constants.PLAYGROUND,EMAIL, new HashMap<>());
-		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, form.getEmail());
+		ElementTO newElement= jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\", \"creatorPlayground\": \"2019A.Kagan\", \"creatorEmail\": \"rubykozel@gmail.com\"}", ElementTO.class);
+		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, EMAIL);
 		
 		/* When I PUT "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/567" with
 		  	{
@@ -299,13 +301,12 @@ public class WebUITestElements {
 		*/
 		
 		newElement.setType(null);
-		
 		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", newElement, Constants.PLAYGROUND,EMAIL,Constants.PLAYGROUND,newElement.getId());
 		
 		//Then the reponse is 500 with message
 	}
 	
-	/*@Test
+	@Test
 	public void getElementsByAttributesValueSuccessfully() throws Exception {
 		// Given the server is up - do nothing
 		// And there are elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", attribute: "isAMovie", value:"False"
@@ -327,5 +328,5 @@ public class WebUITestElements {
 		assertThat(actualActivity)
 		.isNotNull(); //TODO
 
-	}*/
+	}
 }

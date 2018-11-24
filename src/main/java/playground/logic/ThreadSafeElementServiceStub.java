@@ -105,7 +105,6 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 	public void updateElement(String userPlayground, String email, String playground, String id,
 			ElementEntity newElement) throws Exception {
 		checkForNulls(newElement);
-		checkIfExists(newElement);
 		ElementEntity element = getElement(userPlayground, email, playground, id);
 		if (element == null)
 			throw new ElementNotFoundException("Element does not exist");
