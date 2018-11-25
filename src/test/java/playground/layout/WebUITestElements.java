@@ -516,4 +516,231 @@ public class WebUITestElements {
 						Constants.PLAYGROUND, 
 						EMAIL, -1);
 	}
+	
+	/**
+	 * Given the server is up And theres an element with playground: "2019A.Kagan",
+	 * email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "1",
+	 * 
+	 * When I GET
+	 * "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/1"
+	 * 
+	 * Then the response is 200
+	 * 
+	 * And the output is '{"playground": "2019A.Kagan", "id": "1", "location": {
+	 * "x": Any, "y": Any }, "name": "Messaging Board", "creationDate": Any valid
+	 * date, "expirationDate": null, "type": "Messaging Board", "attributes": {},
+	 * "creatorPlayground": "2019A.Kagan", "creatorEmail": "rubykozel@gmail.com" }'
+	 * @throws Exception
+	 */
+	@Test
+	public void testGettingAnElementSuccessfullyWithCorrectId() throws Exception {
+		userservice.createUser(user.toEntity());
+
+		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", Constants.PLAYGROUND, EMAIL,
+				new HashMap<>());
+		newElement.setLocation(new Location(0, 0)); // For testing purposes
+		newElement.setId("1"); // For testing purposes
+
+		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, form.getEmail());
+
+		ElementTO actualElement = this.restTemplate.getForObject(url + "/{userPlayground}/{email}/{playground}/{id}",
+				ElementTO.class, Constants.PLAYGROUND, EMAIL, Constants.PLAYGROUND, "1");
+
+		assertThat(jacksonMapper.writeValueAsString(actualElement))
+		.isNotNull()
+		.isEqualTo("{" 
+						+ "\"playground\":\"2019A.Kagan\"," 
+						+ "\"id\":\"1\","
+						+ "\"location\":{\"x\":0.0,\"y\":0.0}," 
+						+ "\"name\":\"Messaging Board\","
+						+ "\"creationDate\":1," 
+						+ "\"expirationDate\":null," 
+						+ "\"type\":\"Messaging Board\","
+						+ "\"attributes\":{}," 
+						+ "\"creatorPlayground\":\"2019A.Kagan\","
+						+ "\"creatorEmail\":\"rubykozel@gmail.com\"" 
+						+ "}");
+	}
+
+	/**
+	 * Given the server is up And theres an element with playground: "2019A.Kagan",
+	 * email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "1",
+	 * 
+	 * When I GET
+	 * "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/2"
+	 * 
+	 * Then the response is 404 with message: "Element does not exist"
+	 * @throws Exception
+	 */
+
+	@Test (expected = Exception.class)
+	public void testGettingAnElementUnsuccessfullyWithWrongId() throws Exception {
+
+		userservice.createUser(user.toEntity());
+
+		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", Constants.PLAYGROUND, EMAIL,
+				new HashMap<>());
+		newElement.setLocation(new Location(0, 0)); // For testing purposes
+		newElement.setId("1"); // For testing purposes
+
+		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, form.getEmail());
+
+		this.restTemplate.getForObject(url + "/{userPlayground}/{email}/{playground}/{id}", ElementTO.class,
+				Constants.PLAYGROUND, EMAIL, Constants.PLAYGROUND, "2");
+	}
+	
+	/**
+	 * Given the server is up
+	 * 
+	 * And theres an element with playground: "2019A.Kagan", email:
+	 * "rubykozel@gmail.com", playground: "2019A.Kagan", id: "1",
+	 * 
+	 * When I GET
+	 * "/playground/elements/2019A.Kagan/dudidavidov@gmail.com/2019A.Kagan/1"
+	 * 
+	 * Then the response is 404 with message: "Element does not exist"
+	 * @throws Exception
+	 */
+
+	@Test (expected = Exception.class)
+	public void testGettingAnElementUnsuccessfullyWithWrongCreatorEmail() throws Exception {
+		userservice.createUser(user.toEntity());
+
+		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", Constants.PLAYGROUND, EMAIL,
+				new HashMap<>());
+		newElement.setLocation(new Location(0, 0)); // For testing purposes
+		newElement.setId("1"); // For testing purposes
+
+		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, form.getEmail());
+
+		this.restTemplate.getForObject(url + "/{userPlayground}/{email}/{playground}/{id}", ElementTO.class,
+				Constants.PLAYGROUND, "dudidavidov@gmail.com", Constants.PLAYGROUND, "1");
+	}
+	
+	/**
+	 * Given the server is up And there are elements with playground: "2019A.Kagan",
+	 * email: "rubykozel@gmail.com"
+	 * 
+	 * When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/all"
+	 * 
+	 * Then the response is 200
+	 * 
+	 * And the output is '[ { "playground": "2019A.Kagan", "id": "1", "location": {
+	 * "x": Any, "y": Any }, "name": "Messaging Board", "creationDate": Any valid
+	 * date, "expirationDate": null, "type": "Messaging Board", "attributes": {},
+	 * "creatorPlayground": "2019A.Kagan", "creatorEmail": "rubykozel@gmail.com" }
+	 * ...]'
+	 * @throws Exception
+	 */
+
+	@Test
+	public void testGettingAllElementsSuccessfulyBySpecificCreatorEmailAndPlayground() throws Exception {
+		userservice.createUser(user.toEntity());
+
+		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", Constants.PLAYGROUND, EMAIL,
+				new HashMap<>());
+		newElement.setLocation(new Location(0, 0)); // For testing purposes
+		newElement.setId("1"); // For testing purposes
+
+		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, form.getEmail());
+		
+		ElementTO[] actualElements = this.restTemplate.getForObject(
+				url + "/{userPlayground}/{email}/all?size={size}&page={page}", ElementTO[].class,
+				Constants.PLAYGROUND, EMAIL, 5, 0);
+		
+		assertThat(actualElements).isNotNull().hasSize(1).usingElementComparator((e1, e2) -> {
+			if (e1.getType().compareTo(e2.getType()) != 0)
+				return -1;
+			return e1.getName().compareTo(e2.getName());
+		}).contains(newElement);
+	}
+	
+	/**
+	 * Given the server is up
+	 * 
+	 * And there are elements with playground: "2019A.Kagan", email:
+	 * "rubykozel@gmail.com",
+	 * 
+	 * When I GET "/playground/elements/2019A.Kagan/dudidavidov@gmail.com/all"
+	 * 
+	 * Then the response is 500 with message: "Creator has no elements it created"
+	 * @throws Exception
+	 */
+	
+	@Test (expected = Exception.class)
+	public void testGettingNoneElementsWithCreatorEmailThatHasNoElements() throws Exception {
+		userservice.createUser(user.toEntity());
+
+		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", Constants.PLAYGROUND, EMAIL,
+				new HashMap<>());
+		newElement.setLocation(new Location(0, 0)); // For testing purposes
+		newElement.setId("1"); // For testing purposes
+
+		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, form.getEmail());
+		
+		this.restTemplate.getForObject(
+				url + "/{userPlayground}/{email}/all?size={size}&page={page}", ElementTO[].class,
+				Constants.PLAYGROUND, "dudidavidov@gmail.com", 5, 0);
+	}
+	
+	/**
+	 * Given the server is up And there is an element with playground:
+	 * "2019A.Kagan", email: "rubykozel@gmail.com", x: Any x that its distance from
+	 * (0,0) is less then 10, y: Any y that its distance from (0,0) is less then 10
+	 * 
+	 * When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/near/0/0/10"
+	 * 
+	 * Then the response is 200
+	 * 
+	 * And the output is '[ { "playground": "2019A.Kagan", "id": "1",
+	 * "location": { "x": Any x that its distance from (0,0) is less then 10
+	 * "y": Any y that its distance from (0,0) is less then 10 }, "name": Any name,
+	 * "creationDate": Any valid date, "expirationDate": null, "type": Any type,
+	 * "attributes": {}, "creatorPlayground": "2019A.Kagan",
+	 * "creatorEmail": "rubykozel@gmail.com" } ]'
+	 * @throws Exception
+	 */
+	
+	@Test
+	public void testGettingAnElementSuccessfullyWithSpecificDistance() throws Exception {
+		userservice.createUser(user.toEntity());
+
+		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", Constants.PLAYGROUND, EMAIL,
+				new HashMap<>());
+		newElement.setLocation(new Location(0, 0)); // For testing purposes
+		newElement.setId("1"); // For testing purposes
+
+		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, form.getEmail());
+		
+		ElementTO[] actualElements = this.restTemplate.getForObject(
+				url + "/{userPlayground}/{email}/near/{x}/{y}/{distance}?size={size}&page={page}", ElementTO[].class,
+				Constants.PLAYGROUND, EMAIL, 0, 0, 10, 5, 0);
+		
+		assertThat(actualElements).isNotNull().hasSize(1).usingElementComparator((e1, e2) -> {
+			if (e1.getType().compareTo(e2.getType()) != 0)
+				return -1;
+			return e1.getName().compareTo(e2.getName());
+		}).contains(newElement);
+	}
+	
+	/**
+	 * Given the server is up
+	 * 
+	 * And there are no elements in the playground
+	 * 
+	 * When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/near/0/0/1"
+	 * 
+	 * Then the response is 404 with message:
+	 * "No elements at the distance specified from the (x, y) specified"
+	 * @throws Exception
+	 */
+
+	@Test (expected = Exception.class)
+	public void testGettingAnElementWithSpecificDistanceWhenNoElementsInPlayground() throws Exception {
+		userservice.createUser(user.toEntity());
+
+		this.restTemplate.getForObject(
+				url + "/{userPlayground}/{email}/near/{x}/{y}/{distance}?size={size}&page={page}", ElementTO[].class,
+				Constants.PLAYGROUND, EMAIL, 0, 0, 10, 5, 0);
+	}
 }
