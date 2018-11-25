@@ -332,8 +332,11 @@ public class WebUITestElements {
 		String attributeName = "isAMovie";
 		String value = "False";
 		ElementTO[] actualElements = this.restTemplate.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", ElementTO[].class, Constants.PLAYGROUND, EMAIL, attributeName, value);
-		
-		// TODO assert
+		assertThat(actualElements)
+			.isNotNull()
+			.hasSize(1)
+			.usingElementComparator((e1, e2)->e1.getAttributes().get(attributeName).toString().compareTo(e2.getAttributes().get(attributeName).toString()))
+			.contains(newElement);
 
 	}
 	

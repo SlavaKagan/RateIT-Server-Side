@@ -1,5 +1,7 @@
 package playground.layout;
 
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -151,7 +153,11 @@ public class WebUI implements Constants {
 			@PathVariable("attributeName") String attributeName, 
 			@PathVariable("value") Object value) throws Exception {
 		validateParamsNotNull(userPlayground,email, attributeName);
-		ElementTO[] elements = elementservice.getAllElementsByAttributeAndItsValue(userPlayground, email, attributeName, value).toArray(new ElementTO[0]);
+		ElementTO[] elements = elementservice.getAllElementsByAttributeAndItsValue(userPlayground, email, attributeName, value)
+				.stream() //MessageEntity stream
+				.map(ElementTO::new) //ElementTO stream
+				.collect(Collectors.toList()) //ElementTO List
+				.toArray(new ElementTO[0]); //ElementTO[];
 		if (elements.length <= 0)			
 			throw new ElementNotFoundException("No element was found with key: " + attributeName + " and value: " + value);
 		return elements;
