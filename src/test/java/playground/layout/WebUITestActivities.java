@@ -59,22 +59,55 @@ public class WebUITestActivities {
 	}
 	
 	@Test
-	public void postANewActivitySuccessfuly() throws Exception {
-		/** Given the server is up */
+	public void testPostANewActivitySuccessfuly() throws Exception {
+		/**
+		 * 	Given the server is up 
+			When I POST "/playground/activities/2019A.Kagan/rubykozel@gmail.com" with '{"elementId": "1025028355","elementPlayground": "2019A.Kagan","type": "x"}'
+			Then the response is 200
+			And the output is '{"email":"rubykozel@gmail.com","playground":"2019A.Kagan","userName":"ruby","avatar":":-)","role":"Guest","points":0}'
+		 */
 		
-		/** When I POST "/playground/activities/2019A.Kagan/rubykozel@gmail.com" with '{"elementId": "1025028355","elementPlayground": "2019A.Kagan","type": "x"}' */
 		ElementTO element = new ElementTO();
 		element.setId("1025028355");
 		element.setPlayground("2019A.Kagan");
 		ActivityTO activity = new ActivityTO(element, "x");
+		
 		Object returnedObject = this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", activity, ActivityTO.class, Constants.PLAYGROUND, EMAIL);
 		String userJson = "{\"email\":\"rubykozel@gmail.com\",\"playground\":\"2019A.Kagan\",\"userName\":\"ruby\",\"avatar\":\":-)\",\"role\":\"Guest\",\"points\":0}";
 		UserTO newUser = this.jacksonMapper.readValue(userJson, UserTO.class);
 		
-		/**
-		Then the response is 200
-		And the output is '{"email":"rubykozel@gmail.com","playground":"2019A.Kagan","userName":"ruby","avatar":":-)","role":"Guest","points":0}'
-			 */
+		assertThat(jacksonMapper.writeValueAsString((UserTO)returnedObject)).isEqualTo(jacksonMapper.writeValueAsString(newUser));
+
 	}
 	
+	@Test(expected=Exception.class)
+	public void testPostANewActivityWithNullEmailEnsuccessfuly() throws Exception {
+		/**
+		 * 	Given the server is up
+			When I POST "/playground/activities/2019A.Kagan/null" with '{"elementId": "1025028355","elementPlayground": "2019A.Kagan","type": "x"}'
+			Then the response is 500 with message: "One of the paramters provided was null"
+		 */
+		
+		ElementTO element = new ElementTO();
+		element.setId("1025028355");
+		element.setPlayground("2019A.Kagan");
+		ActivityTO activity = new ActivityTO(element, "x");
+		Object returnedObject = this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", activity, ActivityTO.class, Constants.PLAYGROUND, "null");
+		
+	}
+	
+	@Test(expected=Exception.class)
+	public void testPostANewActivityWithAnEmptyJSONUnsuccessfuly() throws Exception {
+		/**
+		 * 	Given the server is up
+			When I POST "/playground/activities/2019A.Kagan/rubykozel@gmail.com" with '{}'
+			Then the response is 500 
+		 */
+		
+		ElementTO element = new ElementTO();
+		element.setId("1025028355");
+		element.setPlayground("2019A.Kagan");
+		Object emptyJson = jacksonMapper.readValue("{}", Object.class);
+		Object returnedObject = this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", emptyJson, ActivityTO.class, Constants.PLAYGROUND, EMAIL);
+	}
 }

@@ -307,9 +307,15 @@ public class WebUITestElements {
 	}
 	
 	@Test
-	public void getElementsByAttributesValueSuccessfully() throws Exception {
-		// Given the server is up - do nothing
-		// And there are 2 elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com" but 1 with attribute: "isAMovie", value:"False"
+	public void testGetElementsByAttributesValueSuccessfully() throws Exception {
+		
+		/**
+		 * 	Given the server is up 
+			And theres are elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", attribute: "isAMovie", value:"False"
+			When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/isAMovie/False"
+			Then the response is 200
+			And the output is '[{"playground":"2019A.Kagan","id":"1025028332","location":{"x": Any x ,"y": Any y },"name": Any name,"creationDate": Any valid date ,"expirationDate":null, "type": any type ,"attributes":{"creatorsName":"Manager","isActive":"True","isAMovie":"False","movieName":"Venom 2018"},"creatorPlayground":"2019A.Kagan","creatorEmail":"rubykozel@gmail.com"} ... ]'
+		 */		
 		
 		userservice.createUser(user.toEntity());
 		
@@ -323,28 +329,60 @@ public class WebUITestElements {
 		newElement2.getAttributes().put("isAMovie", "True");
 		elementservice.createElement(newElement2.toEntity(), Constants.PLAYGROUND, EMAIL);
 		
-//		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/isAMovie/False"
 		String attributeName = "isAMovie";
 		String value = "False";
-		ElementTO[] actualElements = this.restTemplate.getForObject(
-				this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", ElementTO[].class, Constants.PLAYGROUND, EMAIL, attributeName, value);
+		ElementTO[] actualElements = this.restTemplate.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", ElementTO[].class, Constants.PLAYGROUND, EMAIL, attributeName, value);
 		
-//		Then the response is 200
-		
-//		And the output is '[{"playground":"2019A.Kagan","id":"1025028332","location":{"x": Any x ,"y": Any y },"name": Any name,"creationDate": Any valid date ,"expirationDate":null, "type": any type ,"attributes":{"creatorsName":"Manager","isActive":"True","isAMovie":"False","movieName":"Venom 2018"},"creatorPlayground":"2019A.Kagan","creatorEmail":"rubykozel@gmail.com"} ... ]'
-		assertThat(actualElements)
-		.isNotNull()
-		.hasSize(1)
-		.usingElementComparator((e1, e2)->e1.getName().compareTo(e2.getName()))
-		.contains(newElement2);
+		// TODO assert
 
 	}
 	
-	public void getElementsByNullAttributesValue() {
+	@Test (expected = Exception.class)
+	public void testGetElementsByNullAttributesValue() throws Exception {
+		/**
+		 * 	Given the server is up
+			And theres are elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", attribute: "isAMovie", value:"False"
+			When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/null/False"
+			Then the response is 500 with message: "One of the paramters provided was null"
+		 */
+		
+		userservice.createUser(user.toEntity());
+		
+		Map<String, Object> attributes = new HashMap<>();
+		ElementTO newElement = new ElementTO("Movie", "element1", Constants.PLAYGROUND, EMAIL, attributes);
+		newElement.getAttributes().put("isAMovie", "False");
+		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, EMAIL);
+
+		Map<String, Object> attributes2 = new HashMap<>();
+		ElementTO newElement2 = new ElementTO("Message Board", "element2", Constants.PLAYGROUND, EMAIL, attributes2);
+		newElement2.getAttributes().put("isAMovie", "True");
+		elementservice.createElement(newElement2.toEntity(), Constants.PLAYGROUND, EMAIL);
+		
+		String attributeName = "null";
+		String value = "False";
+		ElementTO[] actualElements = this.restTemplate.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", ElementTO[].class, Constants.PLAYGROUND, EMAIL, attributeName, value);
 		
 	}
 	
-	public void getElementsByAttributesValueThatDoesNotExist() {
+	@Test (expected = Exception.class)
+	public void testGetElementsByAttributesValueThatDoesNotExist() throws Exception {
+		/**
+		 * 	Given the server is up
+			And theres are no elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", attribute: "movieName", value:"Venom 1018"
+			When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/movieName/Venom 1018"
+			Then the response is 404 with message "No element was found with key: movieName and value: Venom 1018"
+		 */
+		
+		userservice.createUser(user.toEntity());
+		
+		Map<String, Object> attributes = new HashMap<>();
+		ElementTO newElement = new ElementTO("Movie", "element1", Constants.PLAYGROUND, EMAIL, attributes);
+		newElement.getAttributes().put("movieName", "Spiderman");
+		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, EMAIL);
+		
+		String attributeName = "movieName";
+		String value = "Venom 1018";
+		ElementTO[] actualElements = this.restTemplate.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", ElementTO[].class, Constants.PLAYGROUND, EMAIL, attributeName, value);
 		
 	}
 }
