@@ -23,7 +23,6 @@ public class ActivityTO implements Constants {
 		this.attributes = new HashMap<>();
 		this.attributes.put("isActive", "True");
 		this.attributes.put("creatorsName", REVIEWER);
-		this.attributes.put("activity", new Object());
 		this.attributes.put("activityName", "Post a Review");
 	}
 

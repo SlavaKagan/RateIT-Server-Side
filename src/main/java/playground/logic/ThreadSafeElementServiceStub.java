@@ -38,12 +38,13 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 		this.elements = elements;
 	}
 
-	public void createElement(ElementEntity elementEntity, String userPlayground, String email) throws Exception {
+	public ElementEntity createElement(ElementEntity elementEntity, String userPlayground, String email) throws Exception {
 		checkForNulls(elementEntity);
 		checkIfExists(elementEntity);
 		elementEntity.setCreatorEmail(email);
 		elementEntity.setCreatorPlayground(userPlayground);
 		addElement(elementEntity);
+		return elementEntity;
 	}
 
 	public ElementEntity getElement(String userPlayground, String email, String playground, String id)
@@ -56,7 +57,8 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 		return element;
 	}
 
-	public List<ElementEntity> getAllElements(String userPlayground, String email) {
+	public List<ElementEntity> getAllElements(String userPlayground, String email, int size, int page) {
+		
 		Collection<ElementEntity> copy;
 				
 		synchronized (this.elements) {
@@ -66,11 +68,13 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 		return 	copy
 				.stream()
 				.filter(element -> checkPlaygroundAndEmail(element, userPlayground, email))
+				.skip(page * size)
+				.limit(size)
 				.collect(Collectors.toList());
 	}
 
-	public List<ElementEntity> getAllElementsByDistance(String userPlayground, String email, double x, double y,
-			double distance) {
+	public List<ElementEntity> getAllElementsByDistance(String userPlayground, String email, int size, int page,
+			double x, double y, double distance) {
 		
 		Collection<ElementEntity> copy;
 		
@@ -83,11 +87,13 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 				.filter(element -> 
 					checkPlaygroundAndEmail(element, userPlayground, email)
 					&& Location.getDistance(new Location(x,y),element.getLocation()) <= distance)
+				.skip(page * size)
+				.limit(size)
 				.collect(Collectors.toList());
 	}
 
 	public List<ElementEntity> getAllElementsByAttributeAndItsValue(String userPlayground, String email,
-			String attributeName, Object value) {
+			int size, int page, String attributeName, Object value) {
 		
 		Collection<ElementEntity> copy;
 		
@@ -99,6 +105,8 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 				.stream()
 				.filter(element -> checkPlaygroundAndEmail(element, userPlayground, email)
 						&& element.getAttributes().get(attributeName).equals(value))
+				.skip(page * size)
+				.limit(size)
 				.collect(Collectors.toList());
 	}
 

@@ -295,20 +295,28 @@ public class WebUITestUsers {
 	}
 	
 	
-	/*Given the server is up 
+	/**
+	 * Given the server is up 
 	
-	And theres an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "1025028332",
-	
-	When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/1025028332"
-	
-	Then the response is 200 
-	
-	And the output is 
-	'{"playground": "2019A.Kagan", "id": "1586158061", "location": { "x": Any, "y": Any }, 
-		"name": "Messaging Board", "creationDate": Any valid date, "expirationDate": null, 
-			"type": "Messaging Board", "attributes": { "creatorsName": "Manager", "isActive": "True", 
-				"isAMovie": "False", "movieName": "Venom 2018" }, "creatorPlayground": "2019A.Kagan", 
-					"creatorEmail": "rubykozel@gmail.com" }'*/
+		And there's an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "1025028332",
+		
+		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/1025028332"
+		
+		Then the response is 200 
+		
+		And the output is 
+		{
+			 "playground": "2019A.Kagan",
+			 "id": "1586158061", 
+			 "name": "Messaging Board", 
+			 "expirationDate": null, 
+			 "type": "Messaging Board", 
+			 "attributes": {}, 
+			 "creatorPlayground": "2019A.Kagan", 
+			 "creatorEmail": "rubykozel@gmail.com" 
+		}
+	 * @throws Exception
+	 */
 	public void testGettingAnElementSuccessfully() throws Exception {
 		service.createUser(user.toEntity());
 		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
@@ -316,17 +324,10 @@ public class WebUITestUsers {
 	this.restTemplate.getForObject(url + "{playground}/{email}/{userPlayground}/{id}", ElementTO.class, Constants.PLAYGROUND, "rubykozel@gmail.com", Constants.PLAYGROUND, "1025028332");
 	}
 	
-	@Test
-	public void testChangeTheUserNameSuccesfully() throws Exception {
-	/*
-	 	Given the server is up 
-		And there is a confirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", 
-	 */
-
-		service.createUser(user.toEntity());
-		
-						
-		/* When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with
+	/**
+	 * 	Given the server is up 
+		And there is a confirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com",
+		When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with
 		 	{
 		 		"email":"rubykozel@gmail.com",
 		 		"playground": "2019A.Kagan",
@@ -334,16 +335,24 @@ public class WebUITestUsers {
 		 		"avatar": ":-)",
 		 		"role": "Reviewer",
 		 		"points": 0
-		 	}		
-		 */
+		 	}
+		Then the response is 200
+	 * @throws Exception
+	 */
+	@Test
+	public void testChangeTheUserNameSuccesfully() throws Exception {
 		
+		// Given
+		service.createUser(user.toEntity());
+		
+						
+		// When
 		UserTO newUser = new UserTO(service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234"));
 		
 		newUser.setUserName("rubson");
 		this.restTemplate.put(url + "{playground}/{email}", newUser, Constants.PLAYGROUND,"rubykozel@gmail.com");
 		
-		//Then the response is 200 
-		
+		//Then 
 		assertThat(jacksonMapper.writeValueAsString(newUser))
 		.isNotNull()
 		.isEqualTo(
@@ -357,14 +366,10 @@ public class WebUITestUsers {
 				+ "}");
 	}
 	
-	@Test(expected = Exception.class)
-	public void testChangeUserNameOfUnregisteredUser() throws Exception {
-	/*
-	 	Given the server is up
-	 	And there is an unregistered user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", 
-	 */
-		
-		/*When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with 
+	/**
+	 * 	Given the server is up
+	 	And there is an unregistered user with playground: "2019A.Kagan", email: "rubykozel@gmail.com",
+	 	When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with 
 		 	{
 		 		"email":"ruby@gmail.com",
 		 		"playground": "2019A.Kagan",
@@ -373,27 +378,25 @@ public class WebUITestUsers {
 		 		"role": "Guest",
 		 		"points": 0
 		 	}
-		
-		*/
-		
+		 Then the response is 404
+	 * @throws Exception
+	 */
+	@Test(expected = Exception.class)
+	public void testChangeUserNameOfUnregisteredUser() throws Exception {
+		// Given
 		UserTO newUser= new UserTO(form);
 		newUser.setUserName("omer");
-
+		
+		// When
 		this.restTemplate.put(url + "{playground}/{email}", newUser, Constants.PLAYGROUND,"rubykozel@gmail.com");
 		
-		//Then the response is 404 with message: "This is an unregistered account"
+		//Then
 	}
 	
-	@Test(expected = Exception.class)
-	public void testChangeTheUserAvatarToNull() throws Exception {
-	/*
-		Given the server is up
-		And theres a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com",
-	*/
-		service.createUser(user.toEntity());
-		
-		
-		/* When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with 
+	/**
+	 * 	Given the server is up
+		And there's a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com",
+		When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with 
 		 	{
 		 		"email":rubykozel@gmail.com,
 		 		"playground": "2019A.Kagan",
@@ -401,14 +404,22 @@ public class WebUITestUsers {
 		 		"avatar": ":-)",
 		 		"role": "Reviewer",
 		 		"points": 0
-		 	}		
+		 	}
+		Then the response is 500 	
+	 * @throws Exception
+	 */
+	@Test(expected = Exception.class)
+	public void testChangeTheUserAvatarToNull() throws Exception {
 		
-		*/
+		// Given
+		service.createUser(user.toEntity());
+		
+		// When
 		UserTO newUser= new UserTO(service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234"));
 		
 		newUser.setAvatar(null);
 		this.restTemplate.put(url + "{playground}/{email}", newUser, Constants.PLAYGROUND,"rubykozel@gmail.com");
 		
-		//Then the response is 500 with null exception
+		// Then
 	}
 }

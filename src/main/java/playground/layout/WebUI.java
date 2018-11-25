@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -103,10 +104,16 @@ public class WebUI implements Constants {
 			produces = MediaType.APPLICATION_JSON_VALUE)
 	public ElementTO[] getAllElements(
 			@PathVariable("userPlayground") String userPlayground,
-			@PathVariable("email") String email) throws Exception {
+			@PathVariable("email") String email,
+			@RequestParam(name="size", required=false, defaultValue="10") int size, 
+			@RequestParam(name="page", required=false, defaultValue="0") int page) throws Exception {
 		validateParamsNotNull(userPlayground,email);
-		ElementTO[] element = elementservice.getAllElements(userPlayground, email).toArray(new ElementTO[0]);
-		if (element.length <= 0) {
+		ElementTO[] element = elementservice.getAllElements(userPlayground, email, size, page)
+				.stream().map(ElementTO::new)
+				.collect(Collectors.toList())
+				.toArray(new ElementTO[0]);
+		
+		if (element.length <= 0 && page == 0) {
 			throw new ElementNotFoundException("Creator " + email + " has no elements it created");
 		}
 		return element;
@@ -134,11 +141,19 @@ public class WebUI implements Constants {
 			@PathVariable("email") String email, 
 			@PathVariable("x") String x, 
 			@PathVariable("y") String y,
-			@PathVariable("distance") String distance) throws Exception {
+			@PathVariable("distance") String distance,
+			@RequestParam(name="size", required=false, defaultValue="10") int size, 
+			@RequestParam(name="page", required=false, defaultValue="0") int page) throws Exception {
 		validateParamsNotNull(userPlayground,email,x,y,distance);
 		ElementTO[] element = elementservice
-				.getAllElementsByDistance(userPlayground, email, Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(distance)).toArray(new ElementTO[0]);
-		if (element.length <= 0)			
+				.getAllElementsByDistance(userPlayground, email, size, page, 
+						Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(distance))
+				.stream()
+				.map(ElementTO::new)
+				.collect(Collectors.toList())
+				.toArray(new ElementTO[0]);
+		
+		if (element.length <= 0 && page == 0)			
 			throw new ElementNotFoundException("No elements at the distance specified from the (x, y) specified");
 		return element;
 	}
@@ -151,14 +166,17 @@ public class WebUI implements Constants {
 			@PathVariable("userPlayground") String userPlayground, 
 			@PathVariable("email") String email,
 			@PathVariable("attributeName") String attributeName, 
-			@PathVariable("value") Object value) throws Exception {
+			@PathVariable("value") Object value,
+			@RequestParam(name="size", required=false, defaultValue="10") int size, 
+			@RequestParam(name="page", required=false, defaultValue="0") int page) throws Exception {
 		validateParamsNotNull(userPlayground,email, attributeName);
-		ElementTO[] elements = elementservice.getAllElementsByAttributeAndItsValue(userPlayground, email, attributeName, value)
-				.stream() //MessageEntity stream
-				.map(ElementTO::new) //ElementTO stream
-				.collect(Collectors.toList()) //ElementTO List
-				.toArray(new ElementTO[0]); //ElementTO[];
-		if (elements.length <= 0)			
+		ElementTO[] elements = elementservice.getAllElementsByAttributeAndItsValue(userPlayground, email, size, page, attributeName, value)
+				.stream()
+				.map(ElementTO::new)
+				.collect(Collectors.toList())
+				.toArray(new ElementTO[0]);
+		
+		if (elements.length <= 0 && page == 0)			
 			throw new ElementNotFoundException("No element was found with key: " + attributeName + " and value: " + value);
 		return elements;
 	}

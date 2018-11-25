@@ -94,17 +94,23 @@ public class WebUITestElements {
 	 */
 	@Test
 	public void testCreatingAnElementSuccessfully() throws Exception {
+		System.err.println("Starting this test");
 		//Given
 		userservice.createUser(user.toEntity());
 		
 		//When
-		ElementTO elementToPost = jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\"}", ElementTO.class);
-		this.restTemplate
-				.postForObject(url + "/{userPlayground}/{email}", elementToPost,ElementTO.class, Constants.PLAYGROUND, EMAIL);
+
+		ElementTO postedElement = this.restTemplate
+				.postForObject(url + "/{userPlayground}/{email}", 
+						jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\"}", ElementTO.class),
+						ElementTO.class, Constants.PLAYGROUND, EMAIL);
 		
 		//Then
-		ElementEntity actualElementInDb = elementservice.getAllElements(Constants.PLAYGROUND, EMAIL).get(0);
+		ElementEntity actualElementInDb = elementservice
+				.getElement(Constants.PLAYGROUND, postedElement.getCreatorEmail(), Constants.PLAYGROUND, postedElement.getId());
+		
 		actualElementInDb.setLocation(new Location(0,0)); // For testing purposes
+		
 		assertThat(jacksonMapper.writeValueAsString(actualElementInDb))
 		.isNotNull()
 		.isEqualTo(jacksonMapper.writeValueAsString(
@@ -211,27 +217,14 @@ public class WebUITestElements {
 		 
 	}
 	
-	@Test
-	public void testChangeTheNameOfTheElement() throws Exception{
-	/*
-	 	Given the server is up
-		And theres an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "someID",
-	*/
-		userservice.createUser(user.toEntity());
-		ElementTO newElement= jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\", \"creatorPlayground\": \"2019A.Kagan\", \"creatorEmail\": \"rubykozel@gmail.com\"}", ElementTO.class);
-		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, EMAIL);
-		
-		/* When I PUT "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/someID" with 
+	/**
+	 * Given the server is up
+		And there's an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "someID",
+	 	When I PUT "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/someID" with 
+		 	
 		 	{
 		 		"playground": "2019A.Kagan",
-		 		"id": "Any valid ID",
-		 		"location": {
-		 			"x": Any valid x,
-		 			"y": Any valid y,
-		 		},
 		 		"name": "MyBoard",
-		 		"creationDate": Any valid date,
-		 		"expirationDate": null or any valid date,
 		 		"type": "Messaging Board",
 		 		"attributes": {
 		 			"creatorsName": "Manager",
@@ -242,16 +235,30 @@ public class WebUITestElements {
 		 		"creatorPlayground": "2019A.Kagan",
 		 		"creatorEmail": "rubykozel@gmail.com"
 		 	}
-		*/
-
-		newElement.setName("MyBoard");
-		newElement.setLocation(new Location(0,0)); // For testing purposes
-
-		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", newElement, Constants.PLAYGROUND,EMAIL,Constants.PLAYGROUND,newElement.getId());
-
-		//Then the reponse is "200 OK"
+		 	
+		 Then the reponse is "200 OK"
+	 * @throws Exception
+	 */
+	@Test
+	public void testChangeTheNameOfTheElement() throws Exception{
 		
-		assertThat(jacksonMapper.writeValueAsString(newElement))
+		// Given
+		userservice.createUser(user.toEntity());
+		ElementTO element = jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\"}", ElementTO.class);
+		element = new ElementTO(elementservice.createElement(element.toEntity(), Constants.PLAYGROUND, EMAIL));
+		
+		// When
+		element.setName("MyBoard");
+		element.setLocation(new Location(0,0)); // For testing purposes
+		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", 
+								element, 
+								Constants.PLAYGROUND,
+								EMAIL,
+								Constants.PLAYGROUND,
+								element.getId());
+
+		//Then	
+		assertThat(jacksonMapper.writeValueAsString(element))
 		.isNotNull()
 		.isEqualTo(jacksonMapper.writeValueAsString(
 				jacksonMapper.readValue(""
@@ -267,56 +274,53 @@ public class WebUITestElements {
 		
 	}
 	
-	@Test (expected = Exception.class)
-	public void testTryingToChangeTypeNameWithNull() throws Exception{
-	/*
-		Given the server is up
+	/**
+	 * 	Given the server is up
 		And there is an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "567",
-	*/
-		userservice.createUser(user.toEntity());
-		ElementTO newElement= jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\", \"creatorPlayground\": \"2019A.Kagan\", \"creatorEmail\": \"rubykozel@gmail.com\"}", ElementTO.class);
-		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, EMAIL);
-		
-		/* When I PUT "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/567" with
+	 	When I PUT "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/567" with
 		  	{
 		 		"playground": "2019A.Kagan",
-		 		"id": null,
-		 		"location": {
-		 			"x": Any valid x,
-		 			"y": Any valid y,
-		 		},
 		 		"name": "Messaging Board",
-		 		"creationDate": Any valid date,
-		 		"expirationDate": null or any valid date,
-		 		"type": "Messaging Board",
-		 		"attributes": {
-		 			"creatorsName": "Manager",
-		 			"isActive": "True",
-		 			"isAMovie": "False",
-		 			"movieName": "Venom 2018"
-		 		},
+		 		"type": null,
 		 		"creatorPlayground": "2019A.Kagan",
 		 		"creatorEmail": "rubykozel@gmail.com"
 		 	}
-		*/
+		Then the reponse is 500
+	 * @throws Exception
+	 */
+	@Test (expected = Exception.class)
+	public void testTryingToChangeTypeNameWithNull() throws Exception{
 		
+		//Given
+		userservice.createUser(user.toEntity());
+		ElementTO newElement= jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\"}", ElementTO.class);
+		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, EMAIL);
+		
+		// When
 		newElement.setType(null);
 		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", newElement, Constants.PLAYGROUND,EMAIL,Constants.PLAYGROUND,newElement.getId());
 		
-		//Then the reponse is 500 with message
 	}
 	
+	/**
+	 * 	Given the server is up 
+		And theres are elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", attribute: "isAMovie", value:"False"
+		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/isAMovie/False"
+		Then the response is 200
+		And the output is 
+		[{
+			"playground":"2019A.Kagan",
+			"id":"1025028332",
+			"expirationDate":null, 
+			"attributes":{"isAMovie":"False"},
+			"creatorPlayground":"2019A.Kagan",
+			"creatorEmail":"rubykozel@gmail.com"
+			} ... ]
+	 */	
 	@Test
-	public void testGetElementsByAttributesValueSuccessfully() throws Exception {
+	public void testGetElementsByAttributesValueSuccessfully() throws Exception {	
 		
-		/**
-		 * 	Given the server is up 
-			And theres are elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", attribute: "isAMovie", value:"False"
-			When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/isAMovie/False"
-			Then the response is 200
-			And the output is '[{"playground":"2019A.Kagan","id":"1025028332","location":{"x": Any x ,"y": Any y },"name": Any name,"creationDate": Any valid date ,"expirationDate":null, "type": any type ,"attributes":{"creatorsName":"Manager","isActive":"True","isAMovie":"False","movieName":"Venom 2018"},"creatorPlayground":"2019A.Kagan","creatorEmail":"rubykozel@gmail.com"} ... ]'
-		 */		
-		
+		// Given
 		userservice.createUser(user.toEntity());
 		
 		Map<String, Object> attributes = new HashMap<>();
@@ -331,7 +335,17 @@ public class WebUITestElements {
 		
 		String attributeName = "isAMovie";
 		String value = "False";
-		ElementTO[] actualElements = this.restTemplate.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", ElementTO[].class, Constants.PLAYGROUND, EMAIL, attributeName, value);
+		
+		// When
+		ElementTO[] actualElements = this.restTemplate
+				.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", 
+						ElementTO[].class, 
+						Constants.PLAYGROUND, 
+						EMAIL, 
+						attributeName, 
+						value);
+		
+		// Then
 		assertThat(actualElements)
 			.isNotNull()
 			.hasSize(1)
@@ -340,15 +354,16 @@ public class WebUITestElements {
 
 	}
 	
+	/**
+	 * 	Given the server is up
+		And theres are elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", attribute: "isAMovie", value:"False"
+		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/null/False"
+		Then the response is 500
+	 */
 	@Test (expected = Exception.class)
 	public void testGetElementsByNullAttributesValue() throws Exception {
-		/**
-		 * 	Given the server is up
-			And theres are elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", attribute: "isAMovie", value:"False"
-			When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/null/False"
-			Then the response is 500 with message: "One of the paramters provided was null"
-		 */
 		
+		// Given
 		userservice.createUser(user.toEntity());
 		
 		Map<String, Object> attributes = new HashMap<>();
@@ -363,19 +378,28 @@ public class WebUITestElements {
 		
 		String attributeName = "null";
 		String value = "False";
-		ElementTO[] actualElements = this.restTemplate.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", ElementTO[].class, Constants.PLAYGROUND, EMAIL, attributeName, value);
+		
+		// When
+		this.restTemplate
+		.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", 
+				ElementTO[].class, 
+				Constants.PLAYGROUND, 
+				EMAIL, 
+				attributeName, 
+				value);
 		
 	}
 	
+	/**
+	 * 	Given the server is up
+		And theres are no elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", attribute: "movieName", value:"Venom 1018"
+		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/movieName/Venom 1018"
+		Then the response is 404 with message "No element was found with key: movieName and value: Venom 1018"
+	 */
 	@Test (expected = Exception.class)
 	public void testGetElementsByAttributesValueThatDoesNotExist() throws Exception {
-		/**
-		 * 	Given the server is up
-			And theres are no elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", attribute: "movieName", value:"Venom 1018"
-			When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/movieName/Venom 1018"
-			Then the response is 404 with message "No element was found with key: movieName and value: Venom 1018"
-		 */
 		
+		// Given
 		userservice.createUser(user.toEntity());
 		
 		Map<String, Object> attributes = new HashMap<>();
@@ -385,7 +409,111 @@ public class WebUITestElements {
 		
 		String attributeName = "movieName";
 		String value = "Venom 1018";
-		ElementTO[] actualElements = this.restTemplate.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", ElementTO[].class, Constants.PLAYGROUND, EMAIL, attributeName, value);
 		
+		// When
+		this.restTemplate
+		.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", 
+				ElementTO[].class, 
+				Constants.PLAYGROUND, 
+				EMAIL, 
+				attributeName, 
+				value);
+		
+	}
+	
+	/**
+	 * 	Given the server is up 
+		And theres at list 1 element in the database with playground: "2019A.Kagan", email: "rubykozel@gmail.com" 
+		When I GET "/playground/elements/2019A.Kagan/rubykoze@gmail.com/all?size=5&page=0" 
+		Then the response 200 
+		And the output is 
+		[ { 
+			"playground": "2019A.Kagan",
+			 "id": "1025028332",
+			 "location": { "x": Any, "y": Any },
+			 "name": "Messaging Board", 
+			 "creationDate": Any valid date, 
+			 "expirationDate": null, 
+			 "type": "Messaging Board",
+			 attributes: {}, 
+			 "creatorPlayground": "2019A.Kagan", 
+			 "creatorEmail": 
+			 "rubykozel@gmail.com" 
+			} x 1 .. 5]'
+	 * @throws Exception
+	 */
+	@Test
+	public void testGettingElementsUsingPaginationSuccessfully() throws Exception {
+		
+		// Given
+		userservice.createUser(user.toEntity());	
+		ElementTO newElement= jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\"}", ElementTO.class);
+		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, EMAIL);
+		
+		// When
+		ElementTO[] actualElements = this.restTemplate
+		.getForObject(this.url + "/{playground}/{email}/all?size={size}&page={page}", 
+				ElementTO[].class, 
+				Constants.PLAYGROUND, 
+				EMAIL, 5, 0);
+		
+		assertThat(actualElements)
+		.isNotNull()
+		.hasSize(1)
+		.usingElementComparator((e1,e2)-> {
+			if(e1.getType().compareTo(e2.getType()) != 0)
+				return -1;
+			return e1.getName().compareTo(e2.getName());
+			})
+		.contains(newElement);
+	}
+	
+	/**
+	 * 	Given the server is up 
+		And theres at list 1 element in the database with playground: "2019A.Kagan", email: "rubykozel@gmail.com" 
+		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/all?size=5&page=1" 
+		Then the response is 200 
+		And the output is '[]'
+	 * @throws Exception
+	 */
+	@Test
+	public void testGettingNoElementsFromPageWithNoElementsUsingPaginationSuccessfully() throws Exception {
+		
+		// Given
+		userservice.createUser(user.toEntity());	
+		ElementTO newElement= jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\"}", ElementTO.class);
+		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, EMAIL);
+		
+		// When
+		ElementTO[] actualElements = this.restTemplate
+				.getForObject(this.url + "/{playground}/{email}/all?size={size}&page={page}", 
+						ElementTO[].class, 
+						Constants.PLAYGROUND, 
+						EMAIL, 5, 1);
+		
+		// Then
+		assertThat(actualElements)
+			.isNotNull()
+			.hasSize(0);
+	}
+	
+	/**
+		Given the server is up 
+		And theres at list 1 element in the database with playground: "2019A.Kagan", email: "rubykozel@gmail.com" 
+		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/all?size=5&page=1" 
+		Then the response  500
+	 * @throws Exception 
+	 */
+	@Test(expected = Exception.class)
+	public void testUsingBadPageNumberToRetreiveElements() throws Exception {
+		userservice.createUser(user.toEntity());	
+		ElementTO newElement= jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\"}", ElementTO.class);
+		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, EMAIL);
+		
+		// When
+		this.restTemplate.getForObject(this.url + "/{playground}/{email}/all?page={page}", 
+						ElementTO[].class, 
+						Constants.PLAYGROUND, 
+						EMAIL, -1);
 	}
 }
