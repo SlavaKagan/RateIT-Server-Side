@@ -8,7 +8,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
-@Service
+//@Service
 public class ThreadSafeActivityServiceStub implements Constants, ActivityService {
 	private Map<String, ActivityEntity> activities;
 

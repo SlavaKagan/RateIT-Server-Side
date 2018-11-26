@@ -3,6 +3,7 @@ package playground.layout;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 import playground.logic.Constants;
 import playground.logic.ElementEntity;
@@ -19,6 +20,7 @@ public class ElementTO implements Constants {
 	private Map<String, Object> attributes;
 	private String creatorPlayground;
 	private String creatorEmail;
+	private static AtomicLong generator;
 
 	public ElementTO() {
 		this.playground = PLAYGROUND;
@@ -26,7 +28,7 @@ public class ElementTO implements Constants {
 		this.creationDate = DEFAULT_DATE;
 		this.expirationDate = null;
 		this.attributes = new HashMap<>();
-		setId(hashId() + "");
+		this.id = "" + generator.getAndIncrement();
 	}
 
 	public ElementTO(ElementEntity element) {
@@ -53,7 +55,6 @@ public class ElementTO implements Constants {
 		this.creatorPlayground = creatorPlayground;
 		this.creatorEmail = creatorEmail;
 		this.attributes = attributes;
-		setId(hashId() + "");
 	}
 
 	public String getPlayground() {
@@ -70,10 +71,6 @@ public class ElementTO implements Constants {
 
 	public void setId(String id) {
 		this.id = id;
-	}
-
-	public int hashId() {
-		return Math.abs((this.creatorEmail + this.name + this.type).hashCode());
 	}
 
 	public Location getLocation() {
@@ -152,14 +149,13 @@ public class ElementTO implements Constants {
 		ElementEntity rv = new ElementEntity();
 		rv.setAttributes(this.attributes);
 		rv.setCreationDate(this.creationDate);
-		rv.setId(this.id);
+		rv.setUniqueKey(this.id + "@@" + this.playground);
 		rv.setExpirationDate(this.expirationDate);
 		rv.setCreatorEmail(this.creatorEmail);
 		rv.setCreatorPlayground(this.creatorPlayground);
 		rv.setType(this.type);
 		rv.setName(this.name);
 		rv.setLocation(this.location);
-		rv.setPlayground(this.playground);
 
 		return rv;
 	}

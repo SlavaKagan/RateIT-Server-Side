@@ -8,7 +8,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
-@Service
+//@Service
 public class ThreadSafeUserServiceStub implements Constants, UserService {
 
 	private Map<String, UserEntity> users;

@@ -123,7 +123,8 @@ public class WebUI implements Constants {
 			method = RequestMethod.PUT, 
 			path = "/playground/elements/{userPlayground}/{email}/{playground}/{id}", 
 			consumes = MediaType.APPLICATION_JSON_VALUE)
-	public void updateElement(@PathVariable("userPlayground") String userPlayground,
+	public void updateElement(
+			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email, 
 			@PathVariable("playground") String playground,
 			@PathVariable("id") String id, 

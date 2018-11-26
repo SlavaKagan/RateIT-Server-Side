@@ -1,44 +1,40 @@
 package playground.logic;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
 import playground.logic.Constants;
 
+@Entity
+@Table(name="USERS")
 public class UserEntity implements Constants {
-	private String email;
-	private String playground;
+	private String uniqueKey;
 	private String userName;
 	private String avatar;
 	private String role;
 	private long points;
+	private String number;
 
 	public UserEntity() {
 
 	}
 
-	public UserEntity(String email, String playground, String userName, String avatar, String role) {
-		this.email = email;
-		this.playground = playground;
+	public UserEntity(String uniqueKey, String userName, String avatar, String role) {
+		this.uniqueKey = uniqueKey;
 		this.userName = userName;
 		this.avatar = avatar;
 		this.role = role;
 		setStartingPoints();
 	}
-
-	public String getEmail() {
-		return email;
+	
+	@Id
+	public String getUniqueKey() {
+		return uniqueKey;
 	}
 
-	public void setEmail(String email) throws Exception {
-		validateNull(email);
-		this.email = email;
-	}
-
-	public String getPlayground() {
-		return playground;
-	}
-
-	public void setPlayground(String playground) throws Exception {
-		validateNull(playground);
-		this.playground = playground;
+	public void setUniqueKey(String uniqueKey) {
+		this.uniqueKey = uniqueKey;
 	}
 
 	public String getUserName() {
@@ -86,6 +82,22 @@ public class UserEntity implements Constants {
 
 	public void updatePoints(int amount) {
 		this.points += amount;
+	}
+	
+	public String getEmail() {
+		return this.getUniqueKey().split("@@")[1];
+	}
+	
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
+	}
+	
+	public String getPlayground() {
+		return this.getUniqueKey().split("@@")[0];
 	}
 	
 	private void validateNull(String string) throws Exception {

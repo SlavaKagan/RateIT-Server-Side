@@ -23,12 +23,13 @@ public class UserTO implements Constants {
 		this.role = form.getRole();
 		setStartingPoints();
 	}
-	
+
 	public UserTO(UserEntity user) {
 		this();
-		if(user != null ) {
-			this.email = user.getEmail();
-			this.playground = user.getPlayground();
+		if (user != null) {
+			String[] temp = user.getUniqueKey().split("@@");
+			this.playground = temp[0];
+			this.email = temp[1];
 			this.userName = user.getUserName();
 			this.avatar = user.getAvatar();
 			this.role = user.getRole();
@@ -87,7 +88,7 @@ public class UserTO implements Constants {
 			this.points = 100;
 		}
 	}
-	
+
 	public void setPoints(long points) {
 		this.points = points;
 	}
@@ -100,8 +101,7 @@ public class UserTO implements Constants {
 		UserEntity rv = new UserEntity();
 		rv.setUserName(this.userName);
 		rv.setAvatar(this.avatar);
-		rv.setEmail(this.email);
-		rv.setPlayground(this.playground);
+		rv.setUniqueKey(playground + "@@" + email);
 		rv.setPoints(this.points);
 		rv.setRole(this.role);
 		return rv;

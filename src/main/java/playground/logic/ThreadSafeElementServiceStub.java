@@ -12,7 +12,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
-@Service
+//@Service
 public class ThreadSafeElementServiceStub implements Constants, ElementService {
 
 	private Map<String, ElementEntity> elements;

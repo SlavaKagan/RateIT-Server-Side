@@ -2,8 +2,13 @@ package playground.layout;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
+import javax.persistence.Transient;
+
+import playground.logic.ActivityEntity;
 import playground.logic.Constants;
+import playground.logic.ElementEntity;
 
 public class ActivityTO implements Constants {
 	private String playground;
@@ -13,20 +18,21 @@ public class ActivityTO implements Constants {
 	private String type;
 	private String playerPlayground;
 	private String playerEmail;
+	private AtomicLong generator;
 	private Map<String, Object> attributes;
 
-	public ActivityTO() throws Exception {
+	public ActivityTO() {
 		this.playground = PLAYGROUND;
 		this.playerPlayground = REVIEWER;
 		this.playerEmail = PLAYER_MAIL;
-		setId(hashId() + ""); 
 		this.attributes = new HashMap<>();
 		this.attributes.put("isActive", "True");
 		this.attributes.put("creatorsName", REVIEWER);
 		this.attributes.put("activityName", "Post a Review");
+		this.id = "" + generator.getAndIncrement();
 	}
 
-	public ActivityTO(ElementTO newElement, String type) throws Exception {
+	public ActivityTO(ElementTO newElement, String type) {
 		this();
 		this.elementId = newElement.getId();
 		this.elementPlayground = newElement.getPlayground();	
@@ -37,7 +43,7 @@ public class ActivityTO implements Constants {
 		return playground;
 	}
 
-	public void setPlayground(String playground) throws Exception {
+	public void setPlayground(String playground) {
 		validateNull(playground);
 		this.playground = playground;
 	}
@@ -46,20 +52,16 @@ public class ActivityTO implements Constants {
 		return id;
 	}
 
-	public void setId(String id) throws Exception {
+	public void setId(String id) {
 		validateNull(id);
 		this.id = id;
-	}
-	
-	public int hashId() {
-		return Math.abs((this.playerEmail + this.elementId).hashCode());
 	}
 
 	public String getElementPlayground() {
 		return elementPlayground;
 	}
 
-	public void setElementPlayground(String elementPlayground) throws Exception {
+	public void setElementPlayground(String elementPlayground) {
 		validateNull(elementPlayground);
 		this.elementPlayground = elementPlayground;
 	}
@@ -68,7 +70,7 @@ public class ActivityTO implements Constants {
 		return elementId;
 	}
 
-	public void setElementId(String elementId) throws Exception {
+	public void setElementId(String elementId) {
 		validateNull(elementId);
 		this.elementId = elementId;
 	}
@@ -77,7 +79,7 @@ public class ActivityTO implements Constants {
 		return type;
 	}
 
-	public void setType(String type) throws Exception {
+	public void setType(String type) {
 		validateNull(type);
 		this.type = type;
 	}
@@ -86,7 +88,7 @@ public class ActivityTO implements Constants {
 		return playerPlayground;
 	}
 
-	public void setPlayerPlayground(String playerPlayground) throws Exception {
+	public void setPlayerPlayground(String playerPlayground) {
 		validateNull(playerPlayground);
 		this.playerPlayground = playerPlayground;
 	}
@@ -95,17 +97,30 @@ public class ActivityTO implements Constants {
 		return playerEmail;
 	}
 
-	public void setPlayerEmail(String playerEmail) throws Exception {
+	public void setPlayerEmail(String playerEmail) {
 		validateNull(playerEmail);
 		this.playerEmail = playerEmail;
 	}
-
+	
 	public Map<String, Object> getAttributes() {
 		return attributes;
 	}
 
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
+	}
+	
+	public ActivityEntity toEntity() {
+		ActivityEntity rv = new ActivityEntity();
+		rv.setElementId(this.getElementId());
+		rv.setElementPlayground(this.getElementPlayground());
+		rv.setType(this.getType());
+		rv.setPlayerEmail(this.getPlayerEmail());
+		rv.setPlayerPlayground(this.playerPlayground);
+		rv.setAttributes(this.attributes);
+		rv.setUniqueKey(this.id + "@@" + this.playground);
+		
+		return rv;
 	}
 
 	@Override
@@ -116,8 +131,8 @@ public class ActivityTO implements Constants {
 
 	}
 	
-	private void validateNull(String string) throws Exception {
+	private void validateNull(String string) throws RuntimeException {
 		if ("null".equals(string) || string == null)
-			throw new Exception("One of the paramters provided was null");
+			throw new RuntimeException("One of the paramters provided was null");
 	}
 }
