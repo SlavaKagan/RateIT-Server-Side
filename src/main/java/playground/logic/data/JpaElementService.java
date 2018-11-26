@@ -31,14 +31,12 @@ public class JpaElementService implements ElementService {
 
 	@Override
 	@Transactional
-	public ElementEntity createElement(ElementEntity elementEntity, String userPlayground, String email)
+	public ElementEntity createElement(ElementEntity elementEntity)
 			throws Exception {
 		if (!this.elements.existsById(elementEntity.getUniqueKey())) {
 			checkForNulls(elementEntity);
 			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
-
-			elementEntity.setCreatorPlayground(userPlayground);
-			elementEntity.setCreatorEmail(email);
+			
 			elementEntity.setNumber("" + temp.getNextNumber());
 
 			this.numberGenerator.delete(temp);
@@ -50,7 +48,7 @@ public class JpaElementService implements ElementService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public ElementEntity getElement(String userPlayground, String email, String playground, String id)
+	public ElementEntity getElement(String id)
 			throws ElementNotFoundException {
 		System.err.println("id= " + id);
 		Optional<ElementEntity> op = this.elements.findById(id);
@@ -68,7 +66,7 @@ public class JpaElementService implements ElementService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ElementEntity> getAllElements(String userPlayground, String email, int size, int page) {
+	public List<ElementEntity> getAllElements(int size, int page) {
 		return getAllValuesFromDao()
 				.stream()
 				.skip(page * size)
@@ -78,7 +76,7 @@ public class JpaElementService implements ElementService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ElementEntity> getAllElementsByDistance(String userPlayground, String email, int size, int page,
+	public List<ElementEntity> getAllElementsByDistance(int size, int page,
 			double x, double y, double distance) {
 		return getAllValuesFromDao()
 				.stream()
@@ -92,7 +90,7 @@ public class JpaElementService implements ElementService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public List<ElementEntity> getAllElementsByAttributeAndItsValue(String userPlayground, String email, int size,
+	public List<ElementEntity> getAllElementsByAttributeAndItsValue(int size,
 			int page, String attributeName, Object value) {
 		return getAllValuesFromDao()
 				.stream()
@@ -104,12 +102,11 @@ public class JpaElementService implements ElementService {
 
 	@Override
 	@Transactional
-	public void updateElement(String userPlayground, String email, String playground, String id,
-			ElementEntity newElement) throws ElementNotFoundException, Exception {
+	public void updateElement(String id,ElementEntity newElement) throws ElementNotFoundException, Exception {
 		checkForNulls(newElement);
-		ElementEntity existing = this.getElement(userPlayground, email, playground, id);
+		ElementEntity existing = this.getElement(id);
 		this.elements.delete(existing);
-		this.createElement(newElement, userPlayground, email);
+		this.createElement(newElement);
 	}
 
 	@Override

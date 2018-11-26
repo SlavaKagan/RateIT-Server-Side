@@ -39,7 +39,7 @@ public class ElementWebUI {
 			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email) throws Exception {
 		validateParamsNotNull(userPlayground,email);
-		return new ElementTO(elementservice.createElement(element.toEntity(), userPlayground, email));
+		return new ElementTO(elementservice.createElement(element.toEntity()));
 	}
 	
 	@RequestMapping(
@@ -52,7 +52,7 @@ public class ElementWebUI {
 			@PathVariable("playground") String playground,
 			@PathVariable("id") String id) throws Exception {
 		validateParamsNotNull(userPlayground,email,playground,id);
-		return new ElementTO(elementservice.getElement(userPlayground, email, playground, id));
+		return new ElementTO(elementservice.getElement(id));
 	}
 	
 	@RequestMapping(
@@ -65,7 +65,7 @@ public class ElementWebUI {
 			@RequestParam(name="size", required=false, defaultValue="10") int size, 
 			@RequestParam(name="page", required=false, defaultValue="0") int page) throws Exception {
 		validateParamsNotNull(userPlayground,email);
-		ElementTO[] element = elementservice.getAllElements(userPlayground, email, size, page)
+		ElementTO[] element = elementservice.getAllElements(size, page)
 				.stream()
 				.map(ElementTO::new)
 				.collect(Collectors.toList())
@@ -84,7 +84,7 @@ public class ElementWebUI {
 			@PathVariable("id") String id, 
 			@RequestBody ElementTO newElement) throws Exception {
 		validateParamsNotNull(playground,email,id);
-		elementservice.updateElement(userPlayground, email, playground, id,newElement.toEntity());
+		elementservice.updateElement(id, newElement.toEntity());
 	}
 
 	@RequestMapping(
@@ -101,7 +101,7 @@ public class ElementWebUI {
 			@RequestParam(name="page", required=false, defaultValue="0") int page) throws Exception {
 		validateParamsNotNull(userPlayground,email,x,y,distance);
 		ElementTO[] element = elementservice
-				.getAllElementsByDistance(userPlayground, email, size, page, 
+				.getAllElementsByDistance(size, page, 
 						Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(distance))
 				.stream()
 				.map(ElementTO::new)
@@ -125,7 +125,7 @@ public class ElementWebUI {
 			@RequestParam(name="size", required=false, defaultValue="10") int size, 
 			@RequestParam(name="page", required=false, defaultValue="0") int page) throws Exception {
 		validateParamsNotNull(userPlayground,email, attributeName);
-		ElementTO[] elements = elementservice.getAllElementsByAttributeAndItsValue(userPlayground, email, size, page, attributeName, value)
+		ElementTO[] elements = elementservice.getAllElementsByAttributeAndItsValue(size, page, attributeName, value)
 				.stream()
 				.map(ElementTO::new)
 				.collect(Collectors.toList())

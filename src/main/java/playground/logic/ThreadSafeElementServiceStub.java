@@ -38,26 +38,22 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 		this.elements = elements;
 	}
 
-	public ElementEntity createElement(ElementEntity elementEntity, String userPlayground, String email) throws Exception {
+	public ElementEntity createElement(ElementEntity elementEntity) throws Exception {
 		checkForNulls(elementEntity);
 		checkIfExists(elementEntity);
-		elementEntity.setCreatorEmail(email);
-		elementEntity.setCreatorPlayground(userPlayground);
 		addElement(elementEntity);
 		return elementEntity;
 	}
 
-	public ElementEntity getElement(String userPlayground, String email, String playground, String id)
+	public ElementEntity getElement(String id)
 			throws ElementNotFoundException {
 		ElementEntity element = elements.get(id);
-		if (element == null || 
-				!(element.getUniqueKey().split("@@")[1].equals(playground) 
-					&& checkPlaygroundAndEmail(element, userPlayground, email)))
+		if (element == null)
 			throw new ElementNotFoundException("Element not found");
 		return element;
 	}
 
-	public List<ElementEntity> getAllElements(String userPlayground, String email, int size, int page) {
+	public List<ElementEntity> getAllElements(int size, int page) {
 		
 		Collection<ElementEntity> copy;
 				
@@ -67,14 +63,12 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 		
 		return 	copy
 				.stream()
-				.filter(element -> checkPlaygroundAndEmail(element, userPlayground, email))
 				.skip(page * size)
 				.limit(size)
 				.collect(Collectors.toList());
 	}
 
-	public List<ElementEntity> getAllElementsByDistance(String userPlayground, String email, int size, int page,
-			double x, double y, double distance) {
+	public List<ElementEntity> getAllElementsByDistance(int size, int page, double x, double y, double distance) {
 		
 		Collection<ElementEntity> copy;
 		
@@ -85,15 +79,13 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 		return 	copy
 				.stream()
 				.filter(element -> 
-					checkPlaygroundAndEmail(element, userPlayground, email)
-					&& Location.getDistance(new Location(x,y),new Location(element.getX(),element.getY())) <= distance)
+					Location.getDistance(new Location(x,y),new Location(element.getX(),element.getY())) <= distance)
 				.skip(page * size)
 				.limit(size)
 				.collect(Collectors.toList());
 	}
 
-	public List<ElementEntity> getAllElementsByAttributeAndItsValue(String userPlayground, String email,
-			int size, int page, String attributeName, Object value) {
+	public List<ElementEntity> getAllElementsByAttributeAndItsValue(int size, int page, String attributeName, Object value) {
 		
 		Collection<ElementEntity> copy;
 		
@@ -103,17 +95,15 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 		
 		return 	copy
 				.stream()
-				.filter(element -> checkPlaygroundAndEmail(element, userPlayground, email)
-						&& element.getAttributes().get(attributeName).equals(value))
+				.filter(element -> element.getAttributes().get(attributeName).equals(value))
 				.skip(page * size)
 				.limit(size)
 				.collect(Collectors.toList());
 	}
 
-	public void updateElement(String userPlayground, String email, String playground, String id,
-			ElementEntity newElement) throws Exception {
+	public void updateElement(String id, ElementEntity newElement) throws Exception {
 		checkForNulls(newElement);
-		ElementEntity element = getElement(userPlayground, email, playground, id);
+		ElementEntity element = getElement(id);
 		if (element == null)
 			throw new ElementNotFoundException("Element does not exist");
 		this.elements.remove(id);
@@ -128,10 +118,6 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 	private void checkIfExists(ElementEntity e) throws Exception {
 		if (this.elements.containsKey(e.getUniqueKey().split("@@")[0]))
 			throw new Exception("Element already exists");
-	}
-	
-	private boolean checkPlaygroundAndEmail(ElementEntity element, String playground, String email) {
-		return element.getCreatorEmail().equals(email) && element.getUniqueKey().split("@@")[1].equals(playground);
 	}
 
 	@Override
