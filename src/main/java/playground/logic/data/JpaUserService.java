@@ -4,19 +4,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import playground.dal.NumberGeneratorDao;
 import playground.dal.UserDao;
 import playground.logic.ConfirmationException;
 import playground.logic.UserEntity;
 import playground.logic.UserService;
 
-@Service
-public class JpaUserDao implements UserService {
+//@Service
+public class JpaUserService implements UserService {
 	
 	private UserDao users;
+	private NumberGeneratorDao numberGenerator;
 
 	@Autowired
-	public void setElementDao(UserDao users){
+	public void setElementDao(UserDao users, NumberGeneratorDao numberGenerator){
 		this.users = users;
+		this.numberGenerator = numberGenerator;
 	}
 	
 	@Override

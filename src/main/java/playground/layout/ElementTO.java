@@ -20,7 +20,7 @@ public class ElementTO implements Constants {
 	private Map<String, Object> attributes;
 	private String creatorPlayground;
 	private String creatorEmail;
-	private static AtomicLong generator;
+	private static AtomicLong generator = new AtomicLong();
 
 	public ElementTO() {
 		this.playground = PLAYGROUND;
@@ -34,16 +34,17 @@ public class ElementTO implements Constants {
 	public ElementTO(ElementEntity element) {
 		this();
 		if (element != null) {
-			this.playground = element.getPlayground();
+			String[] idAndPlayground = element.getUniqueKey().split("@@");
+			this.playground = idAndPlayground[1];
 			this.creationDate = element.getCreationDate();
-			this.location = element.getLocation();
+			this.location = new Location(element.getX(), element.getY());
 			this.expirationDate = element.getExpirationDate();
 			this.attributes = element.getAttributes();
 			this.type = element.getType();
 			this.name = element.getName();
 			this.creatorPlayground = element.getCreatorPlayground();
 			this.creatorEmail = element.getCreatorEmail();
-			this.id = element.getId();
+			this.id = idAndPlayground[0];
 		}
 	}
 
@@ -155,7 +156,8 @@ public class ElementTO implements Constants {
 		rv.setCreatorPlayground(this.creatorPlayground);
 		rv.setType(this.type);
 		rv.setName(this.name);
-		rv.setLocation(this.location);
+		rv.setX(this.location.getX());
+		rv.setY(this.location.getY());
 
 		return rv;
 	}

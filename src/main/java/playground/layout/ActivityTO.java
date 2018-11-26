@@ -18,7 +18,7 @@ public class ActivityTO implements Constants {
 	private String type;
 	private String playerPlayground;
 	private String playerEmail;
-	private AtomicLong generator;
+	private static AtomicLong generator = new AtomicLong();
 	private Map<String, Object> attributes;
 
 	public ActivityTO() {

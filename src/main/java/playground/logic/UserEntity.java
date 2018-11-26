@@ -84,20 +84,12 @@ public class UserEntity implements Constants {
 		this.points += amount;
 	}
 	
-	public String getEmail() {
-		return this.getUniqueKey().split("@@")[1];
-	}
-	
 	public String getNumber() {
 		return number;
 	}
 
 	public void setNumber(String number) {
 		this.number = number;
-	}
-	
-	public String getPlayground() {
-		return this.getUniqueKey().split("@@")[0];
 	}
 	
 	private void validateNull(String string) throws Exception {

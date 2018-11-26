@@ -11,6 +11,6 @@ Scenario: Getting all elements successfully # PASSED
 Scenario: Getting none elements fail, with creator email that has no elements # PASSED
 
 	Given the server is up 
-	And there are elements with playground: "2019A.Kagan", email: "rubykozel@gmail.com", 
-	When I GET "/playground/elements/2019A.Kagan/dudidavidov@gmail.com/all" 
+	And there might be elements with playground: "2019A.Kagan" but not the email: "rubykozel@gmail.com", 
+	When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/all" 
 	Then the response is 500 with message: "Creator has no elements it created" 

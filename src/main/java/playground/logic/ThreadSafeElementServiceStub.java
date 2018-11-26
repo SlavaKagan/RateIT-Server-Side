@@ -26,12 +26,12 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 		elements = new HashMap<>();
 	}
 
-	public Map<String, ElementEntity> getAllElements() {
+	public Map<String, ElementEntity> getAllElementsMap() {
 		return elements;
 	}
 
 	public void addElement(ElementEntity element) {
-		elements.put(element.getId(), element);
+		elements.put(element.getUniqueKey().split("@@")[0], element);
 	}
 
 	public void setElements(Map<String, ElementEntity> elements) {
@@ -51,7 +51,7 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 			throws ElementNotFoundException {
 		ElementEntity element = elements.get(id);
 		if (element == null || 
-				!(element.getPlayground().equals(playground) 
+				!(element.getUniqueKey().split("@@")[1].equals(playground) 
 					&& checkPlaygroundAndEmail(element, userPlayground, email)))
 			throw new ElementNotFoundException("Element not found");
 		return element;
@@ -86,7 +86,7 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 				.stream()
 				.filter(element -> 
 					checkPlaygroundAndEmail(element, userPlayground, email)
-					&& Location.getDistance(new Location(x,y),element.getLocation()) <= distance)
+					&& Location.getDistance(new Location(x,y),new Location(element.getX(),element.getY())) <= distance)
 				.skip(page * size)
 				.limit(size)
 				.collect(Collectors.toList());
@@ -117,21 +117,21 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 		if (element == null)
 			throw new ElementNotFoundException("Element does not exist");
 		this.elements.remove(id);
-		this.elements.put(newElement.getId(), newElement);
+		this.elements.put(newElement.getUniqueKey().split("@@")[0], newElement);
 	}
 	
 	private void checkForNulls(ElementEntity e) throws Exception {
-		if(e.getName() == null || e.getType() == null || e.getId() == null)
+		if(e.getName() == null || e.getType() == null || e.getUniqueKey().split("@@")[0] == null)
 			throw new Exception("Null was given to name or type");
 	}
 	
 	private void checkIfExists(ElementEntity e) throws Exception {
-		if (this.elements.containsKey(e.getId()))
+		if (this.elements.containsKey(e.getUniqueKey().split("@@")[0]))
 			throw new Exception("Element already exists");
 	}
 	
 	private boolean checkPlaygroundAndEmail(ElementEntity element, String playground, String email) {
-		return element.getCreatorEmail().equals(email) && element.getPlayground().equals(playground);
+		return element.getCreatorEmail().equals(email) && element.getUniqueKey().split("@@")[1].equals(playground);
 	}
 
 	@Override

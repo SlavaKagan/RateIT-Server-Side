@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.persistence.Entity;
+import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Transient;
@@ -36,17 +37,27 @@ public class ActivityEntity implements Constants {
 
 	public ActivityEntity(ElementEntity newElement, String type) throws Exception {
 		this();
-		this.elementId = newElement.getId();
-		this.elementPlayground = newElement.getPlayground();	
+		String[] idAndPlayground = newElement.getUniqueKey().split("@@");
+		this.elementId = idAndPlayground[0];
+		this.elementPlayground = idAndPlayground[1];	
 		this.type = type;
 	}
-
-	public String getPlayground() {
-		return this.uniqueKey.split("@@")[0];
+	
+	public String getNumber() {
+		return number;
 	}
 
-	public String getId() {
-		return this.uniqueKey.split("@@")[1];
+	public void setNumber(String number) {
+		this.number = number;
+	}
+	
+	@Id
+	public String getUniqueKey() {
+		return uniqueKey;
+	}
+
+	public void setUniqueKey(String uniqueKey) {
+		this.uniqueKey = uniqueKey;
 	}
 	
 	public String getElementPlayground() {
@@ -118,22 +129,6 @@ public class ActivityEntity implements Constants {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-	}
-	
-	public String getNumber() {
-		return number;
-	}
-
-	public void setNumber(String number) {
-		this.number = number;
-	}
-	
-	public String getUniqueKey() {
-		return uniqueKey;
-	}
-
-	public void setUniqueKey(String uniqueKey) {
-		this.uniqueKey = uniqueKey;
 	}
 
 	private void validateNull(String string) {

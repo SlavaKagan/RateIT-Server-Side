@@ -8,6 +8,7 @@ public interface Constants {
 	public static final String MANAGER_NAME = "Manager";
 	public static final String MANAGER_MAIL = "manager@gmail.com";
 	public static final String PLAYER_MAIL = "player@gmail.com";
+	public static final String EMAIL = "rubykozel@gmail.com";
 	public static final String MANAGER = "Manager";
 	public static final String REVIEWER = "Reviewer";
 	public static final String GUEST = "Guest";

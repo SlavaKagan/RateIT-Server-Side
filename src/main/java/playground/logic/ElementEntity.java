@@ -1,6 +1,5 @@
 package playground.logic;
 
-import java.io.IOException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,18 +12,16 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import playground.logic.Constants;
 
 @Entity
-@Table(name="ELEMENTS")
+@Table(name = "ELEMENTS")
 public class ElementEntity implements Constants {
 	private String uniqueKey;
-	private Location location;
+	private Double x;
+	private Double y;
 	private String name;
 	private Date creationDate;
 	private Date expirationDate;
@@ -33,7 +30,7 @@ public class ElementEntity implements Constants {
 	private String creatorPlayground;
 	private String creatorEmail;
 	private String number;
-	
+
 	@Id
 	public String getUniqueKey() {
 		return uniqueKey;
@@ -52,7 +49,8 @@ public class ElementEntity implements Constants {
 	}
 
 	public ElementEntity() {
-		this.location = new Location(Math.random() * 20, Math.random() * 20);
+		this.x = Math.random() * 20;
+		this.y = Math.random() * 20;
 		this.creationDate = DEFAULT_DATE;
 		this.expirationDate = null;
 		this.attributes = new HashMap<>();
@@ -68,20 +66,20 @@ public class ElementEntity implements Constants {
 		this.attributes = attributes;
 	}
 
-	public String getPlayground() {
-		return this.uniqueKey.split("@@")[1];
+	public Double getX() {
+		return x;
 	}
 
-	public String getId() {
-		return this.uniqueKey.split("@@")[0];
+	public void setX(Double x) {
+		this.x = x;
 	}
 
-	public Location getLocation() {
-		return location;
+	public Double getY() {
+		return y;
 	}
 
-	public void setLocation(Location location) {
-		this.location = location;
+	public void setY(Double y) {
+		this.y = y;
 	}
 
 	public String getName() {
@@ -92,6 +90,7 @@ public class ElementEntity implements Constants {
 		this.name = name;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -99,7 +98,7 @@ public class ElementEntity implements Constants {
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
 	}
-	
+
 	@Temporal(TemporalType.TIMESTAMP)
 	public Date getExpirationDate() {
 		return expirationDate;
@@ -125,7 +124,7 @@ public class ElementEntity implements Constants {
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
 	}
-	
+
 	@Lob
 	public String getAttributesJson() {
 		try {
@@ -142,7 +141,7 @@ public class ElementEntity implements Constants {
 			throw new RuntimeException(e);
 		}
 	}
-	
+
 	public String getCreatorPlayground() {
 		return creatorPlayground;
 	}
@@ -161,10 +160,9 @@ public class ElementEntity implements Constants {
 
 	@Override
 	public String toString() {
-		return "ElementEntity [uniqueKey=" + uniqueKey + ", location=" + location + ", name=" + name + ", creationDate="
+		return "ElementEntity [uniqueKey=" + uniqueKey + ", x=" + x + ", y=" + y + ", name=" + name + ", creationDate="
 				+ creationDate + ", expirationDate=" + expirationDate + ", type=" + type + ", attributes=" + attributes
 				+ ", creatorPlayground=" + creatorPlayground + ", creatorEmail=" + creatorEmail + ", number=" + number
 				+ "]";
 	}
-
 }

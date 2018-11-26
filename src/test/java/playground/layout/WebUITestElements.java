@@ -23,17 +23,18 @@ import playground.logic.UserService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
-public class WebUITestElements {
+public class WebUITestElements implements Constants {
+	
 	@Autowired
 	private ElementService elementservice;
 	
 	@Autowired
 	private UserService userservice;
+	
 	private RestTemplate restTemplate;
 	private String url;
 	private NewUserForm form;
 	private UserTO user;
-	public static final String EMAIL = "rubykozel@gmail.com";
 	
 	@LocalServerPort
 	private int port;
@@ -94,7 +95,6 @@ public class WebUITestElements {
 	 */
 	@Test
 	public void testCreatingAnElementSuccessfully() throws Exception {
-		System.err.println("Starting this test");
 		//Given
 		userservice.createUser(user.toEntity());
 		
@@ -106,52 +106,58 @@ public class WebUITestElements {
 						ElementTO.class, Constants.PLAYGROUND, EMAIL);
 		
 		//Then
+		String postedId = postedElement.getId() + "@@" + postedElement.getPlayground();
 		ElementEntity actualElementInDb = elementservice
-				.getElement(Constants.PLAYGROUND, postedElement.getCreatorEmail(), Constants.PLAYGROUND, postedElement.getId());
+				.getElement(Constants.PLAYGROUND, postedElement.getCreatorEmail(), Constants.PLAYGROUND, postedId);
 		
-		actualElementInDb.setLocation(new Location(0,0)); // For testing purposes
+		actualElementInDb.setX(0.0); // For testing purposes
+		actualElementInDb.setY(0.0);
 		
 		assertThat(jacksonMapper.writeValueAsString(actualElementInDb))
 		.isNotNull()
 		.isEqualTo(jacksonMapper.writeValueAsString(
 				jacksonMapper.readValue(""
 						+ "{"
-						+ "\"playground\": \"2019A.Kagan\","
+						+ "\"uniqueKey\": \"" + postedElement.getId() + "@@2019A.Kagan\","
 						+ "\"name\": \"Messaging Board\","
 						+ "\"expirationDate\": null,"
 						+ "\"type\": \"Messaging Board\","
-						+ "\"location\": {\"x\":0,\"y\":0},"
+						+ "\"x\": 0.0,"
+						+ "\"y\": 0.0,"
+						+ "\"number\": " + actualElementInDb.getNumber() + ","
 						+ "\"creatorPlayground\":\"2019A.Kagan\","
 						+ "\"creatorEmail\":\"rubykozel@gmail.com\""
 						+ "}", ElementEntity.class)));
 	}
 	
-	/**
-	 * 	Given the server is up
-		And there's an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Reviewer",
-		When I POST "/playground/elements/2019A.Kagan/rubykozel@gmail.com" with 
-		{
-		 	"type":"Messaging Board", 
-		 	"name":"Messaging Board"
-		}
-		Then the response is 500
-	 * @throws Exception
-	 */
-	@Test(expected = Exception.class)
-	public void testCreatingAnElementWithAUserThatIsNotAManager() throws Exception {
-		// Given
-		user.setRole(Constants.REVIEWER);
-		userservice.createUser(user.toEntity());
-
-		// When
-		ElementTO elementToPost = jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\"}", ElementTO.class);
-		this.restTemplate.postForObject(url + "/{userPlayground}/{email}", 
-										elementToPost,		
-										ElementTO.class, 
-										Constants.PLAYGROUND,
-										EMAIL);
-			
-	}
+//	***COMMENTED FOR NOW - NO NEED TO TEST IF PLAYER IS MANAGER WHEN POSTING NEW ELEMENT, FOR THIS SPRINT(4)***
+//
+//	/**
+//	 * 	Given the server is up
+//		And there's an account with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Reviewer",
+//		When I POST "/playground/elements/2019A.Kagan/rubykozel@gmail.com" with 
+//		{
+//		 	"type":"Messaging Board", 
+//		 	"name":"Messaging Board"
+//		}
+//		Then the response is 500
+//	 * @throws Exception
+//	 */
+//	@Test(expected = Exception.class)
+//	public void testCreatingAnElementWithAUserThatIsNotAManager() throws Exception {
+//		// Given
+//		user.setRole(Constants.REVIEWER);
+//		userservice.createUser(user.toEntity());
+//
+//		// When
+//		ElementTO elementToPost = jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\"}", ElementTO.class);
+//		this.restTemplate.postForObject(url + "/{userPlayground}/{email}", 
+//										elementToPost,		
+//										ElementTO.class, 
+//										Constants.PLAYGROUND,
+//										EMAIL);
+//			
+//	}
 	
 	/**
 	 *  Given the server is up
@@ -423,7 +429,7 @@ public class WebUITestElements {
 	
 	/**
 	 * 	Given the server is up 
-		And theres at list 1 element in the database with playground: "2019A.Kagan", email: "rubykozel@gmail.com" 
+		And there's at list 1 element in the database with playground: "2019A.Kagan", email: "rubykozel@gmail.com" 
 		When I GET "/playground/elements/2019A.Kagan/rubykoze@gmail.com/all?size=5&page=0" 
 		Then the response 200 
 		And the output is 
@@ -470,7 +476,7 @@ public class WebUITestElements {
 	
 	/**
 	 * 	Given the server is up 
-		And theres at list 1 element in the database with playground: "2019A.Kagan", email: "rubykozel@gmail.com" 
+		And theres at most 5 elements in the database with playground: "2019A.Kagan", email: "rubykozel@gmail.com" 
 		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/all?size=5&page=1" 
 		Then the response is 200 
 		And the output is '[]'
@@ -658,29 +664,27 @@ public class WebUITestElements {
 	/**
 	 * Given the server is up
 	 * 
-	 * And there are elements with playground: "2019A.Kagan", email:
+	 * And there might be elements with playground: "2019A.Kagan" but not the email:
 	 * "rubykozel@gmail.com",
 	 * 
-	 * When I GET "/playground/elements/2019A.Kagan/dudidavidov@gmail.com/all"
+	 * When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/all"
 	 * 
-	 * Then the response is 500 with message: "Creator has no elements it created"
+	 * Then the response 200
+	 * And the output is '[]'
 	 * @throws Exception
 	 */
 	
-	@Test (expected = Exception.class)
+	@Test
 	public void testGettingNoneElementsWithCreatorEmailThatHasNoElements() throws Exception {
 		userservice.createUser(user.toEntity());
-
-		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", Constants.PLAYGROUND, EMAIL,
-				new HashMap<>());
-		newElement.setLocation(new Location(0, 0)); // For testing purposes
-		newElement.setId("1"); // For testing purposes
-
-		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, form.getEmail());
 		
-		this.restTemplate.getForObject(
+		ElementTO[] elements = this.restTemplate.getForObject(
 				url + "/{userPlayground}/{email}/all?size={size}&page={page}", ElementTO[].class,
-				Constants.PLAYGROUND, "dudidavidov@gmail.com", 5, 0);
+				Constants.PLAYGROUND, "rubykozel@gmail.com", 5, 0);
+		
+		assertThat(elements)
+		.isNotNull()
+		.hasSize(0);
 	}
 	
 	/**

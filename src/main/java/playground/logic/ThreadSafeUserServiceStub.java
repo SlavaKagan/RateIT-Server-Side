@@ -8,7 +8,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.stereotype.Service;
 
-//@Service
+@Service
 public class ThreadSafeUserServiceStub implements Constants, UserService {
 
 	private Map<String, UserEntity> users;
@@ -23,7 +23,7 @@ public class ThreadSafeUserServiceStub implements Constants, UserService {
 	}
 
 	public void createUser(UserEntity user) throws Exception {
-		this.users.put(user.getEmail(), user);
+		this.users.put(user.getUniqueKey().split("@@")[1], user);
 	}
 	
 	@Override
@@ -35,7 +35,7 @@ public class ThreadSafeUserServiceStub implements Constants, UserService {
 		UserEntity user = users.get(email);
 		if(user == null)
 			throw new ConfirmationException("This is an unregistered account");
-		else if (!user.getPlayground().equals(playground))
+		else if (!user.getUniqueKey().split("@@")[0].equals(playground))
 			throw new ConfirmationException("There's no such user in the specified playground");		
 		else if(user.getRole().equals(GUEST))
 			throw new ConfirmationException("This is an unconfirmed account");
@@ -45,7 +45,7 @@ public class ThreadSafeUserServiceStub implements Constants, UserService {
 
 	public UserEntity confirmUser(String playground, String email, String code) throws Exception {
 		UserEntity confirmedUser = users.get(email);
-		if(!confirmedUser.getPlayground().equals(playground))
+		if(!confirmedUser.getUniqueKey().split("@@")[0].equals(playground))
 			throw new ConfirmationException("There's no such user in the specified playground");
 		else if (code.equals(TEMPORARY_CODE) && confirmedUser.getRole().equals(GUEST))
 			confirmedUser.setRole(REVIEWER);		
@@ -57,13 +57,13 @@ public class ThreadSafeUserServiceStub implements Constants, UserService {
 	}
 
 	public void editUser(String playground, String email, UserEntity newUser) throws Exception {
-		if(newUser.getEmail() == null)
+		if(newUser.getUniqueKey().split("@@")[1] == null)
 			throw new Exception("Email of user can't be null");
 		UserEntity user = getRegisteredUser(playground, email);
 		if(user == null)
 			throw new ConfirmationException("This is an unregistered account");
 		this.users.remove(email);
-		this.users.put(newUser.getEmail(), newUser);
+		this.users.put(newUser.getUniqueKey().split("@@")[1], newUser);
 	}
 
 //	private String generateRandomCode() {
