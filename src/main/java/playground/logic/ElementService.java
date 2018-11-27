@@ -4,7 +4,7 @@ import java.util.List;
 
 public interface ElementService {
 
-	public ElementEntity createElement(ElementEntity elementEntity) throws Exception;
+	public ElementEntity createElement(ElementEntity elementEntity, String userPlayground, String email) throws Exception;
 
 	public ElementEntity getElement(String id) throws ElementNotFoundException;
 

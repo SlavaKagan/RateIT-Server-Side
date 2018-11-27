@@ -38,9 +38,11 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 		this.elements = elements;
 	}
 
-	public ElementEntity createElement(ElementEntity elementEntity) throws Exception {
+	public ElementEntity createElement(ElementEntity elementEntity, String creatorPlayground, String email) throws Exception {
 		checkForNulls(elementEntity);
 		checkIfExists(elementEntity);
+		elementEntity.setCreatorPlayground(creatorPlayground);
+		elementEntity.setCreatorEmail(email);
 		addElement(elementEntity);
 		return elementEntity;
 	}

@@ -31,14 +31,16 @@ public class JpaElementService implements ElementService {
 
 	@Override
 	@Transactional
-	public ElementEntity createElement(ElementEntity elementEntity)
+	public ElementEntity createElement(ElementEntity elementEntity, String userPlayground, String email)
 			throws Exception {
 		if (!this.elements.existsById(elementEntity.getUniqueKey())) {
 			checkForNulls(elementEntity);
 			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
 			
 			elementEntity.setNumber("" + temp.getNextNumber());
-
+			elementEntity.setCreatorPlayground(userPlayground);
+			elementEntity.setCreatorEmail(email);
+			
 			this.numberGenerator.delete(temp);
 
 			return this.elements.save(elementEntity);
@@ -106,7 +108,7 @@ public class JpaElementService implements ElementService {
 		checkForNulls(newElement);
 		ElementEntity existing = this.getElement(id);
 		this.elements.delete(existing);
-		this.createElement(newElement);
+		this.createElement(newElement, existing.getCreatorEmail(), existing.getCreatorEmail());
 	}
 
 	@Override

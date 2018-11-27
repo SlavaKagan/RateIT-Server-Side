@@ -39,7 +39,7 @@ public class ElementWebUI {
 			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email) throws Exception {
 		validateParamsNotNull(userPlayground,email);
-		return new ElementTO(elementservice.createElement(element.toEntity()));
+		return new ElementTO(elementservice.createElement(element.toEntity(), userPlayground, email));
 	}
 	
 	@RequestMapping(
