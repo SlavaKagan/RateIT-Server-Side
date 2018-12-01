@@ -2,35 +2,36 @@ package playground.logic;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
 import javax.persistence.Transient;
-
+import org.springframework.beans.factory.annotation.Value;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import playground.logic.Constants;
 
 @Entity
 @Table(name="ACTIVITIES")
-public class ActivityEntity implements Constants {
+public class ActivityEntity {
 	private String uniqueKey;
 	private String elementPlayground;
 	private String elementId;
 	private String type;
+	
+	@Value("${reviewer:Anonymous}")
 	private String playerPlayground;
+	
+	@Value("${player.email:Anonymous}")
 	private String playerEmail;
+	
 	private String number;
 	private Map<String, Object> attributes;
 
 	public ActivityEntity() {
-		this.playerPlayground = REVIEWER;
-		this.playerEmail = PLAYER_MAIL;
+
 		this.attributes = new HashMap<>();
 		this.attributes.put("isActive", "True");
-		this.attributes.put("creatorsName", REVIEWER);
+		this.attributes.put("creatorsName", playerPlayground);
 		this.attributes.put("activity", new Object());
 		this.attributes.put("activityName", "Post a Review");
 	}

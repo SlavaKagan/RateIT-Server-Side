@@ -1,11 +1,20 @@
 package playground.layout;
 
-import playground.logic.Constants;
+import org.springframework.beans.factory.annotation.Value;
 import playground.logic.UserEntity;
 
-public class UserTO implements Constants {
+public class UserTO {
 	private String email;
+	
+	@Value("${playground:Anonymous}")
 	private String playground;
+	
+	@Value("${manager:Anonymous}")
+	private String manager;
+	
+	@Value("${reviewer:Anonymous}")
+	private String reviewer;
+	
 	private String userName;
 	private String avatar;
 	private String role;
@@ -17,7 +26,6 @@ public class UserTO implements Constants {
 
 	public UserTO(NewUserForm form) {
 		this.email = form.getEmail();
-		this.playground = PLAYGROUND;
 		this.userName = form.getUsername();
 		this.avatar = form.getAvatar();
 		this.role = form.getRole();
@@ -82,9 +90,9 @@ public class UserTO implements Constants {
 	}
 
 	public void setStartingPoints() {
-		if (this.role == MANAGER) {
+		if (this.role == manager) {
 			this.points = 0;
-		} else if (this.role == REVIEWER) {
+		} else if (this.role == reviewer) {
 			this.points = 100;
 		}
 	}

@@ -3,13 +3,10 @@ package playground.logic;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
 
-import org.springframework.stereotype.Service;
-
 //@Service
-public class ThreadSafeActivityServiceStub implements Constants, ActivityService {
+public class ThreadSafeActivityServiceStub implements ActivityService {
 	private Map<String, ActivityEntity> activities;
 
 	@PostConstruct
@@ -21,5 +18,4 @@ public class ThreadSafeActivityServiceStub implements Constants, ActivityService
 	public void cleanup() {
 		this.activities.clear();
 	}
-
 }

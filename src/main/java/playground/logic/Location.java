@@ -40,6 +40,4 @@ public class Location {
 	public String toString() {
 		return "{\"x\":" + x + ", \"y\":" + y + "}";
 	}
-	
-	
 }

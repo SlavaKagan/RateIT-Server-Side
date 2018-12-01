@@ -1,5 +1,4 @@
 package playground.logic;
-
 import java.util.Date;
 
 public interface Constants {

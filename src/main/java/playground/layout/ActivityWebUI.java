@@ -56,7 +56,7 @@ public class ActivityWebUI {
 	
 	private void validateParamsNotNull(String... strings) throws Exception {
 		for(String string : strings) 
-			if ("null".equals(string) || string == null)
+			if ("null".equals(string) || string==null)
 				throw new Exception("One of the paramters provided was null");					
 	}
 }

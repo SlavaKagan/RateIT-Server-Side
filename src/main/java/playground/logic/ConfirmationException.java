@@ -23,5 +23,4 @@ public class ConfirmationException extends Exception implements NotFoundExceptio
 	public ConfirmationException(Throwable cause) {
 		super(cause);
 	}
-
 }

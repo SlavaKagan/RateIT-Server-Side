@@ -26,7 +26,6 @@ public class ElementWebUI {
 	@Autowired
 	public void setService(ElementService elementervice) {
 		this.elementservice = elementervice;
-
 	}
 	
 	@RequestMapping(

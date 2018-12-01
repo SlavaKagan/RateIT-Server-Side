@@ -8,28 +8,33 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import playground.logic.Constants;
 import playground.logic.ElementEntity;
 import playground.logic.ElementService;
-import playground.logic.Location;
 import playground.logic.UserService;
-
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
-public class WebUITestElements implements Constants {
+public class WebUITestElements  {
 	
 	@Autowired
 	private ElementService elementservice;
 	
 	@Autowired
 	private UserService userservice;
+	
+	@Value("${email:Anonymous}")
+	private String email;
+	
+	@Value("${playground:Anonymous}")
+	private String playground;
+	
 	
 	private RestTemplate restTemplate;
 	private String url;
@@ -46,7 +51,7 @@ public class WebUITestElements implements Constants {
 	public void init() {
 		this.restTemplate = new RestTemplate();
 		this.url = "http://localhost:" + port + "/playground/elements";
-		form = new NewUserForm(EMAIL, "ruby", ":-)", "Manager");
+		form = new NewUserForm(email, "ruby", ":-)", "Manager");
 		user = new UserTO(form);
 		jacksonMapper = new ObjectMapper();
 		elementJson = "{"
@@ -95,7 +100,7 @@ public class WebUITestElements implements Constants {
 	 		"name": "Messaging Board",
 	 		"type": "Messaging Board",
 	 		"creatorPlayground": "2019A.Kagan",
-	 		"creatorEmail": "rubykozel@gmail.com"
+	 		"creatoremail": "rubykozel@gmail.com"
 		}
 	 * @throws Exception
 	 */
@@ -109,7 +114,7 @@ public class WebUITestElements implements Constants {
 		ElementTO postedElement = this.restTemplate
 				.postForObject(url + "/{userPlayground}/{email}", 
 						jacksonMapper.readValue(elementJson, ElementTO.class),
-						ElementTO.class, Constants.PLAYGROUND, EMAIL);
+						ElementTO.class, playground, email);
 		
 		//Then
 		String postedId = postedElement.getId() + "@@" + postedElement.getPlayground();
@@ -131,7 +136,7 @@ public class WebUITestElements implements Constants {
 						+ "\"y\": 0.0,"
 						+ "\"number\": " + actualElementInDb.getNumber() + ","
 						+ "\"creatorPlayground\":\"2019A.Kagan\","
-						+ "\"creatorEmail\":\"rubykozel@gmail.com\""
+						+ "\"creatoremail\":\"rubykozel@gmail.com\""
 						+ "}", ElementEntity.class)));
 	}
 	
@@ -159,8 +164,8 @@ public class WebUITestElements implements Constants {
 //		this.restTemplate.postForObject(url + "/{userPlayground}/{email}", 
 //										elementToPost,		
 //										ElementTO.class, 
-//										Constants.PLAYGROUND,
-//										EMAIL);
+//										playground,
+//										email);
 //			
 //	}
 	
@@ -180,8 +185,8 @@ public class WebUITestElements implements Constants {
 		this.restTemplate.postForObject(url + "/{userPlayground}/{email}", 
 										null, 
 										ElementTO.class, 
-										Constants.PLAYGROUND,
-										EMAIL);	
+										playground,
+										email);	
 	}
 	
 	/**
@@ -196,7 +201,7 @@ public class WebUITestElements implements Constants {
 	 * @throws Exception
 	 */
 	@Test(expected = Exception.class)
-	public void testCreatingAnElementWithEmailAsNull() throws Exception {
+	public void testCreatingAnElementWithemailAsNull() throws Exception {
 		// Given
 		userservice.createUser(user.toEntity());
 		
@@ -205,7 +210,7 @@ public class WebUITestElements implements Constants {
 		this.restTemplate.postForObject(url + "/{userPlayground}/{email}", 
 										elementToPost, 
 										ElementTO.class,
-										Constants.PLAYGROUND,
+										playground,
 										null); 
 	}
 	
@@ -224,7 +229,7 @@ public class WebUITestElements implements Constants {
 		// When
 		this.restTemplate.postForObject(url + "/{userPlayground}/{email}",
 				jacksonMapper.readValue("{}", ElementTO.class),
-				ElementTO.class, Constants.PLAYGROUND, "rubykozel@gmail.com");
+				ElementTO.class, playground, "rubykozel@gmail.com");
 		 
 	}
 	
@@ -244,7 +249,7 @@ public class WebUITestElements implements Constants {
 		 			"movieName": "Venom 2018"
 		 		},
 		 		"creatorPlayground": "2019A.Kagan",
-		 		"creatorEmail": "rubykozel@gmail.com"
+		 		"creatoremail": "rubykozel@gmail.com"
 		 	}
 		 	
 		 Then the reponse is "200 OK"
@@ -256,15 +261,15 @@ public class WebUITestElements implements Constants {
 		// Given
 		userservice.createUser(user.toEntity());
 		ElementTO element = jacksonMapper.readValue(elementJson, ElementTO.class);
-		element = new ElementTO(elementservice.createElement(element.toEntity(), Constants.PLAYGROUND, Constants.EMAIL));
+		element = new ElementTO(elementservice.createElement(element.toEntity(), playground, email));
 		
 		// When
 		element.setName("MyBoard");
 		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", 
 								element, 
-								Constants.PLAYGROUND,
-								EMAIL,
-								Constants.PLAYGROUND,
+								playground,
+								email,
+								playground,
 								element.getId());
 
 		//Then	
@@ -279,7 +284,7 @@ public class WebUITestElements implements Constants {
 						+ "\"type\": \"Messaging Board\","
 						+ "\"location\": {\"x\":0,\"y\":0},"
 						+ "\"creatorPlayground\":\"2019A.Kagan\","
-						+ "\"creatorEmail\":\"rubykozel@gmail.com\""
+						+ "\"creatoremail\":\"rubykozel@gmail.com\""
 						+ "}", ElementEntity.class)));
 		
 	}
@@ -293,7 +298,7 @@ public class WebUITestElements implements Constants {
 		 		"name": "Messaging Board",
 		 		"type": null,
 		 		"creatorPlayground": "2019A.Kagan",
-		 		"creatorEmail": "rubykozel@gmail.com"
+		 		"creatoremail": "rubykozel@gmail.com"
 		 	}
 		Then the reponse is 500
 	 * @throws Exception
@@ -304,12 +309,12 @@ public class WebUITestElements implements Constants {
 		//Given
 		userservice.createUser(user.toEntity());
 		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
-		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, Constants.EMAIL);
+		elementservice.createElement(newElement.toEntity(), playground, email);
 		
 		// When
 		newElement.setType(null);
 		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", 
-				newElement, Constants.PLAYGROUND,EMAIL,Constants.PLAYGROUND,newElement.getId());
+				newElement, playground,email,playground,newElement.getId());
 		
 	}
 	
@@ -325,7 +330,7 @@ public class WebUITestElements implements Constants {
 			"expirationDate":null, 
 			"attributes":{"isAMovie":"False"},
 			"creatorPlayground":"2019A.Kagan",
-			"creatorEmail":"rubykozel@gmail.com"
+			"creatoremail":"rubykozel@gmail.com"
 			} ... ]
 	 */	
 	@Test
@@ -335,14 +340,14 @@ public class WebUITestElements implements Constants {
 		userservice.createUser(user.toEntity());
 		
 		Map<String, Object> attributes = new HashMap<>();
-		ElementTO newElement = new ElementTO("Movie", "element1", Constants.PLAYGROUND, EMAIL, attributes);
+		ElementTO newElement = new ElementTO("Movie", "element1", playground, email, attributes);
 		newElement.getAttributes().put("isAMovie", "False");
-		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, Constants.EMAIL);
+		elementservice.createElement(newElement.toEntity(), playground, email);
 
 		Map<String, Object> attributes2 = new HashMap<>();
-		ElementTO newElement2 = new ElementTO("Message Board", "element2", Constants.PLAYGROUND, EMAIL, attributes2);
+		ElementTO newElement2 = new ElementTO("Message Board", "element2", playground, email, attributes2);
 		newElement2.getAttributes().put("isAMovie", "True");
-		elementservice.createElement(newElement2.toEntity(), Constants.PLAYGROUND, Constants.EMAIL);
+		elementservice.createElement(newElement2.toEntity(), playground, email);
 		
 		String attributeName = "isAMovie";
 		String value = "False";
@@ -351,8 +356,8 @@ public class WebUITestElements implements Constants {
 		ElementTO[] actualElements = this.restTemplate
 				.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", 
 						ElementTO[].class, 
-						Constants.PLAYGROUND, 
-						EMAIL, 
+						playground, 
+						email, 
 						attributeName, 
 						value);
 		
@@ -378,14 +383,14 @@ public class WebUITestElements implements Constants {
 		userservice.createUser(user.toEntity());
 		
 		Map<String, Object> attributes = new HashMap<>();
-		ElementTO newElement = new ElementTO("Movie", "element1", Constants.PLAYGROUND, EMAIL, attributes);
+		ElementTO newElement = new ElementTO("Movie", "element1", playground, email, attributes);
 		newElement.getAttributes().put("isAMovie", "False");
-		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, Constants.EMAIL);
+		elementservice.createElement(newElement.toEntity(), playground, email);
 
 		Map<String, Object> attributes2 = new HashMap<>();
-		ElementTO newElement2 = new ElementTO("Message Board", "element2", Constants.PLAYGROUND, EMAIL, attributes2);
+		ElementTO newElement2 = new ElementTO("Message Board", "element2", playground, email, attributes2);
 		newElement2.getAttributes().put("isAMovie", "True");
-		elementservice.createElement(newElement2.toEntity(), Constants.PLAYGROUND, Constants.EMAIL);
+		elementservice.createElement(newElement2.toEntity(), playground, email);
 		
 		String attributeName = "null";
 		String value = "False";
@@ -394,8 +399,8 @@ public class WebUITestElements implements Constants {
 		this.restTemplate
 		.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", 
 				ElementTO[].class, 
-				Constants.PLAYGROUND, 
-				EMAIL, 
+				playground, 
+				email, 
 				attributeName, 
 				value);
 		
@@ -414,9 +419,9 @@ public class WebUITestElements implements Constants {
 		userservice.createUser(user.toEntity());
 		
 		Map<String, Object> attributes = new HashMap<>();
-		ElementTO newElement = new ElementTO("Movie", "element1", Constants.PLAYGROUND, EMAIL, attributes);
+		ElementTO newElement = new ElementTO("Movie", "element1", playground, email, attributes);
 		newElement.getAttributes().put("movieName", "Spiderman");
-		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, Constants.EMAIL);
+		elementservice.createElement(newElement.toEntity(), playground, email);
 		
 		String attributeName = "movieName";
 		String value = "Venom 1018";
@@ -425,8 +430,8 @@ public class WebUITestElements implements Constants {
 		this.restTemplate
 		.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", 
 				ElementTO[].class, 
-				Constants.PLAYGROUND, 
-				EMAIL, 
+				playground, 
+				email, 
 				attributeName, 
 				value);
 		
@@ -448,7 +453,7 @@ public class WebUITestElements implements Constants {
 			 "type": "Messaging Board",
 			 attributes: {}, 
 			 "creatorPlayground": "2019A.Kagan", 
-			 "creatorEmail": 
+			 "creatoremail": 
 			 "rubykozel@gmail.com" 
 			} x 1 .. 5]'
 	 * @throws Exception
@@ -459,14 +464,14 @@ public class WebUITestElements implements Constants {
 		// Given
 		userservice.createUser(user.toEntity());	
 		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
-		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, Constants.EMAIL);
+		elementservice.createElement(newElement.toEntity(), playground, email);
 		
 		// When
 		ElementTO[] actualElements = this.restTemplate
 		.getForObject(this.url + "/{playground}/{email}/all?size={size}&page={page}", 
 				ElementTO[].class, 
-				Constants.PLAYGROUND, 
-				EMAIL, 5, 0);
+				playground, 
+				email, 5, 0);
 		
 		assertThat(actualElements)
 		.isNotNull()
@@ -493,14 +498,14 @@ public class WebUITestElements implements Constants {
 		// Given
 		userservice.createUser(user.toEntity());	
 		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
-		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, Constants.EMAIL);
+		elementservice.createElement(newElement.toEntity(), playground, email);
 		
 		// When
 		ElementTO[] actualElements = this.restTemplate
 				.getForObject(this.url + "/{playground}/{email}/all?size={size}&page={page}", 
 						ElementTO[].class, 
-						Constants.PLAYGROUND, 
-						EMAIL, 5, 1);
+						playground, 
+						email, 5, 1);
 		
 		// Then
 		assertThat(actualElements)
@@ -519,13 +524,13 @@ public class WebUITestElements implements Constants {
 	public void testUsingBadPageNumberToRetreiveElements() throws Exception {
 		userservice.createUser(user.toEntity());	
 		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
-		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, Constants.EMAIL);
+		elementservice.createElement(newElement.toEntity(), playground, email);
 		
 		// When
 		this.restTemplate.getForObject(this.url + "/{playground}/{email}/all?page={page}", 
 						ElementTO[].class, 
-						Constants.PLAYGROUND, 
-						EMAIL, -1);
+						playground, 
+						email, -1);
 	}
 	
 	/**
@@ -540,21 +545,21 @@ public class WebUITestElements implements Constants {
 	 * And the output is '{"playground": "2019A.Kagan", "id": "1", "location": {
 	 * "x": Any, "y": Any }, "name": "Messaging Board", "creationDate": Any valid
 	 * date, "expirationDate": null, "type": "Messaging Board", "attributes": {},
-	 * "creatorPlayground": "2019A.Kagan", "creatorEmail": "rubykozel@gmail.com" }'
+	 * "creatorPlayground": "2019A.Kagan", "creatoremail": "rubykozel@gmail.com" }'
 	 * @throws Exception
 	 */
 	@Test
 	public void testGettingAnElementSuccessfullyWithCorrectId() throws Exception {
 		userservice.createUser(user.toEntity());
 
-		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", Constants.PLAYGROUND, EMAIL,
+		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", playground, email,
 				new HashMap<>());
 		newElement.setId("1"); // For testing purposes
 
-		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, Constants.EMAIL);
+		elementservice.createElement(newElement.toEntity(), playground, email);
 
 		ElementTO actualElement = this.restTemplate.getForObject(url + "/{userPlayground}/{email}/{playground}/{id}",
-				ElementTO.class, Constants.PLAYGROUND, EMAIL, Constants.PLAYGROUND, "1");
+				ElementTO.class, playground, email, playground, "1");
 
 		assertThat(jacksonMapper.writeValueAsString(actualElement))
 		.isNotNull()
@@ -568,7 +573,7 @@ public class WebUITestElements implements Constants {
 						+ "\"type\":\"Messaging Board\","
 						+ "\"attributes\":{}," 
 						+ "\"creatorPlayground\":\"2019A.Kagan\","
-						+ "\"creatorEmail\":\"rubykozel@gmail.com\"" 
+						+ "\"creatoremail\":\"rubykozel@gmail.com\"" 
 						+ "}");
 	}
 
@@ -588,14 +593,14 @@ public class WebUITestElements implements Constants {
 
 		userservice.createUser(user.toEntity());
 
-		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", Constants.PLAYGROUND, EMAIL,
+		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", playground, email,
 				new HashMap<>());
 		newElement.setId("1"); // For testing purposes
 
-		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, Constants.EMAIL);
+		elementservice.createElement(newElement.toEntity(), playground, email);
 
 		this.restTemplate.getForObject(url + "/{userPlayground}/{email}/{playground}/{id}", ElementTO.class,
-				Constants.PLAYGROUND, EMAIL, Constants.PLAYGROUND, "2");
+				playground, email, playground, "2");
 	}
 	
 	/**
@@ -612,17 +617,17 @@ public class WebUITestElements implements Constants {
 	 */
 
 	@Test (expected = Exception.class)
-	public void testGettingAnElementUnsuccessfullyWithWrongCreatorEmail() throws Exception {
+	public void testGettingAnElementUnsuccessfullyWithWrongCreatoremail() throws Exception {
 		userservice.createUser(user.toEntity());
 
-		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", Constants.PLAYGROUND, EMAIL,
+		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", playground, email,
 				new HashMap<>());
 		newElement.setId("1"); // For testing purposes
 
-		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, Constants.EMAIL);
+		elementservice.createElement(newElement.toEntity(), playground, email);
 
 		this.restTemplate.getForObject(url + "/{userPlayground}/{email}/{playground}/{id}", ElementTO.class,
-				Constants.PLAYGROUND, "dudidavidov@gmail.com", Constants.PLAYGROUND, "1");
+				playground, "dudidavidov@gmail.com", playground, "1");
 	}
 	
 	/**
@@ -636,24 +641,24 @@ public class WebUITestElements implements Constants {
 	 * And the output is '[ { "playground": "2019A.Kagan", "id": "1", "location": {
 	 * "x": Any, "y": Any }, "name": "Messaging Board", "creationDate": Any valid
 	 * date, "expirationDate": null, "type": "Messaging Board", "attributes": {},
-	 * "creatorPlayground": "2019A.Kagan", "creatorEmail": "rubykozel@gmail.com" }
+	 * "creatorPlayground": "2019A.Kagan", "creatoremail": "rubykozel@gmail.com" }
 	 * ...]'
 	 * @throws Exception
 	 */
 
 	@Test
-	public void testGettingAllElementsSuccessfulyBySpecificCreatorEmailAndPlayground() throws Exception {
+	public void testGettingAllElementsSuccessfulyBySpecificCreatoremailAndPlayground() throws Exception {
 		userservice.createUser(user.toEntity());
 
-		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", Constants.PLAYGROUND, EMAIL,
+		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", playground, email,
 				new HashMap<>());
 		newElement.setId("1"); // For testing purposes
 
-		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, Constants.EMAIL);
+		elementservice.createElement(newElement.toEntity(), playground, email);
 		
 		ElementTO[] actualElements = this.restTemplate.getForObject(
 				url + "/{userPlayground}/{email}/all?size={size}&page={page}", ElementTO[].class,
-				Constants.PLAYGROUND, EMAIL, 5, 0);
+				playground, email, 5, 0);
 		
 		assertThat(actualElements).isNotNull().hasSize(1).usingElementComparator((e1, e2) -> {
 			if (e1.getType().compareTo(e2.getType()) != 0)
@@ -676,12 +681,12 @@ public class WebUITestElements implements Constants {
 	 */
 	
 	@Test
-	public void testGettingNoneElementsWithCreatorEmailThatHasNoElements() throws Exception {
+	public void testGettingNoneElementsWithCreatoremailThatHasNoElements() throws Exception {
 		userservice.createUser(user.toEntity());
 		
 		ElementTO[] elements = this.restTemplate.getForObject(
 				url + "/{userPlayground}/{email}/all?size={size}&page={page}", ElementTO[].class,
-				Constants.PLAYGROUND, "rubykozel@gmail.com", 5, 0);
+				playground, "rubykozel@gmail.com", 5, 0);
 		
 		assertThat(elements)
 		.isNotNull()
@@ -702,7 +707,7 @@ public class WebUITestElements implements Constants {
 	 * "y": Any y that its distance from (0,0) is less then 10 }, "name": Any name,
 	 * "creationDate": Any valid date, "expirationDate": null, "type": Any type,
 	 * "attributes": {}, "creatorPlayground": "2019A.Kagan",
-	 * "creatorEmail": "rubykozel@gmail.com" } ]'
+	 * "creatoremail": "rubykozel@gmail.com" } ]'
 	 * @throws Exception
 	 */
 	
@@ -710,15 +715,15 @@ public class WebUITestElements implements Constants {
 	public void testGettingAnElementSuccessfullyWithSpecificDistance() throws Exception {
 		userservice.createUser(user.toEntity());
 
-		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", Constants.PLAYGROUND, EMAIL,
+		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", playground, email,
 				new HashMap<>());
 		newElement.setId("1"); // For testing purposes
 
-		elementservice.createElement(newElement.toEntity(), Constants.PLAYGROUND, Constants.EMAIL);
+		elementservice.createElement(newElement.toEntity(), playground, email);
 		
 		ElementTO[] actualElements = this.restTemplate.getForObject(
 				url + "/{userPlayground}/{email}/near/{x}/{y}/{distance}?size={size}&page={page}", ElementTO[].class,
-				Constants.PLAYGROUND, EMAIL, 0, 0, 10, 5, 0);
+				playground, email, 0, 0, 10, 5, 0);
 		
 		assertThat(actualElements).isNotNull().hasSize(1).usingElementComparator((e1, e2) -> {
 			if (e1.getType().compareTo(e2.getType()) != 0)
@@ -745,6 +750,6 @@ public class WebUITestElements implements Constants {
 
 		this.restTemplate.getForObject(
 				url + "/{userPlayground}/{email}/near/{x}/{y}/{distance}?size={size}&page={page}", ElementTO[].class,
-				Constants.PLAYGROUND, EMAIL, 0, 0, 10, 5, 0);
+				playground, email, 0, 0, 10, 5, 0);
 	}
 }

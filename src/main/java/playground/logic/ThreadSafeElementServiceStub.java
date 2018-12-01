@@ -10,10 +10,8 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.stereotype.Service;
-
 //@Service
-public class ThreadSafeElementServiceStub implements Constants, ElementService {
+public class ThreadSafeElementServiceStub implements ElementService {
 
 	private Map<String, ElementEntity> elements;
 	
@@ -126,5 +124,4 @@ public class ThreadSafeElementServiceStub implements Constants, ElementService {
 	public void cleanup() {
 		this.elements.clear();
 	}
-
 }

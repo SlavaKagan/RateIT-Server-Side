@@ -1,18 +1,20 @@
 package playground.layout;
+import org.springframework.beans.factory.annotation.Value;
 
-import playground.logic.Constants;
-
-public class NewUserForm implements Constants {
+public class NewUserForm {
+	
+	@Value("${manager.email:Anonymous}")
 	private String email;
+	
 	private String username;
 	private String avatar;
+	
+	@Value("${guest:Anonymous}")
 	private String role;
 	
 	public NewUserForm() { // added random default values for testing
-		this.email = MANAGER_MAIL;
 		this.username = "anonymous";
 		this.avatar = "(-(-_(-_-)_-)-)";
-		this.role = GUEST;	
 	}
 	
 	public NewUserForm(String email, String username, String avatar, String role) {

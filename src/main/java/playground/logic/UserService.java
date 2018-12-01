@@ -1,6 +1,5 @@
 package playground.logic;
 
-
 public interface UserService {
 	
 	public void createUser(UserEntity userEntity) throws Exception;
@@ -14,5 +13,4 @@ public interface UserService {
 	public void editUser(String playground, String email, UserEntity newUser) throws Exception;
 	
 	public void cleanup();
-
 }

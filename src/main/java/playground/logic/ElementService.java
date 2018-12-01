@@ -2,7 +2,7 @@ package playground.logic;
 
 import java.util.List;
 
-public interface ElementService {
+public interface ElementService{
 
 	public ElementEntity createElement(ElementEntity elementEntity, String userPlayground, String email) throws Exception;
 
@@ -18,5 +18,4 @@ public interface ElementService {
 	public void updateElement(String id, ElementEntity newElement) throws ElementNotFoundException, Exception;
 
 	public void cleanup();
-
 }

@@ -23,7 +23,6 @@ public class WebUITestUsers {
 	
 	@Autowired
 	private UserService service;
-	
 	private RestTemplate restTemplate;
 	private String url;
 	private NewUserForm form;

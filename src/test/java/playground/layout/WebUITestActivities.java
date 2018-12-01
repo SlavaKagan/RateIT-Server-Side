@@ -127,7 +127,6 @@ public class WebUITestActivities {
 	 */
 	@Test(expected=Exception.class)
 	public void testPostANewActivityWithAnEmptyJSONUnsuccessfuly() throws Exception {
-		
 		// Given
 		ElementTO element = new ElementTO();
 		element.setId("1025028355");

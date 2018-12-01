@@ -3,15 +3,26 @@ package playground.logic;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-
 import javax.annotation.PostConstruct;
-
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ThreadSafeUserServiceStub implements Constants, UserService {
+public class ThreadSafeUserServiceStub implements UserService {
 
 	private Map<String, UserEntity> users;
+	
+	@Value("${temporary.code:Anonymous}")
+	private String temporary_code;
+	
+	@Value("${reviewer:Anonymous}")
+	private String reviewer;
+	
+	@Value("${guest:Anonymous}")
+	private String guest;
+	
+	@Value("${manager:Anonymous}")
+	private String manager;
 	
 	@PostConstruct
 	public void init() {
@@ -37,7 +48,7 @@ public class ThreadSafeUserServiceStub implements Constants, UserService {
 			throw new ConfirmationException("This is an unregistered account");
 		else if (!user.getUniqueKey().split("@@")[0].equals(playground))
 			throw new ConfirmationException("There's no such user in the specified playground");		
-		else if(user.getRole().equals(GUEST))
+		else if(user.getRole().equals(guest))
 			throw new ConfirmationException("This is an unconfirmed account");
 		else
 			return user;
@@ -47,11 +58,11 @@ public class ThreadSafeUserServiceStub implements Constants, UserService {
 		UserEntity confirmedUser = users.get(email);
 		if(!confirmedUser.getUniqueKey().split("@@")[0].equals(playground))
 			throw new ConfirmationException("There's no such user in the specified playground");
-		else if (code.equals(TEMPORARY_CODE) && confirmedUser.getRole().equals(GUEST))
-			confirmedUser.setRole(REVIEWER);		
-		else if (confirmedUser.getRole().equals(REVIEWER) || confirmedUser.getRole().equals(MANAGER))
+		else if (code.equals(temporary_code) && confirmedUser.getRole().equals(guest))
+			confirmedUser.setRole(reviewer);		
+		else if (confirmedUser.getRole().equals(reviewer) || confirmedUser.getRole().equals(manager))
 			throw new ConfirmationException("User is already confirmed");
-		else if (!code.equals(TEMPORARY_CODE))
+		else if (!code.equals(temporary_code))
 			throw new ConfirmationException("You have entered the wrong confirmation code");
 		return confirmedUser;
 	}

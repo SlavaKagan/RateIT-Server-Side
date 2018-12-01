@@ -73,8 +73,8 @@ public class UserWebUI {
 	
 	@ExceptionHandler({
 		ElementNotFoundException.class, 
-		ConfirmationException.class
-		})
+		ConfirmationException.class})
+	
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	public ErrorMessage handleException(NotFoundExceptions e) {
 		String msg = e.getMessage();

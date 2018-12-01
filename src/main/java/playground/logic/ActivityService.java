@@ -1,7 +1,5 @@
 package playground.logic;
 
-public interface ActivityService {
-	
+public interface ActivityService {	
 	public void cleanup();
-
 }

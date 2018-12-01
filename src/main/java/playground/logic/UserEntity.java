@@ -3,18 +3,23 @@ package playground.logic;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
-
-import playground.logic.Constants;
+import org.springframework.beans.factory.annotation.Value;
 
 @Entity
 @Table(name="USERS")
-public class UserEntity implements Constants {
+public class UserEntity {
 	private String uniqueKey;
 	private String userName;
 	private String avatar;
 	private String role;
 	private long points;
 	private String number;
+	
+	@Value("${manager:Anonymous}")
+	private String manager;
+	
+	@Value("${reviewer:Anonymous}")
+	private String reviewer;
 
 	public UserEntity() {
 
@@ -69,9 +74,9 @@ public class UserEntity implements Constants {
 	}
 
 	public void setStartingPoints() {
-		if (this.role == MANAGER) {
+		if (this.role == manager) {
 			this.points = 0;
-		} else if (this.role == REVIEWER) {
+		} else if (this.role == reviewer) {
 			this.points = 100;
 		}
 	}

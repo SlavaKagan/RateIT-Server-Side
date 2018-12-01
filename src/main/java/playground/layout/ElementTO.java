@@ -4,17 +4,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-
-import playground.logic.Constants;
+import org.springframework.beans.factory.annotation.Value;
 import playground.logic.ElementEntity;
 import playground.logic.Location;
 
-public class ElementTO implements Constants {
+public class ElementTO {
+	@Value("${playground:Anonymous}")
 	private String playground;
+	
+	@Value("${default.date:Anonymous}")
+	private Date creationDate;
+	
 	private String id;
 	private Location location;
 	private String name;
-	private Date creationDate;
+	
 	private Date expirationDate;
 	private String type;
 	private Map<String, Object> attributes;
@@ -23,9 +27,7 @@ public class ElementTO implements Constants {
 	private static AtomicLong generator = new AtomicLong();
 
 	public ElementTO() {
-		this.playground = PLAYGROUND;
 		this.location = new Location(Math.random() * 20, Math.random() * 20);
-		this.creationDate = DEFAULT_DATE;
 		this.expirationDate = null;
 		this.attributes = new HashMap<>();
 		this.id = "" + generator.getAndIncrement();

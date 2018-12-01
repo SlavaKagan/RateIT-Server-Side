@@ -23,5 +23,4 @@ public class ElementNotFoundException extends Exception implements NotFoundExcep
 	public ElementNotFoundException(Throwable cause) {
 		super(cause);
 	}
-
 }

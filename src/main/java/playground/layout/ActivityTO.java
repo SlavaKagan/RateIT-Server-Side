@@ -3,31 +3,32 @@ package playground.layout;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-
-import javax.persistence.Transient;
-
+import org.springframework.beans.factory.annotation.Value;
 import playground.logic.ActivityEntity;
-import playground.logic.Constants;
-import playground.logic.ElementEntity;
 
-public class ActivityTO implements Constants {
+public class ActivityTO {
+	
+	@Value("${playground:Anonymous}")
 	private String playground;
+	
+	@Value("${reviewer:Anonymous}")
+	private String playerPlayground;
+	
+	@Value("${player.email:Anonymous}")
+	private String playerEmail;
+
+	
 	private String id;
 	private String elementPlayground;
 	private String elementId;
 	private String type;
-	private String playerPlayground;
-	private String playerEmail;
 	private static AtomicLong generator = new AtomicLong();
 	private Map<String, Object> attributes;
 
 	public ActivityTO() {
-		this.playground = PLAYGROUND;
-		this.playerPlayground = REVIEWER;
-		this.playerEmail = PLAYER_MAIL;
 		this.attributes = new HashMap<>();
 		this.attributes.put("isActive", "True");
-		this.attributes.put("creatorsName", REVIEWER);
+		this.attributes.put("creatorsName", playerPlayground);
 		this.attributes.put("activityName", "Post a Review");
 		this.id = "" + generator.getAndIncrement();
 	}
