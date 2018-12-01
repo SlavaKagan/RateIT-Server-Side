@@ -7,13 +7,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import playground.logic.Constants;
 import playground.logic.UserEntity;
 import playground.logic.UserService;
 
@@ -27,6 +27,9 @@ public class WebUITestUsers {
 	private String url;
 	private NewUserForm form;
 	private UserTO user;
+	
+	@Value("${playground:Anonymous}")
+	private String playground;
 	
 	private ObjectMapper jacksonMapper;
 
@@ -160,7 +163,7 @@ public class WebUITestUsers {
 		
 		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class,
-				Constants.PLAYGROUND, "rubykozel@gmail.com", 1234);
+				playground, "rubykozel@gmail.com", 1234);
 		
 		
 		
@@ -192,7 +195,7 @@ public class WebUITestUsers {
 		service.createUser(user.toEntity());
 		
 		// When
-		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class, Constants.PLAYGROUND,
+		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class, playground,
 				"rubykozel@gmail.com", 1235);
 	}
 	
@@ -207,10 +210,10 @@ public class WebUITestUsers {
 	public void testConfirmingAnExistingUser() throws Exception {
 		// Given
 		service.createUser(user.toEntity());
-		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
+		service.confirmUser(playground, form.getEmail(), "1234");
 		
 		// When
-		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class, Constants.PLAYGROUND,
+		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class, playground,
 				"rubykozel@gmail.com", 1111); 
 	}
 	
@@ -234,12 +237,12 @@ public class WebUITestUsers {
 	public void testGettingARegisteredUserFromTheServerSuccessfully() throws Exception {
 		// Given
 		service.createUser(user.toEntity());
-		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
+		service.confirmUser(playground, form.getEmail(), "1234");
 				
 		// When
 		
 		UserTO actualUser = this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
-				Constants.PLAYGROUND, form.getEmail());
+				playground, form.getEmail());
 		
 		// Then
 
@@ -270,7 +273,7 @@ public class WebUITestUsers {
 		
 		// When 
 		this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
-				Constants.PLAYGROUND, form.getEmail());
+				playground, form.getEmail());
 	}
 	
 	/**
@@ -289,7 +292,7 @@ public class WebUITestUsers {
 		// When
 		@SuppressWarnings("unused")
 		UserTO user = this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
-				Constants.PLAYGROUND, form.getEmail());
+				playground, form.getEmail());
 		//Then the response is 500
 	}
 	
@@ -318,9 +321,9 @@ public class WebUITestUsers {
 	 */
 	public void testGettingAnElementSuccessfully() throws Exception {
 		service.createUser(user.toEntity());
-		service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234");
+		service.confirmUser(playground, form.getEmail(), "1234");
 		
-	this.restTemplate.getForObject(url + "{playground}/{email}/{userPlayground}/{id}", ElementTO.class, Constants.PLAYGROUND, "rubykozel@gmail.com", Constants.PLAYGROUND, "1025028332");
+	this.restTemplate.getForObject(url + "{playground}/{email}/{userPlayground}/{id}", ElementTO.class, playground, "rubykozel@gmail.com", playground, "1025028332");
 	}
 	
 	/**
@@ -346,10 +349,10 @@ public class WebUITestUsers {
 		
 						
 		// When
-		UserTO newUser = new UserTO(service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234"));
+		UserTO newUser = new UserTO(service.confirmUser(playground, form.getEmail(), "1234"));
 		
 		newUser.setUserName("rubson");
-		this.restTemplate.put(url + "{playground}/{email}", newUser, Constants.PLAYGROUND,"rubykozel@gmail.com");
+		this.restTemplate.put(url + "{playground}/{email}", newUser, playground,"rubykozel@gmail.com");
 		
 		//Then 
 		assertThat(jacksonMapper.writeValueAsString(newUser))
@@ -387,7 +390,7 @@ public class WebUITestUsers {
 		newUser.setUserName("omer");
 		
 		// When
-		this.restTemplate.put(url + "{playground}/{email}", newUser, Constants.PLAYGROUND,"rubykozel@gmail.com");
+		this.restTemplate.put(url + "{playground}/{email}", newUser, playground,"rubykozel@gmail.com");
 		
 		//Then
 	}
@@ -414,10 +417,10 @@ public class WebUITestUsers {
 		service.createUser(user.toEntity());
 		
 		// When
-		UserTO newUser= new UserTO(service.confirmUser(Constants.PLAYGROUND, form.getEmail(), "1234"));
+		UserTO newUser= new UserTO(service.confirmUser(playground, form.getEmail(), "1234"));
 		
 		newUser.setAvatar(null);
-		this.restTemplate.put(url + "{playground}/{email}", newUser, Constants.PLAYGROUND,"rubykozel@gmail.com");
+		this.restTemplate.put(url + "{playground}/{email}", newUser, playground,"rubykozel@gmail.com");
 		
 		// Then
 	}

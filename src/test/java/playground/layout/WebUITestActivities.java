@@ -8,13 +8,13 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import playground.logic.Constants;
 
 import playground.logic.ActivityService;
 
@@ -24,6 +24,9 @@ public class WebUITestActivities {
 	
 	@Autowired
 	private ActivityService service;
+	
+	@Value("${playground:Anonymous}")
+	private String playground;
 	
 	private RestTemplate restTemplate;
 	private String url;
@@ -81,7 +84,7 @@ public class WebUITestActivities {
 		
 		// When
 		ActivityTO activity = new ActivityTO(element, "x");
-		Object returnedObject = this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", activity, Object.class, Constants.PLAYGROUND, EMAIL);
+		Object returnedObject = this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", activity, Object.class, playground, EMAIL);
 		
 		assertThat(jacksonMapper.writeValueAsString(returnedObject))
 		.isNotNull()
@@ -114,7 +117,7 @@ public class WebUITestActivities {
 		
 		// When
 		ActivityTO activity = new ActivityTO(element, "x");
-		this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", activity, ActivityTO.class, Constants.PLAYGROUND, "null");
+		this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", activity, ActivityTO.class, playground, "null");
 		
 	}
 	
@@ -134,6 +137,6 @@ public class WebUITestActivities {
 		
 		// When
 		Object emptyJson = jacksonMapper.readValue("{}", Object.class);
-		this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", emptyJson, ActivityTO.class, Constants.PLAYGROUND, EMAIL);
+		this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", emptyJson, ActivityTO.class, playground, EMAIL);
 	}
 }
