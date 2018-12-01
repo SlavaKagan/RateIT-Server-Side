@@ -1,9 +1,6 @@
 package playground.logic.data;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import playground.dal.NumberGeneratorDao;
 import playground.dal.UserDao;
 import playground.logic.ConfirmationException;
@@ -12,7 +9,6 @@ import playground.logic.UserService;
 
 //@Service
 public class JpaUserService implements UserService {
-	
 	private UserDao users;
 	private NumberGeneratorDao numberGenerator;
 
