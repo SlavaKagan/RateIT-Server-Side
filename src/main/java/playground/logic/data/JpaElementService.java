@@ -40,6 +40,7 @@ public class JpaElementService implements ElementService {
 			elementEntity.setNumber("" + temp.getNextNumber());
 			elementEntity.setCreatorPlayground(userPlayground);
 			elementEntity.setCreatorEmail(email);
+			elementEntity.setUniqueKey(email + "@@" + userPlayground);
 			
 			this.numberGenerator.delete(temp);
 
@@ -52,7 +53,6 @@ public class JpaElementService implements ElementService {
 	@Transactional(readOnly = true)
 	public ElementEntity getElement(String id)
 			throws ElementNotFoundException {
-		System.err.println("id= " + id);
 		Optional<ElementEntity> op = this.elements.findById(id);
 		if (op.isPresent())
 			return op.get();

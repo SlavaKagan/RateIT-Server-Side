@@ -116,6 +116,12 @@ public class WebUITestElements  {
 						jacksonMapper.readValue(elementJson, ElementTO.class),
 						ElementTO.class, playground, email);
 		
+		
+		System.err.println(postedElement.getCreatorEmail());
+		System.err.println(postedElement.getCreatorPlayground());
+		System.err.println(playground);
+		System.err.println(email);
+		
 		//Then
 		String postedId = postedElement.getId() + "@@" + postedElement.getPlayground();
 		ElementEntity actualElementInDb = elementservice.getElement(postedId);
@@ -136,7 +142,7 @@ public class WebUITestElements  {
 						+ "\"y\": 0.0,"
 						+ "\"number\": " + actualElementInDb.getNumber() + ","
 						+ "\"creatorPlayground\":\"2019A.Kagan\","
-						+ "\"creatoremail\":\"rubykozel@gmail.com\""
+						+ "\"creatorEmail\":\"rubykozel@gmail.com\""
 						+ "}", ElementEntity.class)));
 	}
 	
