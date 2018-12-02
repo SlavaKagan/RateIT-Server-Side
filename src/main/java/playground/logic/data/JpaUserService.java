@@ -106,8 +106,8 @@ public class JpaUserService implements UserService {
 
 	@Override
 	@Transactional
-	public void editUser(String playground, String uniqueKey, UserEntity newUser) throws Exception {
-		UserEntity existing = this.getUser(uniqueKey);
+	public void editUser(String playground, String email, UserEntity newUser) throws Exception {
+		UserEntity existing = this.getUser(playground + delim + email);
 
 		if (newUser.getAvatar() != null && !newUser.getAvatar().equals(existing.getAvatar())) {
 			existing.setAvatar(newUser.getAvatar());

@@ -6,11 +6,11 @@ public interface UserService {
 	
 	public UserEntity getUser(String uniqueKey);
 	
-	public UserEntity getRegisteredUser(String playground, String uniqueKey) throws ConfirmationException;
+	public UserEntity getRegisteredUser(String playground, String email) throws ConfirmationException;
 	
-	public UserEntity confirmUser(String playground, String uniqueKey, String code) throws Exception;
+	public UserEntity confirmUser(String playground, String email, String code) throws Exception;
 	
-	public void editUser(String playground, String uniqueKey, UserEntity newUser) throws Exception;
+	public void editUser(String playground, String email, UserEntity newUser) throws Exception;
 	
 	public void cleanup();
 }
