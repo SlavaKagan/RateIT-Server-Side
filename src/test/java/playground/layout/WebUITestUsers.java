@@ -31,6 +31,9 @@ public class WebUITestUsers {
 	@Value("${playground:Anonymous}")
 	private String playground;
 	
+	@Value("${email:Anonymous}")
+	private String email;
+	
 	private ObjectMapper jacksonMapper;
 
 	@LocalServerPort
@@ -96,19 +99,19 @@ public class WebUITestUsers {
 		// When
 		this.restTemplate.postForObject(url, form, UserTO.class);
 		
-		UserEntity actualUserInDb = this.service.getUser(form.getEmail());
+		UserEntity actualUserInDb = this.service.getUser(playground + "@@" + email);
 		
 		// Then
 		assertThat(jacksonMapper.writeValueAsString(actualUserInDb))
 		.isNotNull()
 		.isEqualTo(
 				"{"
-				+ "\"email\":\"rubykozel@gmail.com\","
-				+ "\"playground\":\"2019A.Kagan\","
+				+ "\"uniqueKey\":\"" + playground + "@@" + email + "\","
 				+ "\"userName\":\"ruby\","
 				+ "\"avatar\":\":-)\","
 				+ "\"role\":\"Guest\","
-				+ "\"points\":0"
+				+ "\"points\":0,"
+				+ "\"number\":\"" + actualUserInDb.getNumber() + "\""
 				+ "}");
 	}
 	
@@ -163,23 +166,24 @@ public class WebUITestUsers {
 		
 		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class,
-				playground, "rubykozel@gmail.com", 1234);
+				playground, email, 1234);
 		
 		
 		
 		// Then
-		UserEntity actualUserInDb = this.service.getUser(form.getEmail());
+		String id = playground + "@@" + email;
+		UserEntity actualUserInDb = this.service.getUser(id);
 		
 		assertThat(jacksonMapper.writeValueAsString(actualUserInDb))
 		.isNotNull()
 		.isEqualTo(
 				"{"
-				+ "\"email\":\"rubykozel@gmail.com\","
-				+ "\"playground\":\"2019A.Kagan\","
+				+ "\"uniqueKey\":\"" + playground + "@@" + email + "\","
 				+ "\"userName\":\"ruby\","
 				+ "\"avatar\":\":-)\","
 				+ "\"role\":\"Reviewer\","
-				+ "\"points\":0"
+				+ "\"points\":0,"
+				+ "\"number\":\"" + actualUserInDb.getNumber() + "\""
 				+ "}");
 	}
 	
@@ -209,8 +213,9 @@ public class WebUITestUsers {
 	@Test(expected = Exception.class)
 	public void testConfirmingAnExistingUser() throws Exception {
 		// Given
-		service.createUser(user.toEntity());
-		service.confirmUser(playground, form.getEmail(), "1234");
+		UserEntity userToPost = user.toEntity();
+		service.createUser(userToPost);
+		service.confirmUser(playground, userToPost.getUniqueKey(), "1234");
 		
 		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class, playground,
@@ -237,12 +242,12 @@ public class WebUITestUsers {
 	public void testGettingARegisteredUserFromTheServerSuccessfully() throws Exception {
 		// Given
 		service.createUser(user.toEntity());
-		service.confirmUser(playground, form.getEmail(), "1234");
+		service.confirmUser(playground, email, "1234");
 				
 		// When
 		
 		UserTO actualUser = this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
-				playground, form.getEmail());
+				playground, email);
 		
 		// Then
 

@@ -30,7 +30,7 @@ public class UserWebUI {
 			path = "/playground/users", 
 			produces = MediaType.APPLICATION_JSON_VALUE, 
 			consumes = MediaType.APPLICATION_JSON_VALUE)
-	public UserTO createUser(@RequestBody NewUserForm userForm) throws IllegalArgumentException, IllegalAccessException, Exception {
+	public UserTO createUser(@RequestBody NewUserForm userForm) throws Exception {
 		UserTO user = new UserTO(userForm);
 		userservice.createUser(user.toEntity());
 		return user;

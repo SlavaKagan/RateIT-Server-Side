@@ -6,15 +6,17 @@ public class NewUserForm {
 	@Value("${manager.email:Anonymous}")
 	private String email;
 	
+	@Value("${default.user.name:Anonymous}")
 	private String username;
+	
+	@Value("${default.avatar:Anonymous}")
 	private String avatar;
 	
 	@Value("${guest:Anonymous}")
 	private String role;
 	
-	public NewUserForm() { // added random default values for testing
-		this.username = "anonymous";
-		this.avatar = "(-(-_(-_-)_-)-)";
+	public NewUserForm() { 
+
 	}
 	
 	public NewUserForm(String email, String username, String avatar, String role) {

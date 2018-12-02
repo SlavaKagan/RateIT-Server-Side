@@ -31,23 +31,6 @@ public class ElementEntity {
 	private String creatorEmail;
 	private String number;
 
-	@Id
-	public String getUniqueKey() {
-		return uniqueKey;
-	}
-
-	public void setUniqueKey(String uniqueKey) {
-		this.uniqueKey = uniqueKey;
-	}
-
-	public String getNumber() {
-		return number;
-	}
-
-	public void setNumber(String number) {
-		this.number = number;
-	}
-
 	public ElementEntity() {
 		this.x = Math.random() * 20;
 		this.y = Math.random() * 20;
@@ -63,6 +46,23 @@ public class ElementEntity {
 		this.creatorPlayground = creatorPlayground;
 		this.creatorEmail = creatorEmail;
 		this.attributes = attributes;
+	}
+	
+	@Id
+	public String getUniqueKey() {
+		return uniqueKey;
+	}
+
+	public void setUniqueKey(String uniqueKey) {
+		this.uniqueKey = uniqueKey;
+	}
+
+	public String getNumber() {
+		return number;
+	}
+
+	public void setNumber(String number) {
+		this.number = number;
 	}
 
 	public Double getX() {

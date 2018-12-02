@@ -7,7 +7,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-@Service
+//@Service
 public class ThreadSafeUserServiceStub implements UserService {
 
 	private Map<String, UserEntity> users;

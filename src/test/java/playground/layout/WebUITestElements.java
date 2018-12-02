@@ -100,7 +100,7 @@ public class WebUITestElements  {
 	 		"name": "Messaging Board",
 	 		"type": "Messaging Board",
 	 		"creatorPlayground": "2019A.Kagan",
-	 		"creatoremail": "rubykozel@gmail.com"
+	 		"creatorEmail": "rubykozel@gmail.com"
 		}
 	 * @throws Exception
 	 */
@@ -115,12 +115,6 @@ public class WebUITestElements  {
 				.postForObject(url + "/{userPlayground}/{email}", 
 						jacksonMapper.readValue(elementJson, ElementTO.class),
 						ElementTO.class, playground, email);
-		
-		
-		System.err.println(postedElement.getCreatorEmail());
-		System.err.println(postedElement.getCreatorPlayground());
-		System.err.println(playground);
-		System.err.println(email);
 		
 		//Then
 		String postedId = postedElement.getId() + "@@" + postedElement.getPlayground();

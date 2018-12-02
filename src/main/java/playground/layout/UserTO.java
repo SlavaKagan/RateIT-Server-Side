@@ -56,7 +56,7 @@ public class UserTO {
 	public String getPlayground() {
 		return playground;
 	}
-
+	
 	public void setPlayground(String playground) {
 		this.playground = playground;
 	}
@@ -109,7 +109,7 @@ public class UserTO {
 		UserEntity rv = new UserEntity();
 		rv.setUserName(this.userName);
 		rv.setAvatar(this.avatar);
-		rv.setUniqueKey(playground + "@@" + email);
+		rv.setUniqueKey(this.playground + "@@" + this.email);
 		rv.setPoints(this.points);
 		rv.setRole(this.role);
 		return rv;
