@@ -33,8 +33,8 @@ public class ThreadSafeUserServiceStub implements UserService {
 		return users;
 	}
 
-	public void createUser(UserEntity user) throws Exception {
-		this.users.put(user.getUniqueKey().split("@@")[1], user);
+	public UserEntity createUser(UserEntity user) throws Exception {
+		return this.users.put(user.getUniqueKey().split("@@")[1], user);
 	}
 	
 	@Override
