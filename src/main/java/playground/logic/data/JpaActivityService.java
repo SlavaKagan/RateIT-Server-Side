@@ -2,6 +2,7 @@ package playground.logic.data;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import playground.dal.ActivityDao;
 import playground.dal.NumberGeneratorDao;
@@ -20,9 +21,8 @@ public class JpaActivityService implements ActivityService {
 	}
 	
 	@Override
+	@Transactional
 	public void cleanup() {
-		// TODO Auto-generated method stub
-		
+		this.activities.deleteAll();
 	}
-
 }
