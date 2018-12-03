@@ -1,7 +1,7 @@
 package playground.dal;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
 
-public interface NumberGeneratorDao extends CrudRepository<NumberGenerator, Long> {
+public interface NumberGeneratorDao extends PagingAndSortingRepository<NumberGenerator, Long> {
 
 }

@@ -6,6 +6,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,21 +61,13 @@ public class JpaElementService implements ElementService {
 		throw new ElementNotFoundException("Element not found");
 	}
 
-	private List<ElementEntity> getAllValuesFromDao() {
-		List<ElementEntity> allList = new ArrayList<>();
-		this.elements.findAll().forEach(allList::add);
-
-		return allList;
-	}
-
 	@Override
 	@Transactional(readOnly = true)
 	public List<ElementEntity> getAllElements(int size, int page) {
-		return getAllValuesFromDao()
-				.stream()
-				.skip(page * size)
-				.limit(size)
-				.collect(Collectors.toList());
+		return this
+				.elements
+				.findAll(PageRequest.of(page, size, Direction.DESC, "creationDate"))
+				.getContent();
 	}
 
 	@Override
@@ -89,7 +83,8 @@ public class JpaElementService implements ElementService {
 				.limit(size)
 				.collect(Collectors.toList());
 	}
-
+	
+	// get by name and type
 	@Override
 	@Transactional(readOnly = true)
 	public List<ElementEntity> getAllElementsByAttributeAndItsValue(int size,
