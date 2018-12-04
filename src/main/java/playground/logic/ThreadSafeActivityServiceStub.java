@@ -27,22 +27,4 @@ public class ThreadSafeActivityServiceStub implements ActivityService {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-	@Override
-	public ActivityEntity getElement(String id) throws NotFoundException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<ActivityEntity> getAllActivities(int size, int page) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void updateActivity(String id, ActivityEntity newActivity) throws Exception {
-		// TODO Auto-generated method stub
-		
-	}
 }

@@ -120,7 +120,7 @@ public class ElementWebUI {
 			@PathVariable("userPlayground") String userPlayground, 
 			@PathVariable("email") String email,
 			@PathVariable("attributeName") String attributeName, 
-			@PathVariable("value") Object value,
+			@PathVariable("value") String value,
 			@RequestParam(name="size", required=false, defaultValue="10") int size, 
 			@RequestParam(name="page", required=false, defaultValue="0") int page) throws Exception {
 		validateParamsNotNull(userPlayground,email, attributeName);

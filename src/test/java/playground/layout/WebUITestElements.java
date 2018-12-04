@@ -376,6 +376,8 @@ public class WebUITestElements  {
 		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/null/False"
 		Then the response is 500
 	 */
+	
+	// FIX THIS - NEED TO SEARCH BY TYPE AND NAME ONLY
 	@Test (expected = Exception.class)
 	public void testGetElementsByNullAttributesValue() throws Exception {
 		
@@ -412,6 +414,8 @@ public class WebUITestElements  {
 		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/movieName/Venom 1018"
 		Then the response is 404 with message "No element was found with key: movieName and value: Venom 1018"
 	 */
+	
+	// FIX THIS - NEED TO SEARCH BY TYPE AND NAME ONLY
 	@Test (expected = Exception.class)
 	public void testGetElementsByAttributesValueThatDoesNotExist() throws Exception {
 		
@@ -725,11 +729,15 @@ public class WebUITestElements  {
 				url + "/{userPlayground}/{email}/near/{x}/{y}/{distance}?size={size}&page={page}", ElementTO[].class,
 				playground, email, 0, 0, 10, 5, 0);
 		
-		assertThat(actualElements).isNotNull().hasSize(1).usingElementComparator((e1, e2) -> {
+		assertThat(actualElements)
+		.isNotNull()
+		.hasSize(1)
+		.usingElementComparator((e1, e2) -> {
 			if (e1.getType().compareTo(e2.getType()) != 0)
 				return -1;
 			return e1.getName().compareTo(e2.getName());
-		}).contains(newElement);
+		})
+		.contains(newElement);
 	}
 	
 	/**

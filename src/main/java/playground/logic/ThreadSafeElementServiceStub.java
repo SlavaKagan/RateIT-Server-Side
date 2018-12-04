@@ -85,7 +85,7 @@ public class ThreadSafeElementServiceStub implements ElementService {
 				.collect(Collectors.toList());
 	}
 
-	public List<ElementEntity> getAllElementsByAttributeAndItsValue(int size, int page, String attributeName, Object value) {
+	public List<ElementEntity> getAllElementsByAttributeAndItsValue(int size, int page, String attributeName, String value) {
 		
 		Collection<ElementEntity> copy;
 		

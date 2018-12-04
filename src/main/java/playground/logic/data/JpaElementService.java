@@ -1,10 +1,7 @@
 package playground.logic.data;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
@@ -17,7 +14,6 @@ import playground.dal.NumberGeneratorDao;
 import playground.logic.ElementEntity;
 import playground.logic.ElementNotFoundException;
 import playground.logic.ElementService;
-import playground.logic.Location;
 
 @Service
 public class JpaElementService implements ElementService {
@@ -74,36 +70,49 @@ public class JpaElementService implements ElementService {
 	@Transactional(readOnly = true)
 	public List<ElementEntity> getAllElementsByDistance(int size, int page,
 			double x, double y, double distance) {
-		return getAllValuesFromDao()
-				.stream()
-				.filter(element -> 
-				Location.getDistance(
-						new Location(x, y), new Location(element.getX(),element.getY())) <= distance)
-				.skip(page * size)
-				.limit(size)
-				.collect(Collectors.toList());
+		return this
+				.elements
+				.findAllByXBetweenAndYBetween(
+						x-distance, 
+						x+distance, 
+						y-distance, 
+						y+distance, 
+						PageRequest.of(page, size, Direction.DESC, "creationDate"));
 	}
 	
-	// get by name and type
 	@Override
 	@Transactional(readOnly = true)
 	public List<ElementEntity> getAllElementsByAttributeAndItsValue(int size,
-			int page, String attributeName, Object value) {
-		return getAllValuesFromDao()
-				.stream()
-				.filter(element -> element.getAttributes().get(attributeName).equals(value))
-				.skip(page * size)
-				.limit(size)
-				.collect(Collectors.toList());
+			int page, String attributeName, String value) throws Exception {
+		if(attributeName.toLowerCase().equals("name"))
+			return this
+				.elements
+				.findAllByNameEquals(
+						value, 
+						PageRequest.of(page, size, Direction.DESC, "creationDate"));
+		else if(attributeName.toLowerCase().equals("type"))
+			return this
+					.elements
+					.findAllByTypeEquals(
+							value, 
+							PageRequest.of(page, size, Direction.DESC, "creationDate"));
+		else
+			throw new Exception("No such attribute name");
+			
 	}
 
 	@Override
 	@Transactional
 	public void updateElement(String id,ElementEntity newElement) throws ElementNotFoundException, Exception {
 		checkForNulls(newElement);
-		ElementEntity existing = this.getElement(id);
-		this.elements.delete(existing);
-		this.createElement(newElement, existing.getCreatorEmail(), existing.getCreatorEmail());
+		if(this.elements.existsById(id)) {
+			ElementEntity existing = this.getElement(id);
+			this.elements.delete(existing);
+			this.createElement(newElement, existing.getCreatorEmail(), existing.getCreatorEmail());
+		} else {
+			throw new ElementNotFoundException("There's no such element");
+		}
+		
 	}
 
 	@Override

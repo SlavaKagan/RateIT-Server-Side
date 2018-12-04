@@ -13,7 +13,7 @@ public interface ElementService{
 	public List<ElementEntity> getAllElementsByDistance(int size, int page, double x, double y, double distance);
 
 	public List<ElementEntity> getAllElementsByAttributeAndItsValue(int size, int page, String attributeName,
-			Object value);
+			String value) throws Exception;
 
 	public void updateElement(String id, ElementEntity newElement) throws ElementNotFoundException, Exception;
 
