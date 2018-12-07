@@ -56,7 +56,7 @@ public class ElementWebUI {
 			@PathVariable("playground") String playground,
 			@PathVariable("id") String id) throws Exception {
 		validateParamsNotNull(userPlayground,email,playground,id);
-		return new ElementTO(elementservice.getElement(id));
+		return new ElementTO(elementservice.getElement(id, playground));
 	}
 	
 	@RequestMapping(
@@ -87,8 +87,8 @@ public class ElementWebUI {
 			@PathVariable("playground") String playground,
 			@PathVariable("id") String id, 
 			@RequestBody ElementTO newElement) throws Exception {
-		validateParamsNotNull(playground,email,id);
-		elementservice.updateElement(id, newElement.toEntity());
+		validateParamsNotNull(userPlayground, playground, email, id);
+		elementservice.updateElement(id, playground, newElement.toEntity());
 	}
 
 	@RequestMapping(

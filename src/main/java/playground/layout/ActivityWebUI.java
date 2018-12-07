@@ -1,6 +1,7 @@
 package playground.layout;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +22,9 @@ public class ActivityWebUI {
 	
 	private ActivityService service;
 	
+	@Value("${playground:default}")
+	private String playground;
+	
 	@Autowired
 	public void setService(ActivityService service) {
 		this.service = service;
@@ -36,13 +40,21 @@ public class ActivityWebUI {
 			@PathVariable("email") String email,
 			@RequestBody ActivityTO theActivity) throws Exception {
 		validateParamsNotNull(userPlayground,email);
-		theActivity.setPlayerPlayground(userPlayground);
-		theActivity.setPlayerEmail(email);
+		//this.service.createActivity(theActivity.toEntity());
+		/**
+		 * This method returns a dummy activity for now
+		 */
 		switch(theActivity.getType()) {
-		case "x":
-			return new UserTO(new NewUserForm("rubykozel@gmail.com","ruby",":-)","Guest"));
-		default:
-			return new UserTO();
+		case "x":{
+			UserTO ret = new UserTO(new NewUserForm("rubykozel@gmail.com","ruby",":-)","Guest"));
+			ret.setPlayground(playground);
+			return ret;
+		}
+		default:{
+			UserTO ret = new UserTO();
+			ret.setPlayground(playground);
+			return ret;
+		}
 		}
 	}
 	

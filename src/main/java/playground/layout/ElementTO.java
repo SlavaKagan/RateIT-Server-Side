@@ -60,11 +60,6 @@ public class ElementTO {
 		this.creatorEmail = creatorEmail;
 		this.attributes = attributes;
 	}
-	
-	@PostConstruct
-	public void init() {
-		System.err.println("invoked");
-	}
 
 	public String getPlayground() {
 		return playground;

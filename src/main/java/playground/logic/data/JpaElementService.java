@@ -24,6 +24,9 @@ public class JpaElementService implements ElementService {
 	
 	@Value("${playground:Default}")
 	private String playground;
+	
+	@Value("${delim:@@}")
+	private String delim;
 
 	@Autowired
 	public void setElementDao(ElementDao elements, NumberGeneratorDao numberGenerator) {
@@ -44,7 +47,7 @@ public class JpaElementService implements ElementService {
 			elementEntity.setCreatorEmail(email);
 			
 			this.numberGenerator.delete(temp);
-
+			
 			return this.elements.save(elementEntity);
 		}
 		throw new Exception("Element already exists!");
@@ -52,9 +55,9 @@ public class JpaElementService implements ElementService {
 
 	@Override
 	@Transactional(readOnly = true)
-	public ElementEntity getElement(String id)
+	public ElementEntity getElement(String id, String playground)
 			throws ElementNotFoundException {
-		Optional<ElementEntity> op = this.elements.findById(id);
+		Optional<ElementEntity> op = this.elements.findById(id + delim + playground);
 		if (op.isPresent())
 			return op.get();
 		throw new ElementNotFoundException("Element not found");
@@ -106,12 +109,12 @@ public class JpaElementService implements ElementService {
 
 	@Override
 	@Transactional
-	public void updateElement(String id,ElementEntity newElement) throws ElementNotFoundException, Exception {
+	public void updateElement(String id, String playground, ElementEntity newElement) throws ElementNotFoundException, Exception {
 		checkForNulls(newElement);
-		if(this.elements.existsById(id)) {
-			ElementEntity existing = this.getElement(id);
+		if(this.elements.existsById(id + delim + playground)) {
+			ElementEntity existing = getElement(id, playground);
 			this.elements.delete(existing);
-			this.createElement(newElement, existing.getCreatorEmail(), existing.getCreatorEmail());
+			this.createElement(newElement, existing.getCreatorPlayground(), existing.getCreatorEmail());
 		} else {
 			throw new ElementNotFoundException("There's no such element");
 		}

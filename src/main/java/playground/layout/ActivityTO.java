@@ -38,7 +38,6 @@ public class ActivityTO {
 	}
 
 	public void setPlayground(String playground) {
-		validateNull(playground);
 		this.playground = playground;
 	}
 
@@ -56,7 +55,6 @@ public class ActivityTO {
 	}
 
 	public void setElementPlayground(String elementPlayground) {
-		validateNull(elementPlayground);
 		this.elementPlayground = elementPlayground;
 	}
 
@@ -83,7 +81,6 @@ public class ActivityTO {
 	}
 
 	public void setPlayerPlayground(String playerPlayground) {
-		validateNull(playerPlayground);
 		this.playerPlayground = playerPlayground;
 	}
 
@@ -92,7 +89,6 @@ public class ActivityTO {
 	}
 
 	public void setPlayerEmail(String playerEmail) {
-		validateNull(playerEmail);
 		this.playerEmail = playerEmail;
 	}
 	

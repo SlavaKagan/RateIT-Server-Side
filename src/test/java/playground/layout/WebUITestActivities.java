@@ -29,9 +29,11 @@ public class WebUITestActivities {
 	@Value("${playground:Anonymous}")
 	private String playground;
 	
+	@Value("${email:email}")
+	private String email;
+	
 	private RestTemplate restTemplate;
 	private String url;
-	public static final String EMAIL = "rubykozel@gmail.com";
 	private ObjectMapper jacksonMapper;
 	
 	@LocalServerPort
@@ -82,16 +84,14 @@ public class WebUITestActivities {
 		// Given
 		ElementTO element = new ElementTO();
 		element.setId("1025028355");
-		element.setPlayground("2019A.Kagan");
+		element.setPlayground(playground);
 		
 		// When
 		ActivityTO activity = new ActivityTO(element, "x");
-		this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", activity, ActivityTO.class, playground, EMAIL);
-		
-		ActivityEntity actualActivityInDb = this.service.getActivity(activity.getId());
+		UserTO activityTO = this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", activity, UserTO.class, playground, email);
 
 		
-		assertThat(jacksonMapper.writeValueAsString(actualActivityInDb))
+		assertThat(jacksonMapper.writeValueAsString(activityTO))
 		.isNotNull()
 		.isEqualTo(
 				"{"
@@ -144,6 +144,6 @@ public class WebUITestActivities {
 		
 		// When
 		Object emptyJson = jacksonMapper.readValue("{}", Object.class);
-		this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", emptyJson, ActivityTO.class, playground, EMAIL);
+		this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", emptyJson, ActivityTO.class, playground, email);
 	}
 }

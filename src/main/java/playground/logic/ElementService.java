@@ -6,7 +6,7 @@ public interface ElementService{
 
 	public ElementEntity createElement(ElementEntity elementEntity, String userPlayground, String email) throws Exception;
 
-	public ElementEntity getElement(String id) throws ElementNotFoundException;
+	public ElementEntity getElement(String id, String playground) throws ElementNotFoundException;
 
 	public List<ElementEntity> getAllElements(int size, int page);
 
@@ -15,7 +15,7 @@ public interface ElementService{
 	public List<ElementEntity> getAllElementsByAttributeAndItsValue(int size, int page, String attributeName,
 			String value) throws Exception;
 
-	public void updateElement(String id, ElementEntity newElement) throws ElementNotFoundException, Exception;
+	public void updateElement(String id, String playground, ElementEntity newElement) throws ElementNotFoundException, Exception;
 
 	public void cleanup();
 }

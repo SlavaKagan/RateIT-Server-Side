@@ -46,6 +46,9 @@ public class WebUITestUsers {
 	@Value("${email:Anonymous}")
 	private String email;
 	
+	@Value("${test.user.unique.key:default}")
+	private String testUniqueKey;
+	
 	private ObjectMapper jacksonMapper;
 
 	@LocalServerPort
@@ -55,7 +58,7 @@ public class WebUITestUsers {
 	public void init() {
 		this.restTemplate = new RestTemplate();
 		this.url = "http://localhost:" + port + "/playground/users/";
-		form = new NewUserForm("rubykozel@gmail.com", "ruby", ":-)", "Guest");
+		form = new NewUserForm(email, "ruby", ":-)", "Guest");
 		user = new UserTO(form);
 		jacksonMapper = new ObjectMapper();
 	}
@@ -86,7 +89,7 @@ public class WebUITestUsers {
 	 * 	Given the server is up 
 		When I POST "/playground/users" with 
 		{
-			"email":"rubykozel@gmail.com",
+			"email":email,
 			"username":"ruby", 
 			"avatar":":-)", 
 			"role":"Guest"
@@ -94,7 +97,7 @@ public class WebUITestUsers {
 	 	Then the response is 200 OK
 	 	And the database contains the user:
 	 	{
-			"email": "rubykozel@gmail.com",
+			"email": email,
 			"playground": "2019A.Kagan",
 			"userName": "ruby",
 			"avatar": ":-)", 
@@ -113,14 +116,14 @@ public class WebUITestUsers {
 		// When
 		this.restTemplate.postForObject(url, form, UserTO.class);
 		
-		UserEntity actualUserInDb = this.service.getUser(playground + "@@" + email);
+		UserEntity actualUserInDb = this.service.getUser(testUniqueKey);
 		
 		// Then
 		assertThat(jacksonMapper.writeValueAsString(actualUserInDb))
 		.isNotNull()
 		.isEqualTo(
 				"{"
-				+ "\"uniqueKey\":\"" + playground + "@@" + email + "\","
+				+ "\"uniqueKey\":\"" + testUniqueKey + "\","
 				+ "\"userName\":\"ruby\","
 				+ "\"avatar\":\":-)\","
 				+ "\"role\":\"Guest\","
@@ -162,12 +165,12 @@ public class WebUITestUsers {
 	
 	/**
 	 * 	Given the server is up 
-		And theres a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", code: "1234"
+		And theres a user with playground: "2019A.Kagan", email: email, code: "1234"
 		When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/1234"
 		Then the response is 200 
 		And the database contains the user 
 		{
-			"email": "rubykozel@gmail.com",
+			"email": email,
 			"playground": "2019A.Kagan", 
 			"userName": "ruby", 
 			"avatar": ":-)", 
@@ -188,19 +191,19 @@ public class WebUITestUsers {
 		
 		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class,
-				playground, email, service.getUser(playground + delim + email).getCode());
+				playground, email, service.getUser(testUniqueKey).getCode());
 		
 		
 		
 		// Then
-		String id = playground + "@@" + email;
+		String id = testUniqueKey;
 		UserEntity actualUserInDb = this.service.getUser(id);
 		
 		assertThat(jacksonMapper.writeValueAsString(actualUserInDb))
 		.isNotNull()
 		.isEqualTo(
 				"{"
-				+ "\"uniqueKey\":\"" + playground + "@@" + email + "\","
+				+ "\"uniqueKey\":\"" + testUniqueKey + "\","
 				+ "\"userName\":\"ruby\","
 				+ "\"avatar\":\":-)\","
 				+ "\"role\":\"Reviewer\","
@@ -212,7 +215,7 @@ public class WebUITestUsers {
 	
 	/**
 	 * 	Given the server is up 
-		And theres an unconfirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", code: "1234"
+		And theres an unconfirmed user with playground: "2019A.Kagan", email: email, code: "1234"
 		When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/1235"
 	 * @throws Exception
 	 */
@@ -226,12 +229,12 @@ public class WebUITestUsers {
 		
 		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class, playground,
-				"rubykozel@gmail.com", "1235");
+				email, "1235");
 	}
 	
 	/**
 	 * 	Given the server is up 
-		And there's a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com", role: "Reviewer"
+		And there's a user with playground: "2019A.Kagan", email: email, role: "Reviewer"
 	 	When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/Any_Code"
 	 	Then the response is 500
 	 * @throws Exception
@@ -241,23 +244,22 @@ public class WebUITestUsers {
 	public void testConfirmingAnExistingUser() throws Exception {
 		// Given
 		UserEntity userToPost = user.toEntity();
-		userToPost.setCode("1234");
 		service.createUser(userToPost);
-		service.confirmUser(playground, userToPost.getUniqueKey(), "1234");
+		service.confirmUser(playground, userToPost.getUniqueKey(), service.getUser(testUniqueKey).getCode());
 		
 		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class, playground,
-				"rubykozel@gmail.com", service.getUser(playground + delim + email).getCode()); 
+				email, service.getUser(testUniqueKey).getCode()); 
 	}
 	
 	/**
 	 * 	Given the server is up 
-		And theres a registered user with playground: "2019A.Kagan", email: "rubykozel@gmail.com"
+		And theres a registered user with playground: "2019A.Kagan", email: email
 	 	When I GET "/playground/users/login/2019A.Kagan/rubykozel@gmail.com"
 	 	Then the response is 200 
 		And the output is 
 		{
-			"email": "rubykozel@gmail.com",
+			"email": email,
 			"playground": "2019A.Kagan",
 			"userName": "ruby",
 			"avatar": ":-)",
@@ -271,8 +273,7 @@ public class WebUITestUsers {
 	public void testGettingARegisteredUserFromTheServerSuccessfully() throws Exception {
 		// Given
 		service.createUser(user.toEntity());
-		String code = service.getUser(playground + delim + email).getCode();
-		service.confirmUser(playground, email, code);
+		service.confirmUser(playground, email, service.getUser(testUniqueKey).getCode());
 				
 		// When
 		
@@ -296,7 +297,7 @@ public class WebUITestUsers {
 	
 	/**
 	 * 	Given the server is up 
-		And there's an unconfirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com" 
+		And there's an unconfirmed user with playground: "2019A.Kagan", email: email 
 	 	When I GET "/playground/users/login/2019A.Kagan/rubykozel@gmail.com" 
 	 	Then the response is 500
 	 * @throws Exception
@@ -335,10 +336,10 @@ public class WebUITestUsers {
 	
 	/**
 	 * 	Given the server is up 
-		And there is a confirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com",
+		And there is a confirmed user with playground: "2019A.Kagan", email: email,
 		When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with
 		 	{
-		 		"email":"rubykozel@gmail.com",
+		 		"email":email,
 		 		"playground": "2019A.Kagan",
 		 		"userName": "rubson",
 		 		"avatar": ":-)",
@@ -358,10 +359,10 @@ public class WebUITestUsers {
 		service.createUser(userTemp);
 						
 		// When
-		UserTO newUser = new UserTO(service.confirmUser(playground, form.getEmail(), service.getUser(playground + delim + email).getCode()));
+		UserTO newUser = new UserTO(service.confirmUser(playground, form.getEmail(), service.getUser(testUniqueKey).getCode()));
 		
 		newUser.setUserName("rubson");
-		this.restTemplate.put(url + "{playground}/{email}", newUser, playground,"rubykozel@gmail.com");
+		this.restTemplate.put(url + "{playground}/{email}", newUser, playground,email);
 		
 		//Then 
 		assertThat(jacksonMapper.writeValueAsString(newUser))
@@ -379,7 +380,7 @@ public class WebUITestUsers {
 	
 	/**
 	 * 	Given the server is up
-	 	And there is an unregistered user with playground: "2019A.Kagan", email: "rubykozel@gmail.com",
+	 	And there is an unregistered user with playground: "2019A.Kagan", email: email,
 	 	When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with 
 		 	{
 		 		"email":"ruby@gmail.com",
@@ -400,14 +401,14 @@ public class WebUITestUsers {
 		newUser.setUserName("omer");
 		
 		// When
-		this.restTemplate.put(url + "{playground}/{email}", newUser, playground,"rubykozel@gmail.com");
+		this.restTemplate.put(url + "{playground}/{email}", newUser, playground,email);
 		
 		//Then
 	}
 	
 	/**
 	 * 	Given the server is up
-		And there's a user with playground: "2019A.Kagan", email: "rubykozel@gmail.com",
+		And there's a user with playground: "2019A.Kagan", email: email,
 		When I PUT "/playground/users/2019A.Kagan/rubykozel@gmail.com" with 
 		 	{
 		 		"email":rubykozel@gmail.com,
@@ -428,10 +429,10 @@ public class WebUITestUsers {
 		service.createUser(user.toEntity());
 		
 		// When
-		UserTO newUser= new UserTO(service.confirmUser(playground, form.getEmail(), service.getUser(playground + delim + email).getCode()));
+		UserTO newUser= new UserTO(service.confirmUser(playground, form.getEmail(), service.getUser(testUniqueKey).getCode()));
 		
 		newUser.setAvatar(null);
-		this.restTemplate.put(url + "{playground}/{email}", newUser, playground,"rubykozel@gmail.com");
+		this.restTemplate.put(url + "{playground}/{email}", newUser, playground,email);
 		
 		// Then
 	}

@@ -45,7 +45,7 @@ public class ThreadSafeElementServiceStub implements ElementService {
 		return elementEntity;
 	}
 
-	public ElementEntity getElement(String id)
+	public ElementEntity getElement(String id, String playground)
 			throws ElementNotFoundException {
 		ElementEntity element = elements.get(id);
 		if (element == null)
@@ -101,9 +101,9 @@ public class ThreadSafeElementServiceStub implements ElementService {
 				.collect(Collectors.toList());
 	}
 
-	public void updateElement(String id, ElementEntity newElement) throws Exception {
+	public void updateElement(String id, String playground, ElementEntity newElement) throws Exception {
 		checkForNulls(newElement);
-		ElementEntity element = getElement(id);
+		ElementEntity element = getElement(id, playground);
 		if (element == null)
 			throw new ElementNotFoundException("Element does not exist");
 		this.elements.remove(id);
