@@ -1,6 +1,7 @@
 package playground.logic.data;
 
 import java.util.Optional;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,12 +48,14 @@ public class JpaUserService implements UserService {
 			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
 			String number = "" + temp.getNextNumber();
 			userEntity.setNumber(number);
-			
+			if (userEntity.getCode().isEmpty()) {
+				userEntity.setCode(this.generateCode());
+			}
 			String email = userEntity.getUniqueKey().split(delim)[1];
 			userEntity.setUniqueKey(playground + delim + email);
 			
 			this.numberGenerator.delete(temp);
-
+			
 			UserEntity saved = this.users.save(userEntity);
 			return saved;
 		} else {
@@ -96,10 +99,11 @@ public class JpaUserService implements UserService {
 			throw new ConfirmationException("There's no such user in the specified playground");
 		else if (!user.get().getRole().equals(guest))
 			throw new ConfirmationException("This user is already confirmed");
-		else if (!code.equals(temporary_code))
+		else if (!code.equals(user.get().getCode()))
 			throw new ConfirmationException("Code given is incorrect");
 		else {
 			user.get().setRole(reviewer);
+			user.get().setCode(null); // Means user is registered
 			return user.get();
 		}
 	}
@@ -129,5 +133,18 @@ public class JpaUserService implements UserService {
 	public void cleanup() {
 		this.users.deleteAll();
 	}
+	
+	private String generateCode() {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+        StringBuilder rndStrBuild = new StringBuilder();
+        Random rnd = new Random();
+        while (rndStrBuild.length() < 10) { // length of the random string.
+            int index = (int) (rnd.nextFloat() * chars.length());
+            rndStrBuild.append(chars.charAt(index));
+        }
+        String rndString = rndStrBuild.toString();
+        return rndString;
+
+    }
 
 }

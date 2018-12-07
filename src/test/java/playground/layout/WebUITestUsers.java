@@ -28,8 +28,20 @@ public class WebUITestUsers {
 	private NewUserForm form;
 	private UserTO user;
 	
+	@Value("${guest:Anonymous}")
+	private String guest;
+
+	@Value("${temporary.code:Anonymous}")
+	private String temporary_code;
+
+	@Value("${reviewer:Anonymous}")
+	private String reviewer;
+
 	@Value("${playground:Anonymous}")
 	private String playground;
+	
+	@Value("${delim:@@}")
+	private String delim;
 	
 	@Value("${email:Anonymous}")
 	private String email;
@@ -155,18 +167,22 @@ public class WebUITestUsers {
 			"userName": "ruby", 
 			"avatar": ":-)", 
 			"role": "Reviewer", 
-			"points": 0
+			"points": 0,
+			"code":null
 		}
 	 * @throws Exception
 	 */
 	@Test
 	public void testConfirmingANewRegisteredUserSuccessfully() throws Exception {
 		// Given
-		service.createUser(user.toEntity());
+		
+		UserEntity userToConfirm = user.toEntity();
+		userToConfirm.setCode("1234");
+		service.createUser(userToConfirm);
 		
 		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class,
-				playground, email, 1234);
+				playground, email, "1234");
 		
 		
 		
@@ -183,7 +199,8 @@ public class WebUITestUsers {
 				+ "\"avatar\":\":-)\","
 				+ "\"role\":\"Reviewer\","
 				+ "\"points\":0,"
-				+ "\"number\":\"" + actualUserInDb.getNumber() + "\""
+				+ "\"number\":\"" + actualUserInDb.getNumber() + "\","
+				+ "\"code\":null"
 				+ "}");
 	}
 	
@@ -242,7 +259,8 @@ public class WebUITestUsers {
 	public void testGettingARegisteredUserFromTheServerSuccessfully() throws Exception {
 		// Given
 		service.createUser(user.toEntity());
-		service.confirmUser(playground, email, "1234");
+		String code = service.getUser(playground + delim + email).getCode();
+		service.confirmUser(playground, email, code);
 				
 		// When
 		
@@ -351,7 +369,9 @@ public class WebUITestUsers {
 		
 		// Given
 		service.createUser(user.toEntity());
-		
+		System.err.println("got here");
+		//String code = service.getUser(playground + delim + email).getCode();
+						
 		// When
 		UserTO newUser = new UserTO(service.confirmUser(playground, form.getEmail(), "1234"));
 		

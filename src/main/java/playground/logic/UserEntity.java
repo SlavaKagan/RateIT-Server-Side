@@ -13,6 +13,7 @@ public class UserEntity {
 	private String role;
 	private long points;
 	private String number;
+	private String code;
 	
 	@Value("${manager:Anonymous}")
 	private String manager;
@@ -96,8 +97,17 @@ public class UserEntity {
 		this.number = number;
 	}
 	
+	public String getCode() {
+		return code;
+	}
+	
+	public void setCode(String code) {
+		this.code = code;
+	}
+	
 	private void validateNull(String string) throws Exception {
 		if ("null".equals(string) || string == null)
 			throw new Exception("One of the paramters provided was null");
 	}
+
 }
