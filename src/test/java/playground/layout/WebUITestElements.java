@@ -255,7 +255,8 @@ public class WebUITestElements  {
 		 Then the reponse is "200 OK"
 	 * @throws Exception
 	 */
-	//@Test
+	
+	@Test
 	public void testChangeTheNameOfTheElement() throws Exception{
 		
 		// Given
@@ -303,7 +304,8 @@ public class WebUITestElements  {
 		Then the reponse is 500
 	 * @throws Exception
 	 */
-	//@Test (expected = Exception.class)
+	
+	@Test (expected = Exception.class)
 	public void testTryingToChangeTypeNameWithNull() throws Exception{
 		
 		//Given
@@ -333,6 +335,7 @@ public class WebUITestElements  {
 			"creatoremail":"rubykozel@gmail.com"
 			} ... ]
 	 */	
+	
 	//@Test
 	public void testGetElementsByAttributesValueSuccessfully() throws Exception {	
 		

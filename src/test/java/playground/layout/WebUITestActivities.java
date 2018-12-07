@@ -16,6 +16,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import playground.logic.ActivityEntity;
 import playground.logic.ActivityService;
 
 @RunWith(SpringRunner.class)
@@ -84,9 +85,12 @@ public class WebUITestActivities {
 		
 		// When
 		ActivityTO activity = new ActivityTO(element, "x");
-		Object returnedObject = this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", activity, Object.class, playground, EMAIL);
+		this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", activity, ActivityTO.class, playground, EMAIL);
 		
-		assertThat(jacksonMapper.writeValueAsString(returnedObject))
+		ActivityEntity actualActivityInDb = this.service.getActivity(activity.getId());
+
+		
+		assertThat(jacksonMapper.writeValueAsString(actualActivityInDb))
 		.isNotNull()
 		.isEqualTo(
 				"{"
@@ -108,7 +112,7 @@ public class WebUITestActivities {
 	 * @throws Exception
 	 */
 	@Test(expected=Exception.class)
-	public void testPostANewActivityWithNullEmailEnsuccessfuly() throws Exception {
+	public void testPostANewActivityWithNullEmailUnsuccessfuly() throws Exception {
 		
 		// Given
 		ElementTO element = new ElementTO();
@@ -117,7 +121,7 @@ public class WebUITestActivities {
 		
 		// When
 		ActivityTO activity = new ActivityTO(element, "x");
-		this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", activity, ActivityTO.class, playground, "null");
+		this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", activity, ActivityTO.class, playground, null);
 		
 	}
 	
