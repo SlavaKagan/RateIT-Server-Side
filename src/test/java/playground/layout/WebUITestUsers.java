@@ -214,11 +214,13 @@ public class WebUITestUsers {
 	@Test(expected = Exception.class)
 	public void testConfirmingANewRegisteredUserUnsuccessfullyWithDifferentCode() throws Exception {
 		// Given
-		service.createUser(user.toEntity());
+		UserEntity userToConfirm = user.toEntity();
+		userToConfirm.setCode("1234");
+		service.createUser(userToConfirm);
 		
 		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class, playground,
-				"rubykozel@gmail.com", 1235);
+				"rubykozel@gmail.com", "1235");
 	}
 	
 	/**
@@ -237,7 +239,7 @@ public class WebUITestUsers {
 		
 		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class, playground,
-				"rubykozel@gmail.com", 1111); 
+				"rubykozel@gmail.com", "1111"); 
 	}
 	
 	/**
@@ -320,36 +322,6 @@ public class WebUITestUsers {
 		//Then the response is 500
 	}
 	
-	
-	/**
-	 * Given the server is up 
-	
-		And there's an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "1025028332",
-		
-		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/1025028332"
-		
-		Then the response is 200 
-		
-		And the output is 
-		{
-			 "playground": "2019A.Kagan",
-			 "id": "1586158061", 
-			 "name": "Messaging Board", 
-			 "expirationDate": null, 
-			 "type": "Messaging Board", 
-			 "attributes": {}, 
-			 "creatorPlayground": "2019A.Kagan", 
-			 "creatorEmail": "rubykozel@gmail.com" 
-		}
-	 * @throws Exception
-	 */
-	public void testGettingAnElementSuccessfully() throws Exception {
-		service.createUser(user.toEntity());
-		service.confirmUser(playground, form.getEmail(), "1234");
-		
-	this.restTemplate.getForObject(url + "{playground}/{email}/{userPlayground}/{id}", ElementTO.class, playground, "rubykozel@gmail.com", playground, "1025028332");
-	}
-	
 	/**
 	 * 	Given the server is up 
 		And there is a confirmed user with playground: "2019A.Kagan", email: "rubykozel@gmail.com",
@@ -369,9 +341,9 @@ public class WebUITestUsers {
 	public void testChangeTheUserNameSuccesfully() throws Exception {
 		
 		// Given
-		service.createUser(user.toEntity());
-		System.err.println("got here");
-		//String code = service.getUser(playground + delim + email).getCode();
+		UserEntity userTemp = user.toEntity();
+		userTemp.setCode("1234");
+		service.createUser(userTemp);
 						
 		// When
 		UserTO newUser = new UserTO(service.confirmUser(playground, form.getEmail(), "1234"));
