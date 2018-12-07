@@ -38,7 +38,7 @@ public class JpaElementService implements ElementService {
 			elementEntity.setNumber("" + temp.getNextNumber());
 			elementEntity.setCreatorPlayground(userPlayground);
 			elementEntity.setCreatorEmail(email);
-			elementEntity.setUniqueKey(email + "@@" + userPlayground);
+			elementEntity.setUniqueKey(elementEntity.getUniqueKey().split("@@")[0] + "@@" + userPlayground);
 			
 			this.numberGenerator.delete(temp);
 

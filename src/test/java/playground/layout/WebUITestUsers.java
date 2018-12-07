@@ -352,7 +352,6 @@ public class WebUITestUsers {
 		// Given
 		service.createUser(user.toEntity());
 		
-						
 		// When
 		UserTO newUser = new UserTO(service.confirmUser(playground, form.getEmail(), "1234"));
 		

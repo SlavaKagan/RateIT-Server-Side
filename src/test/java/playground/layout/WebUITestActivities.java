@@ -75,6 +75,7 @@ public class WebUITestActivities {
 		}
 	 * @throws Exception
 	 */
+	
 	@Test
 	public void testPostANewActivitySuccessfuly() throws Exception {
 		
@@ -111,6 +112,7 @@ public class WebUITestActivities {
 		Then the response is 500
 	 * @throws Exception
 	 */
+	
 	@Test(expected=Exception.class)
 	public void testPostANewActivityWithNullEmailUnsuccessfuly() throws Exception {
 		
@@ -132,6 +134,7 @@ public class WebUITestActivities {
 		Then the response is 500
 	 * @throws Exception
 	 */
+	
 	@Test(expected=Exception.class)
 	public void testPostANewActivityWithAnEmptyJSONUnsuccessfuly() throws Exception {
 		// Given

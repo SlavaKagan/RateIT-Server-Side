@@ -78,6 +78,7 @@ public class WebUITestElements  {
 	 * Then the server is loading properly
 	 * @throws Exception
 	 */
+	
 	@Test
 	public void testServerInitializesProperly() throws Exception {
 		
@@ -104,7 +105,8 @@ public class WebUITestElements  {
 		}
 	 * @throws Exception
 	 */
-	//@Test
+	
+	@Test
 	public void testCreatingAnElementSuccessfully() throws Exception {
 		//Given
 		userservice.createUser(user.toEntity());
@@ -176,7 +178,8 @@ public class WebUITestElements  {
 	 	Then the response is <> 2xx
 	 * @throws Exception
 	 */
-	//@Test(expected = Exception.class)
+	
+	@Test(expected = Exception.class)
 	public void testCreatingAnElementWithoutDeliveringAnyValidJSON() throws Exception {
 		// Given
 		userservice.createUser(user.toEntity());
@@ -200,7 +203,8 @@ public class WebUITestElements  {
 	  	Then the response is 500
 	 * @throws Exception
 	 */
-	//@Test(expected = Exception.class)
+	
+	@Test(expected = Exception.class)
 	public void testCreatingAnElementWithemailAsNull() throws Exception {
 		// Given
 		userservice.createUser(user.toEntity());
@@ -221,7 +225,8 @@ public class WebUITestElements  {
 	 	Then the response is 500
 	 * @throws Exception
 	 */
-	//@Test(expected = Exception.class)
+	
+	@Test(expected = Exception.class)
 	public void testCreatingAnElementWithEmptyJSON() throws Exception {
 		// Given
 		userservice.createUser(user.toEntity());
@@ -263,10 +268,11 @@ public class WebUITestElements  {
 		userservice.createUser(user.toEntity());
 		ElementTO element = jacksonMapper.readValue(elementJson, ElementTO.class);
 		element = new ElementTO(elementservice.createElement(element.toEntity(), playground, email));
-		
+
 		// When
+
 		element.setName("MyBoard");
-		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", 
+		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}",
 								element, 
 								playground,
 								email,
@@ -336,7 +342,7 @@ public class WebUITestElements  {
 			} ... ]
 	 */	
 	
-	//@Test
+	@Test
 	public void testGetElementsByAttributesValueSuccessfully() throws Exception {	
 		
 		// Given
@@ -381,7 +387,7 @@ public class WebUITestElements  {
 	 */
 	
 	// FIX THIS - NEED TO SEARCH BY TYPE AND NAME ONLY
-	//@Test (expected = Exception.class)
+	@Test (expected = Exception.class)
 	public void testGetElementsByNullAttributesValue() throws Exception {
 		
 		// Given
@@ -419,7 +425,7 @@ public class WebUITestElements  {
 	 */
 	
 	// FIX THIS - NEED TO SEARCH BY TYPE AND NAME ONLY
-	//@Test (expected = Exception.class)
+	@Test (expected = Exception.class)
 	public void testGetElementsByAttributesValueThatDoesNotExist() throws Exception {
 		
 		// Given
@@ -465,7 +471,8 @@ public class WebUITestElements  {
 			} x 1 .. 5]'
 	 * @throws Exception
 	 */
-	//@Test
+	
+	@Test
 	public void testGettingElementsUsingPaginationSuccessfully() throws Exception {
 		
 		// Given
@@ -499,7 +506,8 @@ public class WebUITestElements  {
 		And the output is '[]'
 	 * @throws Exception
 	 */
-	//@Test
+	
+	@Test
 	public void testGettingNoElementsFromPageWithNoElementsUsingPaginationSuccessfully() throws Exception {
 		
 		// Given
@@ -527,7 +535,8 @@ public class WebUITestElements  {
 		Then the response  500
 	 * @throws Exception 
 	 */
-	//@Test(expected = Exception.class)
+	
+	@Test(expected = Exception.class)
 	public void testUsingBadPageNumberToRetreiveElements() throws Exception {
 		userservice.createUser(user.toEntity());	
 		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
@@ -555,6 +564,7 @@ public class WebUITestElements  {
 	 * "creatorPlayground": "2019A.Kagan", "creatoremail": "rubykozel@gmail.com" }'
 	 * @throws Exception
 	 */
+	
 	@Test //TODO NOT WORKING
 	public void testGettingAnElementSuccessfullyWithCorrectId() throws Exception {
 		userservice.createUser(user.toEntity());
@@ -597,7 +607,7 @@ public class WebUITestElements  {
 	 * @throws Exception
 	 */
 
-	@Test //(expected = Exception.class)
+	@Test (expected = Exception.class)
 	public void testGettingAnElementUnsuccessfullyWithWrongId() throws Exception {
 
 		userservice.createUser(user.toEntity());
@@ -625,7 +635,7 @@ public class WebUITestElements  {
 	 * @throws Exception
 	 */
 
-	@Test //(expected = Exception.class)
+	@Test (expected = Exception.class)
 	public void testGettingAnElementUnsuccessfullyWithWrongCreatoremail() throws Exception {
 		userservice.createUser(user.toEntity());
 
@@ -757,7 +767,7 @@ public class WebUITestElements  {
 	 * @throws Exception
 	 */
 
-	@Test //(expected = Exception.class) //TODO NOT WORKING
+	@Test (expected = Exception.class) //TODO NOT WORKING
 	public void testGettingAnElementWithSpecificDistanceWhenNoElementsInPlayground() throws Exception {
 		userservice.createUser(user.toEntity());
 
