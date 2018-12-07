@@ -4,21 +4,21 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
+
+import javax.annotation.PostConstruct;
+
 import org.springframework.beans.factory.annotation.Value;
+
 import playground.logic.ElementEntity;
 import playground.logic.Location;
 
 public class ElementTO {
-	@Value("${playground:Anonymous}")
+	
 	private String playground;
-	
-	@Value("${default.date:Anonymous}")
-	private Date creationDate;
-	
+	private Date creationDate;	
 	private String id;
 	private Location location;
 	private String name;
-	
 	private Date expirationDate;
 	private String type;
 	private Map<String, Object> attributes;
@@ -30,6 +30,7 @@ public class ElementTO {
 		this.location = new Location(Math.random() * 20, Math.random() * 20);
 		this.expirationDate = null;
 		this.attributes = new HashMap<>();
+		this.creationDate = new Date();
 		this.id = "" + generator.getAndIncrement();
 	}
 
@@ -58,6 +59,11 @@ public class ElementTO {
 		this.creatorPlayground = creatorPlayground;
 		this.creatorEmail = creatorEmail;
 		this.attributes = attributes;
+	}
+	
+	@PostConstruct
+	public void init() {
+		System.err.println("invoked");
 	}
 
 	public String getPlayground() {

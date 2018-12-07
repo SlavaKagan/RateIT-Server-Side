@@ -48,7 +48,7 @@ public class JpaUserService implements UserService {
 			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
 			String number = "" + temp.getNextNumber();
 			userEntity.setNumber(number);
-			if (userEntity.getCode().isEmpty()) {
+			if (userEntity.getCode() == null) {
 				userEntity.setCode(this.generateCode());
 			}
 			String email = userEntity.getUniqueKey().split(delim)[1];

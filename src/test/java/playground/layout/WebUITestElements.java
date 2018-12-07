@@ -122,6 +122,7 @@ public class WebUITestElements  {
 		String postedId = postedElement.getId() + "@@" + postedElement.getPlayground();
 		ElementEntity actualElementInDb = elementservice.getElement(postedId);
 		
+		actualElementInDb.setCreationDate(null);
 		actualElementInDb.setX(0.0); // For testing purposes
 		actualElementInDb.setY(0.0);
 		

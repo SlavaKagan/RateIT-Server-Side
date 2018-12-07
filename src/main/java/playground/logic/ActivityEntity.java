@@ -13,17 +13,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @Entity
 @Table(name="ACTIVITIES")
 public class ActivityEntity {
+	
 	private String uniqueKey;
 	private String elementPlayground;
 	private String elementId;
 	private String type;
-	
-	@Value("${reviewer:Anonymous}")
 	private String playerPlayground;
-	
-	@Value("${player.email:Anonymous}")
-	private String playerEmail;
-	
+	private String playerEmail;	
 	private String number;
 	private Map<String, Object> attributes;
 

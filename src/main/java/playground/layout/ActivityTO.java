@@ -8,16 +8,9 @@ import playground.logic.ActivityEntity;
 
 public class ActivityTO {
 	
-	@Value("${playground:Anonymous}")
 	private String playground;
-	
-	@Value("${reviewer:Anonymous}")
 	private String playerPlayground;
-	
-	@Value("${player.email:Anonymous}")
 	private String playerEmail;
-
-	
 	private String id;
 	private String elementPlayground;
 	private String elementId;

@@ -24,7 +24,7 @@ public class JpaActivityService implements ActivityService {
 	private NumberGeneratorDao numberGenerator;
 
 	@Autowired
-	public void setElementDao(ActivityDao activities, NumberGeneratorDao numberGenerator){
+	public void setActivityDao(ActivityDao activities, NumberGeneratorDao numberGenerator){
 		this.activities = activities;
 		this.numberGenerator = numberGenerator;
 	}

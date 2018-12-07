@@ -1,6 +1,7 @@
 package playground.layout;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -19,7 +20,10 @@ import playground.logic.UserService;
 @RestController
 public class UserWebUI {
 	private UserService userservice;
-
+	
+	@Value("${playground:default}")
+	private String playground;
+	
 	@Autowired
 	public void setService(UserService userservice) {
 		this.userservice = userservice;
@@ -32,6 +36,7 @@ public class UserWebUI {
 			consumes = MediaType.APPLICATION_JSON_VALUE)
 	public UserTO createUser(@RequestBody NewUserForm userForm) throws Exception {
 		UserTO user = new UserTO(userForm);
+		user.setPlayground(playground);
 		userservice.createUser(user.toEntity());
 		return user;
 	}

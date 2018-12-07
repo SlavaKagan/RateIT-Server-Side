@@ -123,7 +123,8 @@ public class WebUITestUsers {
 				+ "\"avatar\":\":-)\","
 				+ "\"role\":\"Guest\","
 				+ "\"points\":0,"
-				+ "\"number\":\"" + actualUserInDb.getNumber() + "\""
+				+ "\"number\":\"" + actualUserInDb.getNumber() + "\","
+				+ "\"code\":\"" + actualUserInDb.getCode() + "\""
 				+ "}");
 	}
 	

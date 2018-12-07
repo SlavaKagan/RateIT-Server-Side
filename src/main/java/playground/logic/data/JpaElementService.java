@@ -3,6 +3,7 @@ package playground.logic.data;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,9 @@ public class JpaElementService implements ElementService {
 
 	private ElementDao elements;
 	private NumberGeneratorDao numberGenerator;
+	
+	@Value("${playground:Default}")
+	private String playground;
 
 	@Autowired
 	public void setElementDao(ElementDao elements, NumberGeneratorDao numberGenerator) {
@@ -38,7 +42,6 @@ public class JpaElementService implements ElementService {
 			elementEntity.setNumber("" + temp.getNextNumber());
 			elementEntity.setCreatorPlayground(userPlayground);
 			elementEntity.setCreatorEmail(email);
-			elementEntity.setUniqueKey(elementEntity.getUniqueKey().split("@@")[0] + "@@" + userPlayground);
 			
 			this.numberGenerator.delete(temp);
 

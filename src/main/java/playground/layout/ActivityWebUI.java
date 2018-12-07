@@ -36,6 +36,8 @@ public class ActivityWebUI {
 			@PathVariable("email") String email,
 			@RequestBody ActivityTO theActivity) throws Exception {
 		validateParamsNotNull(userPlayground,email);
+		theActivity.setPlayerPlayground(userPlayground);
+		theActivity.setPlayerEmail(email);
 		switch(theActivity.getType()) {
 		case "x":
 			return new UserTO(new NewUserForm("rubykozel@gmail.com","ruby",":-)","Guest"));

@@ -3,6 +3,7 @@ package playground.layout;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -22,6 +23,9 @@ import playground.logic.NotFoundExceptions;
 @RestController
 public class ElementWebUI {
 	private ElementService elementservice;
+	
+	@Value("${playground:default}")
+	private String playground;
 
 	@Autowired
 	public void setService(ElementService elementervice) {
@@ -38,6 +42,7 @@ public class ElementWebUI {
 			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email) throws Exception {
 		validateParamsNotNull(userPlayground,email);
+		element.setPlayground(playground);
 		return new ElementTO(elementservice.createElement(element.toEntity(), userPlayground, email));
 	}
 	

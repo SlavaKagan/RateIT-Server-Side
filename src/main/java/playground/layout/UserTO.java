@@ -1,20 +1,11 @@
 package playground.layout;
 
-import org.springframework.beans.factory.annotation.Value;
 import playground.logic.UserEntity;
 
 public class UserTO {
+	
 	private String email;
-	
-	@Value("${playground:Anonymous}")
 	private String playground;
-	
-	@Value("${manager:Anonymous}")
-	private String manager;
-	
-	@Value("${reviewer:Anonymous}")
-	private String reviewer;
-	
 	private String userName;
 	private String avatar;
 	private String role;
@@ -90,9 +81,9 @@ public class UserTO {
 	}
 
 	public void setStartingPoints() {
-		if (this.role == manager) {
+		if (this.role.equals("Manager")) {
 			this.points = 0;
-		} else if (this.role == reviewer) {
+		} else if (this.role.equals("Reviewer")) {
 			this.points = 100;
 		}
 	}

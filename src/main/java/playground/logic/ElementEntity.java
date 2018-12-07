@@ -20,10 +20,7 @@ public class ElementEntity {
 	private Double x;
 	private Double y;
 	private String name;
-	
-	@Value("${default.date:Anonymous}")
 	private Date creationDate;
-
 	private Date expirationDate;
 	private String type;
 	private Map<String, Object> attributes;
