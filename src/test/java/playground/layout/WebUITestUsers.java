@@ -76,6 +76,7 @@ public class WebUITestUsers {
 	 * Then the server is loading properly
 	 * @throws Exception
 	 */
+	
 	@Test
 	public void testServerInitializesProperly() throws Exception {
 
@@ -102,6 +103,7 @@ public class WebUITestUsers {
 		}
 	 * @throws Exception
 	 */
+	
 	@Test
 	public void testPostingNewUserSuccessfully() throws Exception {
 		// Given 
@@ -135,6 +137,7 @@ public class WebUITestUsers {
 	 	Then the response is <> 2xx
 	 * @throws Exception
 	 */
+	
 	@Test(expected = Exception.class)
 	public void testPostingNewUserUnsuccessfully() throws Exception {	
 		//	When
@@ -148,6 +151,7 @@ public class WebUITestUsers {
 	 	Then the response is 500
 	 * @throws Exception
 	 */
+	
 	@Test(expected = Exception.class)
 	public void testPostingNewUserWithGivenEmailAsNull() throws Exception {
 		// When
@@ -173,6 +177,7 @@ public class WebUITestUsers {
 		}
 	 * @throws Exception
 	 */
+	
 	@Test
 	public void testConfirmingANewRegisteredUserSuccessfully() throws Exception {
 		// Given
@@ -183,7 +188,7 @@ public class WebUITestUsers {
 		
 		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class,
-				playground, email, "1234");
+				playground, email, service.getUser(playground + delim + email).getCode());
 		
 		
 		
@@ -211,6 +216,7 @@ public class WebUITestUsers {
 		When I GET "/playground/users/confirm/2019A.Kagan/rubykozel@gmail.com/1235"
 	 * @throws Exception
 	 */
+	
 	@Test(expected = Exception.class)
 	public void testConfirmingANewRegisteredUserUnsuccessfullyWithDifferentCode() throws Exception {
 		// Given
@@ -230,16 +236,18 @@ public class WebUITestUsers {
 	 	Then the response is 500
 	 * @throws Exception
 	 */
+	
 	@Test(expected = Exception.class)
 	public void testConfirmingAnExistingUser() throws Exception {
 		// Given
 		UserEntity userToPost = user.toEntity();
+		userToPost.setCode("1234");
 		service.createUser(userToPost);
 		service.confirmUser(playground, userToPost.getUniqueKey(), "1234");
 		
 		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class, playground,
-				"rubykozel@gmail.com", "1111"); 
+				"rubykozel@gmail.com", service.getUser(playground + delim + email).getCode()); 
 	}
 	
 	/**
@@ -258,6 +266,7 @@ public class WebUITestUsers {
 		}
 	 * @throws Exception
 	 */
+	
 	@Test
 	public void testGettingARegisteredUserFromTheServerSuccessfully() throws Exception {
 		// Given
@@ -292,6 +301,7 @@ public class WebUITestUsers {
 	 	Then the response is 500
 	 * @throws Exception
 	 */
+	
 	@Test(expected = Exception.class)
 	public void testGettingAnUnconfirmedUser() throws Exception {
 		// Given
@@ -309,6 +319,7 @@ public class WebUITestUsers {
 		Then the response is 500
 	 * @throws Exception
 	 */
+	
 	@Test(expected = Exception.class)
 	public void testGettingAnUnregisteredUser() throws Exception {
 		// Given
@@ -337,6 +348,7 @@ public class WebUITestUsers {
 		Then the response is 200
 	 * @throws Exception
 	 */
+	
 	@Test
 	public void testChangeTheUserNameSuccesfully() throws Exception {
 		
@@ -346,7 +358,7 @@ public class WebUITestUsers {
 		service.createUser(userTemp);
 						
 		// When
-		UserTO newUser = new UserTO(service.confirmUser(playground, form.getEmail(), "1234"));
+		UserTO newUser = new UserTO(service.confirmUser(playground, form.getEmail(), service.getUser(playground + delim + email).getCode()));
 		
 		newUser.setUserName("rubson");
 		this.restTemplate.put(url + "{playground}/{email}", newUser, playground,"rubykozel@gmail.com");
@@ -380,6 +392,7 @@ public class WebUITestUsers {
 		 Then the response is 404
 	 * @throws Exception
 	 */
+	
 	@Test(expected = Exception.class)
 	public void testChangeUserNameOfUnregisteredUser() throws Exception {
 		// Given
@@ -407,6 +420,7 @@ public class WebUITestUsers {
 		Then the response is 500 	
 	 * @throws Exception
 	 */
+	
 	@Test(expected = Exception.class)
 	public void testChangeTheUserAvatarToNull() throws Exception {
 		
@@ -414,7 +428,7 @@ public class WebUITestUsers {
 		service.createUser(user.toEntity());
 		
 		// When
-		UserTO newUser= new UserTO(service.confirmUser(playground, form.getEmail(), "1234"));
+		UserTO newUser= new UserTO(service.confirmUser(playground, form.getEmail(), service.getUser(playground + delim + email).getCode()));
 		
 		newUser.setAvatar(null);
 		this.restTemplate.put(url + "{playground}/{email}", newUser, playground,"rubykozel@gmail.com");
