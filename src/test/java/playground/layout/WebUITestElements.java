@@ -17,6 +17,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import playground.logic.ElementEntity;
 import playground.logic.ElementService;
+import playground.logic.Location;
 import playground.logic.UserService;
 
 @RunWith(SpringRunner.class)
@@ -262,11 +263,11 @@ public class WebUITestElements  {
 		
 		// Given
 		userservice.createUser(user.toEntity());
-		ElementTO elementToPost = this.restTemplate
-				.postForObject(url + "/{userPlayground}/{email}", 
-						jacksonMapper.readValue(elementJson, ElementTO.class),
-						ElementTO.class, playground, email);
+		ElementTO elementToPost = jacksonMapper.readValue(elementJson, ElementTO.class);
+		elementToPost.setPlayground(playground);
+		elementservice.createElement(elementToPost.toEntity(), playground, email);
 		
+		// When
 		ElementTO elementToPut = jacksonMapper.readValue(
 				"{"
 						+ "\"playground\":\"2019A.Kagan\","
@@ -276,8 +277,6 @@ public class WebUITestElements  {
 						+ "\"name\":\"MyBoard\""
 				+ "}", ElementTO.class);
 		
-		// When
-
 		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}",
 								elementToPut, 
 								playground,
@@ -330,6 +329,7 @@ public class WebUITestElements  {
 		//Given
 		userservice.createUser(user.toEntity());
 		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
+		newElement.setPlayground(playground);
 		elementservice.createElement(newElement.toEntity(), playground, email);
 		
 		// When
@@ -341,39 +341,27 @@ public class WebUITestElements  {
 	
 	/**
 	 * 	Given the server is up 
-		And theres are elements with playground: "2019A.Kagan", email: email, attribute: "isAMovie", value:"False"
-		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/isAMovie/False"
+		And theres are elements with playground: "2019A.Kagan", email: email
+		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/name/Messaging Board"
 		Then the response is 200
 		And the output is 
 		[{
 			"playground":"2019A.Kagan",
 			"id":"1025028332",
-			"expirationDate":null, 
-			"attributes":{"isAMovie":"False"},
+			"name":"Messaging Board"
 			"creatorPlayground":"2019A.Kagan",
 			"creatoremail":email
 			} ... ]
 	 */	
 	
-	// FIX THIS - NEED TO SEARCH BY TYPE AND NAME ONLY
 	@Test
 	public void testGetElementsByAttributesValueSuccessfully() throws Exception {	
 		
 		// Given
 		userservice.createUser(user.toEntity());
-		
-		Map<String, Object> attributes = new HashMap<>();
-		ElementTO newElement = new ElementTO("Movie", "element1", playground, email, attributes);
-		newElement.getAttributes().put("isAMovie", "False");
+		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
+		newElement.setPlayground(playground);
 		elementservice.createElement(newElement.toEntity(), playground, email);
-
-		Map<String, Object> attributes2 = new HashMap<>();
-		ElementTO newElement2 = new ElementTO("Message Board", "element2", playground, email, attributes2);
-		newElement2.getAttributes().put("isAMovie", "True");
-		elementservice.createElement(newElement2.toEntity(), playground, email);
-		
-		String attributeName = "isAMovie";
-		String value = "False";
 		
 		// When
 		ElementTO[] actualElements = this.restTemplate
@@ -381,44 +369,33 @@ public class WebUITestElements  {
 						ElementTO[].class, 
 						playground, 
 						email, 
-						attributeName, 
-						value);
+						"name", 
+						"Messaging Board");
 		
 		// Then
 		assertThat(actualElements)
 			.isNotNull()
 			.hasSize(1)
-			.usingElementComparator((e1, e2)->e1.getAttributes().get(attributeName).toString().compareTo(e2.getAttributes().get(attributeName).toString()))
+			.usingElementComparator((e1, e2)->e1.getName().toString().compareTo(e2.getName().toString()))
 			.contains(newElement);
 
 	}
 	
 	/**
 	 * 	Given the server is up
-		And theres are elements with playground: "2019A.Kagan", email: email, attribute: "isAMovie", value:"False"
-		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/null/False"
+		And theres are elements with playground: "2019A.Kagan", email: email
+		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/name/null"
 		Then the response is 500
 	 */
 	
-	// FIX THIS - NEED TO SEARCH BY TYPE AND NAME ONLY
 	@Test (expected = Exception.class)
 	public void testGetElementsByNullAttributesValue() throws Exception {
 		
 		// Given
 		userservice.createUser(user.toEntity());
-		
-		Map<String, Object> attributes = new HashMap<>();
-		ElementTO newElement = new ElementTO("Movie", "element1", playground, email, attributes);
-		newElement.getAttributes().put("isAMovie", "False");
+		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
+		newElement.setPlayground(playground);
 		elementservice.createElement(newElement.toEntity(), playground, email);
-
-		Map<String, Object> attributes2 = new HashMap<>();
-		ElementTO newElement2 = new ElementTO("Message Board", "element2", playground, email, attributes2);
-		newElement2.getAttributes().put("isAMovie", "True");
-		elementservice.createElement(newElement2.toEntity(), playground, email);
-		
-		String attributeName = "null";
-		String value = "False";
 		
 		// When
 		this.restTemplate
@@ -426,42 +403,40 @@ public class WebUITestElements  {
 				ElementTO[].class, 
 				playground, 
 				email, 
-				attributeName, 
-				value);
+				"name", 
+				null);
 		
 	}
 	
 	/**
 	 * 	Given the server is up
-		And theres are no elements with playground: "2019A.Kagan", email: email, attribute: "movieName", value:"Venom 1018"
-		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/movieName/Venom 1018"
-		Then the response is 404 with message "No element was found with key: movieName and value: Venom 1018"
+		And theres are no elements with playground: "2019A.Kagan", email: email, type: "something"
+		When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/search/type/something"
+		Then the response 200 
+		And the output is []
 	 */
 	
-	// FIX THIS - NEED TO SEARCH BY TYPE AND NAME ONLY
-	@Test (expected = Exception.class)
+	@Test
 	public void testGetElementsByAttributesValueThatDoesNotExist() throws Exception {
 		
 		// Given
 		userservice.createUser(user.toEntity());
-		
-		Map<String, Object> attributes = new HashMap<>();
-		ElementTO newElement = new ElementTO("Movie", "element1", playground, email, attributes);
-		newElement.getAttributes().put("movieName", "Spiderman");
+		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
+		newElement.setPlayground(playground);
 		elementservice.createElement(newElement.toEntity(), playground, email);
 		
-		String attributeName = "movieName";
-		String value = "Venom 1018";
-		
 		// When
-		this.restTemplate
+		ElementTO[] actualElements = this.restTemplate
 		.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", 
 				ElementTO[].class, 
 				playground, 
 				email, 
-				attributeName, 
-				value);
+				"type", 
+				"something");
 		
+		assertThat(actualElements)
+		.isNotNull()
+		.hasSize(0);	
 	}
 	
 	/**
@@ -491,6 +466,7 @@ public class WebUITestElements  {
 		// Given
 		userservice.createUser(user.toEntity());	
 		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
+		newElement.setPlayground(playground);	
 		elementservice.createElement(newElement.toEntity(), playground, email);
 		
 		// When
@@ -526,6 +502,7 @@ public class WebUITestElements  {
 		// Given
 		userservice.createUser(user.toEntity());	
 		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
+		newElement.setPlayground(playground);	
 		elementservice.createElement(newElement.toEntity(), playground, email);
 		
 		// When
@@ -553,6 +530,7 @@ public class WebUITestElements  {
 	public void testUsingBadPageNumberToRetreiveElements() throws Exception {
 		userservice.createUser(user.toEntity());	
 		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
+		newElement.setPlayground(playground);	
 		elementservice.createElement(newElement.toEntity(), playground, email);
 		
 		// When
@@ -571,41 +549,52 @@ public class WebUITestElements  {
 	 * 
 	 * Then the response is 200
 	 * 
-	 * And the output is '{"playground": "2019A.Kagan", "id": "1", "location": {
-	 * "x": Any, "y": Any }, "name": "Messaging Board", "creationDate": Any valid
-	 * date, "expirationDate": null, "type": "Messaging Board", "attributes": {},
-	 * "creatorPlayground": "2019A.Kagan", "creatoremail": "rubykozel@gmail.com" }'
+	 * And the output is 
+	  {
+	  		"playground": "2019A.Kagan", 
+	  		"id": "1", 
+	  		"location": {
+	  			"x": Any, "y": Any 
+	  		}, 
+	  		"name": "Messaging Board", 
+	  		"creationDate": Any valid date, 
+	  		"expirationDate": null, 
+	  		"type": "Messaging Board", 
+	  		"attributes": {},
+	 		"creatorPlayground": "2019A.Kagan", 
+	  		"creatoremail": "rubykozel@gmail.com" 
+	  }
 	 * @throws Exception
 	 */
 	
-	@Test //TODO NOT WORKING
+	@Test
 	public void testGettingAnElementSuccessfullyWithCorrectId() throws Exception {
 		userservice.createUser(user.toEntity());
-
-		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", playground, email,
-				new HashMap<>());
-		newElement.setId("1"); // For testing purposes
-
-		elementservice.createElement(newElement.toEntity(), playground, email);
-		System.err.println("1111111111111111111111111111111111111111");
-		System.err.println("1111111111111111111111111111111111111111");
-		System.err.println("1111111111111111111111111111111111111111");
+		ElementTO elementToPost = jacksonMapper.readValue(elementJson, ElementTO.class);
+	
+		elementToPost.setId("1"); // For testing purposes
+		elementToPost.setLocation(new Location(0,0));
+		elementToPost.setPlayground(playground);
+		elementservice.createElement(elementToPost.toEntity(), playground, email);
+		
 		ElementTO actualElement = this.restTemplate.getForObject(url + "/{userPlayground}/{email}/{playground}/{id}",
 				ElementTO.class, playground, email, playground, "1");
-		System.err.println("2222222222222222222222222222222222222222");
+		
+		actualElement.setCreationDate(null); // For testing purposes
+		
 		assertThat(jacksonMapper.writeValueAsString(actualElement))
 		.isNotNull()
 		.isEqualTo("{" 
 						+ "\"playground\":\"2019A.Kagan\"," 
+						+ "\"creationDate\":null," 
 						+ "\"id\":\"1\","
 						+ "\"location\":{\"x\":0.0,\"y\":0.0}," 
 						+ "\"name\":\"Messaging Board\","
-						+ "\"creationDate\":1," 
 						+ "\"expirationDate\":null," 
 						+ "\"type\":\"Messaging Board\","
 						+ "\"attributes\":{}," 
 						+ "\"creatorPlayground\":\"2019A.Kagan\","
-						+ "\"creatoremail\":\"rubykozel@gmail.com\"" 
+						+ "\"creatorEmail\":\"rubykozel@gmail.com\"" 
 						+ "}");
 	}
 
@@ -625,41 +614,14 @@ public class WebUITestElements  {
 
 		userservice.createUser(user.toEntity());
 
-		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", playground, email,
-				new HashMap<>());
+		ElementTO newElement = jacksonMapper.readValue(elementJson, ElementTO.class);
 		newElement.setId("1"); // For testing purposes
-
+		
+		newElement.setPlayground(playground);	
 		elementservice.createElement(newElement.toEntity(), playground, email);
 
 		this.restTemplate.getForObject(url + "/{userPlayground}/{email}/{playground}/{id}", ElementTO.class,
 				playground, email, playground, "2");
-	}
-	
-	/**
-	 * Given the server is up
-	 * 
-	 * And theres an element with playground: "2019A.Kagan", email:
-	 * email, playground: "2019A.Kagan", id: "1",
-	 * 
-	 * When I GET
-	 * "/playground/elements/2019A.Kagan/dudidavidov@gmail.com/2019A.Kagan/1"
-	 * 
-	 * Then the response is 404 with message: "Element does not exist"
-	 * @throws Exception
-	 */
-
-	@Test (expected = Exception.class)
-	public void testGettingAnElementUnsuccessfullyWithWrongCreatoremail() throws Exception {
-		userservice.createUser(user.toEntity());
-
-		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", playground, email,
-				new HashMap<>());
-		newElement.setId("1"); // For testing purposes
-
-		elementservice.createElement(newElement.toEntity(), playground, email);
-
-		this.restTemplate.getForObject(url + "/{userPlayground}/{email}/{playground}/{id}", ElementTO.class,
-				playground, "dudidavidov@gmail.com", playground, "1");
 	}
 	
 	/**
@@ -670,11 +632,22 @@ public class WebUITestElements  {
 	 * 
 	 * Then the response is 200
 	 * 
-	 * And the output is '[ { "playground": "2019A.Kagan", "id": "1", "location": {
-	 * "x": Any, "y": Any }, "name": "Messaging Board", "creationDate": Any valid
-	 * date, "expirationDate": null, "type": "Messaging Board", "attributes": {},
-	 * "creatorPlayground": "2019A.Kagan", "creatoremail": "rubykozel@gmail.com" }
-	 * ...]'
+	 * And the output is 
+	  [ 
+	  	{ 
+	  		"playground": "2019A.Kagan", 
+	  		"id": "1", 
+	  		"location": {
+	  			"x": Any, "y": Any 
+	  		}, 
+	  		"name": "Messaging Board", 
+	  		"creationDate": Any valid date, 
+	  		"expirationDate": null, 
+	  		"type": "Messaging Board", 
+	  		"attributes": {},
+	  		"creatorPlayground": "2019A.Kagan", 
+	  		"creatoremail": "rubykozel@gmail.com" 
+	  } ...]'
 	 * @throws Exception
 	 */
 
@@ -682,10 +655,10 @@ public class WebUITestElements  {
 	public void testGettingAllElementsSuccessfulyBySpecificCreatoremailAndPlayground() throws Exception {
 		userservice.createUser(user.toEntity());
 
-		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", playground, email,
-				new HashMap<>());
+		ElementTO newElement = jacksonMapper.readValue(elementJson, ElementTO.class);
 		newElement.setId("1"); // For testing purposes
-
+		
+		newElement.setPlayground(playground);	
 		elementservice.createElement(newElement.toEntity(), playground, email);
 		
 		ElementTO[] actualElements = this.restTemplate.getForObject(
@@ -702,8 +675,7 @@ public class WebUITestElements  {
 	/**
 	 * Given the server is up
 	 * 
-	 * And there might be elements with playground: "2019A.Kagan" but not the email:
-	 * email,
+	 * And there are no elements with playground: "2019A.Kagan"
 	 * 
 	 * When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/all"
 	 * 
@@ -713,7 +685,7 @@ public class WebUITestElements  {
 	 */
 	
 	@Test
-	public void testGettingNoneElementsWithCreatoremailThatHasNoElements() throws Exception {
+	public void testGettingNoneElementsWithPlaygroundThatHasNoElements() throws Exception {
 		userservice.createUser(user.toEntity());
 		
 		ElementTO[] elements = this.restTemplate.getForObject(
@@ -734,22 +706,30 @@ public class WebUITestElements  {
 	 * 
 	 * Then the response is 200
 	 * 
-	 * And the output is '[ { "playground": "2019A.Kagan", "id": "1",
-	 * "location": { "x": Any x that its distance from (0,0) is less then 10
-	 * "y": Any y that its distance from (0,0) is less then 10 }, "name": Any name,
-	 * "creationDate": Any valid date, "expirationDate": null, "type": Any type,
-	 * "attributes": {}, "creatorPlayground": "2019A.Kagan",
-	 * "creatoremail": "rubykozel@gmail.com" } ]'
+	 * And the output is 
+	  '[ 
+	  	{ "playground": "2019A.Kagan", 
+	  	  "id": "1",
+	      "location": { 
+	     	  "x": Any x that its distance from (0,0) is less then 10
+	  		  "y": Any y that its distance from (0,0) is less then 10 
+	  		}, 
+	  	  "name": Any name,
+	  	  "creationDate": Any valid date, "expirationDate": null, "type": Any type,
+	  	  "attributes": {}, 
+	  	  "creatorPlayground": "2019A.Kagan",
+	     "creatoremail": "rubykozel@gmail.com" 
+	    } ... ]'
 	 * @throws Exception
 	 */
 	
-	@Test //TODO NOT WORKING
+	@Test
 	public void testGettingAnElementSuccessfullyWithSpecificDistance() throws Exception {
 		userservice.createUser(user.toEntity());
 
 		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", playground, email,
 				new HashMap<>());
-		newElement.setId("1"); // For testing purposes
+		newElement.setLocation(new Location(1,1));
 
 		elementservice.createElement(newElement.toEntity(), playground, email);
 		
@@ -768,24 +748,23 @@ public class WebUITestElements  {
 		.contains(newElement);
 	}
 	
+	
 	/**
-	 * Given the server is up
-	 * 
-	 * And there are no elements in the playground
-	 * 
 	 * When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/near/0/0/1"
 	 * 
-	 * Then the response is 404 with message:
-	 * "No elements at the distance specified from the (x, y) specified"
+	 * Then the response 200
+	 * And the output is '[]'
 	 * @throws Exception
 	 */
-
-	@Test (expected = Exception.class) //TODO NOT WORKING
+	@Test 
 	public void testGettingAnElementWithSpecificDistanceWhenNoElementsInPlayground() throws Exception {
 		userservice.createUser(user.toEntity());
-
-		this.restTemplate.getForObject(
+		ElementTO[] elements = this.restTemplate.getForObject(
 				url + "/{userPlayground}/{email}/near/{x}/{y}/{distance}?size={size}&page={page}", ElementTO[].class,
 				playground, email, 0, 0, 10, 5, 0);
+		
+		assertThat(elements)
+		.isNotNull()
+		.hasSize(0);
 	}
 }

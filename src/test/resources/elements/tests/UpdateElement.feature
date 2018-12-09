@@ -12,4 +12,4 @@ Scenario: Trying to change type name with null # PASSED #Automated
 	Given the server is up 
 	And theres an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "567", 
 	When I PUT "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/567" with '{type:null}' 
-	Then the reponse is 500 with message: "JSON parse error: One of the paramters provided was null" 
+	Then the reponse is 500 with message: "JSON parse error: One of the parameters provided was null" 

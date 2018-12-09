@@ -111,9 +111,6 @@ public class ElementWebUI {
 				.map(ElementTO::new)
 				.collect(Collectors.toList())
 				.toArray(new ElementTO[0]);
-		
-		if (element.length <= 0 && page == 0)			
-			throw new ElementNotFoundException("No elements at the distance specified from the (x, y) specified");
 		return element;
 	}
 	
@@ -134,9 +131,7 @@ public class ElementWebUI {
 				.map(ElementTO::new)
 				.collect(Collectors.toList())
 				.toArray(new ElementTO[0]);
-		
-		if (elements.length <= 0 && page == 0)			
-			throw new ElementNotFoundException("No element was found with key: " + attributeName + " and value: " + value);
+
 		return elements;
 	}
 	

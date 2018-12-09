@@ -14,10 +14,3 @@ Scenario: Getting an element is unsuccessful with wrong id # PASSED
 	And theres an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "1025028332", 
 	When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/2019A.Kagan/1586158061" 
 	Then the response is 404 with message: "Element does not exist" 
-	
-Scenario: Getting an element is unsuccessful with wrong creator email # PASSED
-
-	Given the server is up 
-	And theres an element with playground: "2019A.Kagan", email: "rubykozel@gmail.com", playground: "2019A.Kagan", id: "1025028332", 
-	When I GET "/playground/elements/2019A.Kagan/dudidavidov@gmail.com/2019A.Kagan/1025028332" 
-	Then the response is 404 with message: "Element does not exist" 

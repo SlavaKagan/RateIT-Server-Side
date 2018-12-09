@@ -13,4 +13,5 @@ Scenario: Getting elements when there are no elements in the playground
 	Given the server is up 
 	And there are no elements in the playground # PASSED
 	When I GET "/playground/elements/2019A.Kagan/rubykozel@gmail.com/near/0/0/1" 
-	Then the response is 404 with message: "No elements at the distance specified from the (x, y) specified" 
+	Then the response 200
+	And the output is []
