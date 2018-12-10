@@ -8,6 +8,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import playground.aop.annotations.ValidateNull;
+import playground.aop.logger.MyLog;
+import playground.aop.logger.PlaygroundPerformance;
 import playground.dal.NumberGenerator;
 import playground.dal.NumberGeneratorDao;
 import playground.dal.UserDao;
@@ -44,6 +46,8 @@ public class JpaUserService implements UserService {
 	@Override
 	@Transactional
 	@ValidateNull
+	@MyLog
+	@PlaygroundPerformance
 	public UserEntity createUser(UserEntity userEntity) throws Exception {
 		if (!this.users.existsById(userEntity.getUniqueKey())) {
 			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
@@ -67,6 +71,8 @@ public class JpaUserService implements UserService {
 
 	@Override
 	@Transactional(readOnly = true)
+	@MyLog
+	@PlaygroundPerformance
 	public UserEntity getUser(String uniqueKey) {
 		Optional<UserEntity> op = this.users.findById(uniqueKey);
 		if (op.isPresent()) {
@@ -80,6 +86,8 @@ public class JpaUserService implements UserService {
 	// Need to think how to implement the logic in the annotation
 	@Override
 	@Transactional(readOnly = true)
+	@MyLog
+	@PlaygroundPerformance
 	public UserEntity getRegisteredUser(String playground, String email) throws ConfirmationException {
 		Optional<UserEntity> user = this.users.findById(playground + delim + email);
 		if (!user.isPresent())
@@ -95,6 +103,8 @@ public class JpaUserService implements UserService {
 	// Need to think how to implement the logic in the annotation
 	@Override
 	@Transactional
+	@MyLog
+	@PlaygroundPerformance
 	public UserEntity confirmUser(String playground, String email, String code) throws Exception {
 		Optional<UserEntity> user = this.users.findById(playground + delim + email);
 		if (!user.isPresent())
@@ -115,6 +125,8 @@ public class JpaUserService implements UserService {
 	@Override
 	@Transactional
 	@ValidateNull
+	@MyLog
+	@PlaygroundPerformance
 	public void editUser(String playground, String email, UserEntity newUser) throws Exception {
 		UserEntity existing = this.getUser(playground + delim + email);
 
@@ -135,6 +147,8 @@ public class JpaUserService implements UserService {
 
 	@Override
 	@Transactional
+	@MyLog
+	@PlaygroundPerformance
 	public void cleanup() {
 		this.users.deleteAll();
 	}

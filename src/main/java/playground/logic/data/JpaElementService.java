@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import playground.aop.annotations.ValidateManager;
 import playground.aop.annotations.ValidateNull;
+import playground.aop.logger.MyLog;
+import playground.aop.logger.PlaygroundPerformance;
 import playground.dal.ElementDao;
 import playground.dal.NumberGenerator;
 import playground.dal.NumberGeneratorDao;
@@ -40,6 +42,8 @@ public class JpaElementService implements ElementService {
 	@Transactional
 	@ValidateManager
 	@ValidateNull
+	@MyLog
+	@PlaygroundPerformance
 	public ElementEntity createElement(String userPlayground, String email, ElementEntity elementEntity)
 			throws Exception {
 		if (!this.elements.existsById(elementEntity.getUniqueKey())) {
@@ -59,6 +63,8 @@ public class JpaElementService implements ElementService {
 	@Override
 	@Transactional(readOnly = true)
 	@ValidateNull
+	@MyLog
+	@PlaygroundPerformance
 	public ElementEntity getElement(String id, String playground)
 			throws ElementNotFoundException {
 		Optional<ElementEntity> op = this.elements.findById(id + delim + playground);
@@ -70,6 +76,8 @@ public class JpaElementService implements ElementService {
 	@Override
 	@Transactional(readOnly = true)
 	@ValidateNull
+	@MyLog
+	@PlaygroundPerformance
 	public List<ElementEntity> getAllElements(int size, int page) {
 		return this
 				.elements
@@ -80,6 +88,8 @@ public class JpaElementService implements ElementService {
 	@Override
 	@Transactional(readOnly = true)
 	@ValidateNull
+	@MyLog
+	@PlaygroundPerformance
 	public List<ElementEntity> getAllElementsByDistance(int size, int page,
 			double x, double y, double distance) {
 		return this
@@ -95,6 +105,8 @@ public class JpaElementService implements ElementService {
 	@Override
 	@Transactional(readOnly = true)
 	@ValidateNull
+	@MyLog
+	@PlaygroundPerformance
 	public List<ElementEntity> getAllElementsByAttributeAndItsValue(int size,
 			int page, String attributeName, String value) throws Exception {
 		if(attributeName.toLowerCase().equals("name"))
@@ -118,6 +130,8 @@ public class JpaElementService implements ElementService {
 	@Transactional
 	@ValidateManager
 	@ValidateNull
+	@MyLog
+	@PlaygroundPerformance
 	public void updateElement(String userPlayground, String email, String id, String playground, ElementEntity newElement) 
 			throws Exception {
 		if(this.elements.existsById(id + delim + playground)) {
@@ -131,6 +145,8 @@ public class JpaElementService implements ElementService {
 
 	@Override
 	@Transactional
+	@MyLog
+	@PlaygroundPerformance
 	public void cleanup() {
 		this.elements.deleteAll();
 	}

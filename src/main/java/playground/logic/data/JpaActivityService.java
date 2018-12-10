@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import playground.aop.annotations.ValidateNull;
+import playground.aop.logger.MyLog;
+import playground.aop.logger.PlaygroundPerformance;
 import playground.dal.ActivityDao;
 import playground.dal.NumberGenerator;
 import playground.dal.NumberGeneratorDao;
@@ -30,6 +32,8 @@ public class JpaActivityService implements ActivityService {
 
 	@Override
 	@Transactional
+	@MyLog
+	@PlaygroundPerformance
 	public ActivityEntity getActivity(String uniqueKey) throws Exception {
 		Optional<ActivityEntity> op = this.activities.findById(uniqueKey);
 		if (op.isPresent()) {
@@ -42,6 +46,8 @@ public class JpaActivityService implements ActivityService {
 	@Override
 	@Transactional
 	@ValidateNull
+	@MyLog
+	@PlaygroundPerformance
 	public ActivityEntity createActivity(ActivityEntity activityEntity) throws Exception {
 		if (!this.activities.existsById(activityEntity.getUniqueKey())) {
 			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
@@ -57,12 +63,16 @@ public class JpaActivityService implements ActivityService {
 
 	@Override
 	@Transactional
+	@MyLog
+	@PlaygroundPerformance
 	public void cleanup() {
 		this.activities.deleteAll();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
+	@MyLog
+	@PlaygroundPerformance
 	public List<ActivityEntity> getAllActivities(int size, int page) {
 		return 
 				this
@@ -73,6 +83,8 @@ public class JpaActivityService implements ActivityService {
 	
 	@Override
 	@ValidateNull
+	@MyLog
+	@PlaygroundPerformance
 	public void updateActivity(String id, ActivityEntity newActivity) throws Exception {
 		if (this.activities.existsById(id)) {
 			ActivityEntity existing = this.getActivity(id);
