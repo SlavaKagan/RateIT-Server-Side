@@ -16,7 +16,6 @@ import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import playground.logic.ActivityEntity;
 import playground.logic.ActivityService;
 
 @RunWith(SpringRunner.class)

@@ -1,6 +1,8 @@
 package playground.layout;
 import org.springframework.beans.factory.annotation.Value;
 
+import playground.aop.annotations.ValidateNull;
+
 public class NewUserForm {
 	
 	@Value("${manager.email:Anonymous}")
@@ -19,6 +21,7 @@ public class NewUserForm {
 
 	}
 	
+	
 	public NewUserForm(String email, String username, String avatar, String role) {
 		this.email = email;
 		this.username = username;
@@ -30,8 +33,8 @@ public class NewUserForm {
 		return email;
 	}
 
+	
 	public void setEmail(String email) throws Exception {
-		validateNull(email);
 		this.email = email;
 	}
 
@@ -39,8 +42,8 @@ public class NewUserForm {
 		return username;
 	}
 
+	
 	public void setUsername(String username) throws Exception {
-		validateNull(username);
 		this.username = username;
 	}
 
@@ -48,8 +51,8 @@ public class NewUserForm {
 		return avatar;
 	}
 
+	
 	public void setAvatar(String avatar) throws Exception {
-		validateNull(avatar);
 		this.avatar = avatar;
 	}
 
@@ -57,14 +60,9 @@ public class NewUserForm {
 		return role;
 	}
 
-	public void setRole(String role) throws Exception {
-		validateNull(role);
-		this.role = role;
-	}
 	
-	private void validateNull(String string) throws Exception {
-		if ("null".equals(string) || string == null)
-			throw new Exception("One of the paramters provided was null");
+	public void setRole(String role) throws Exception {
+		this.role = role;
 	}
 
 	@Override

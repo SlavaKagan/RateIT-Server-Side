@@ -9,6 +9,7 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import playground.aop.annotations.ValidateNull;
 import playground.dal.ActivityDao;
 import playground.dal.NumberGenerator;
 import playground.dal.NumberGeneratorDao;
@@ -40,9 +41,9 @@ public class JpaActivityService implements ActivityService {
 
 	@Override
 	@Transactional
+	@ValidateNull
 	public ActivityEntity createActivity(ActivityEntity activityEntity) throws Exception {
 		if (!this.activities.existsById(activityEntity.getUniqueKey())) {
-			checkForNulls(activityEntity);
 			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
 			activityEntity.setNumber("" + temp.getNextNumber());
 
@@ -69,10 +70,10 @@ public class JpaActivityService implements ActivityService {
 				.findAll(PageRequest.of(page, size, Direction.DESC, "creationDate"))
 				.getContent();
 	}
-
+	
 	@Override
+	@ValidateNull
 	public void updateActivity(String id, ActivityEntity newActivity) throws Exception {
-		checkForNulls(newActivity);
 		if (this.activities.existsById(id)) {
 			ActivityEntity existing = this.getActivity(id);
 			this.activities.delete(existing);
@@ -80,10 +81,5 @@ public class JpaActivityService implements ActivityService {
 		} else {
 			throw new Exception("There's no such element");
 		}
-	}
-
-	private void checkForNulls(ActivityEntity ae) throws Exception {
-		if (ae.getType() == null || ae.getElementId() == null || ae.getUniqueKey() == null)
-			throw new Exception("Null was given.");
 	}
 }

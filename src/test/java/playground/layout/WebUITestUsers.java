@@ -60,6 +60,7 @@ public class WebUITestUsers {
 		this.url = "http://localhost:" + port + "/playground/users/";
 		form = new NewUserForm(email, "ruby", ":-)", "Guest");
 		user = new UserTO(form);
+		user.setPlayground(playground);
 		jacksonMapper = new ObjectMapper();
 	}
 
@@ -184,7 +185,6 @@ public class WebUITestUsers {
 	@Test
 	public void testConfirmingANewRegisteredUserSuccessfully() throws Exception {
 		// Given
-		
 		UserEntity userToConfirm = user.toEntity();
 		userToConfirm.setCode("1234");
 		service.createUser(userToConfirm);
@@ -328,8 +328,7 @@ public class WebUITestUsers {
 		/* nothing */
 		
 		// When
-		@SuppressWarnings("unused")
-		UserTO user = this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
+		this.restTemplate.getForObject(url + "login/{playground}/{email}", UserTO.class,
 				playground, form.getEmail());
 		//Then the response is 500
 	}
@@ -397,7 +396,8 @@ public class WebUITestUsers {
 	@Test(expected = Exception.class)
 	public void testChangeUserNameOfUnregisteredUser() throws Exception {
 		// Given
-		UserTO newUser= new UserTO(form);
+		UserTO newUser = new UserTO(form);
+		newUser.setPlayground(playground);
 		newUser.setUserName("omer");
 		
 		// When

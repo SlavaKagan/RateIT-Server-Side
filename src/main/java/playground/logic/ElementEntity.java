@@ -13,6 +13,8 @@ import javax.persistence.Transient;
 import org.springframework.beans.factory.annotation.Value;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import playground.aop.annotations.ValidateNull;
+
 @Entity
 @Table(name = "ELEMENTS")
 public class ElementEntity {
@@ -34,7 +36,8 @@ public class ElementEntity {
 		this.expirationDate = null;
 		this.attributes = new HashMap<>();
 	}
-
+	
+	
 	public ElementEntity(String type, String name, String creatorPlayground, String creatorEmail,
 			Map<String, Object> attributes) {
 		this();

@@ -9,6 +9,8 @@ import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import playground.aop.annotations.ValidateManager;
+import playground.aop.annotations.ValidateNull;
 import playground.dal.ElementDao;
 import playground.dal.NumberGenerator;
 import playground.dal.NumberGeneratorDao;
@@ -36,10 +38,11 @@ public class JpaElementService implements ElementService {
 
 	@Override
 	@Transactional
-	public ElementEntity createElement(ElementEntity elementEntity, String userPlayground, String email)
+	@ValidateManager
+	@ValidateNull
+	public ElementEntity createElement(String userPlayground, String email, ElementEntity elementEntity)
 			throws Exception {
 		if (!this.elements.existsById(elementEntity.getUniqueKey())) {
-			checkForNulls(elementEntity);
 			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
 			
 			elementEntity.setNumber("" + temp.getNextNumber());
@@ -55,6 +58,7 @@ public class JpaElementService implements ElementService {
 
 	@Override
 	@Transactional(readOnly = true)
+	@ValidateNull
 	public ElementEntity getElement(String id, String playground)
 			throws ElementNotFoundException {
 		Optional<ElementEntity> op = this.elements.findById(id + delim + playground);
@@ -65,6 +69,7 @@ public class JpaElementService implements ElementService {
 
 	@Override
 	@Transactional(readOnly = true)
+	@ValidateNull
 	public List<ElementEntity> getAllElements(int size, int page) {
 		return this
 				.elements
@@ -74,6 +79,7 @@ public class JpaElementService implements ElementService {
 
 	@Override
 	@Transactional(readOnly = true)
+	@ValidateNull
 	public List<ElementEntity> getAllElementsByDistance(int size, int page,
 			double x, double y, double distance) {
 		return this
@@ -88,6 +94,7 @@ public class JpaElementService implements ElementService {
 	
 	@Override
 	@Transactional(readOnly = true)
+	@ValidateNull
 	public List<ElementEntity> getAllElementsByAttributeAndItsValue(int size,
 			int page, String attributeName, String value) throws Exception {
 		if(attributeName.toLowerCase().equals("name"))
@@ -109,27 +116,23 @@ public class JpaElementService implements ElementService {
 
 	@Override
 	@Transactional
-	public void updateElement(String id, String playground, ElementEntity newElement) throws ElementNotFoundException, Exception {
-		checkForNulls(newElement);
+	@ValidateManager
+	@ValidateNull
+	public void updateElement(String userPlayground, String email, String id, String playground, ElementEntity newElement) 
+			throws Exception {
 		if(this.elements.existsById(id + delim + playground)) {
 			ElementEntity existing = getElement(id, playground);
 			this.elements.delete(existing);
-			this.createElement(newElement, existing.getCreatorPlayground(), existing.getCreatorEmail());
+			this.createElement(existing.getCreatorPlayground(), existing.getCreatorEmail(), newElement);
 		} else {
 			throw new ElementNotFoundException("There's no such element");
 		}
-		
 	}
 
 	@Override
 	@Transactional
 	public void cleanup() {
 		this.elements.deleteAll();
-	}
-	
-	private void checkForNulls(ElementEntity e) throws Exception {
-		if(e.getName() == null || e.getType() == null || e.getUniqueKey() == null)
-			throw new Exception("Null was given to name or type");
 	}
 
 }

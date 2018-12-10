@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import playground.aop.annotations.ValidateNull;
 import playground.logic.ConfirmationException;
 import playground.logic.ElementNotFoundException;
 import playground.logic.NotFoundExceptions;
 import playground.logic.UserService;
 
+@CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
 @RestController
 public class UserWebUI {
 	private UserService userservice;
@@ -50,7 +52,6 @@ public class UserWebUI {
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email,
 			@PathVariable("code") String code) throws Exception {
-		validateParamsNotNull(playground,email);
 		return new UserTO(userservice.confirmUser(playground, email, code));
 	}
 	
@@ -61,7 +62,6 @@ public class UserWebUI {
 	public UserTO getUser(
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email) throws Exception {
-		validateParamsNotNull(playground,email);
 		return new UserTO(userservice.getRegisteredUser(playground, email));	
 	}
 	
@@ -73,7 +73,6 @@ public class UserWebUI {
 			@PathVariable("playground") String playground,
 			@PathVariable("email") String email, 
 			@RequestBody UserTO newUser) throws Exception {
-		validateParamsNotNull(playground,email);
 		userservice.editUser(playground, email, newUser.toEntity());
 	}
 	
@@ -85,11 +84,5 @@ public class UserWebUI {
 	public ErrorMessage handleException(NotFoundExceptions e) {
 		String msg = e.getMessage();
 		return new ErrorMessage(msg == null ? "There's no specified message for this exception" : msg);
-	}
-	
-	private void validateParamsNotNull(String... strings) throws Exception {
-		for(String string : strings) 
-			if ("null".equals(string) || string == null)
-				throw new Exception("One of the paramters provided was null");					
 	}
 }

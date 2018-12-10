@@ -10,6 +10,8 @@ import javax.persistence.Transient;
 import org.springframework.beans.factory.annotation.Value;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import playground.aop.annotations.ValidateNull;
+
 @Entity
 @Table(name="ACTIVITIES")
 public class ActivityEntity {
@@ -61,8 +63,8 @@ public class ActivityEntity {
 		return elementPlayground;
 	}
 
+	
 	public void setElementPlayground(String elementPlayground) {
-		validateNull(elementPlayground);
 		this.elementPlayground = elementPlayground;
 	}
 
@@ -70,8 +72,8 @@ public class ActivityEntity {
 		return elementId;
 	}
 
+	
 	public void setElementId(String elementId)  {
-		validateNull(elementId);
 		this.elementId = elementId;
 	}
 
@@ -79,8 +81,8 @@ public class ActivityEntity {
 		return type;
 	}
 
+	
 	public void setType(String type) {
-		validateNull(type);
 		this.type = type;
 	}
 
@@ -88,8 +90,8 @@ public class ActivityEntity {
 		return playerPlayground;
 	}
 
+	
 	public void setPlayerPlayground(String playerPlayground)  {
-		validateNull(playerPlayground);
 		this.playerPlayground = playerPlayground;
 	}
 
@@ -97,8 +99,8 @@ public class ActivityEntity {
 		return playerEmail;
 	}
 
+	
 	public void setPlayerEmail(String playerEmail)  {
-		validateNull(playerEmail);
 		this.playerEmail = playerEmail;
 	}
 	
@@ -126,10 +128,5 @@ public class ActivityEntity {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
-	}
-
-	private void validateNull(String string) {
-		if ("null".equals(string) || string == null)
-			throw new RuntimeException("One of the paramters provided was null");
 	}
 }

@@ -2,12 +2,12 @@ package playground.logic.data;
 
 import java.util.Optional;
 import java.util.Random;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import playground.aop.annotations.ValidateNull;
 import playground.dal.NumberGenerator;
 import playground.dal.NumberGeneratorDao;
 import playground.dal.UserDao;
@@ -43,6 +43,7 @@ public class JpaUserService implements UserService {
 
 	@Override
 	@Transactional
+	@ValidateNull
 	public UserEntity createUser(UserEntity userEntity) throws Exception {
 		if (!this.users.existsById(userEntity.getUniqueKey())) {
 			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
@@ -75,6 +76,8 @@ public class JpaUserService implements UserService {
 		}
 	}
 
+	
+	// Need to think how to implement the logic in the annotation
 	@Override
 	@Transactional(readOnly = true)
 	public UserEntity getRegisteredUser(String playground, String email) throws ConfirmationException {
@@ -88,7 +91,8 @@ public class JpaUserService implements UserService {
 		else
 			return user.get();
 	}
-
+	
+	// Need to think how to implement the logic in the annotation
 	@Override
 	@Transactional
 	public UserEntity confirmUser(String playground, String email, String code) throws Exception {
@@ -110,18 +114,19 @@ public class JpaUserService implements UserService {
 
 	@Override
 	@Transactional
+	@ValidateNull
 	public void editUser(String playground, String email, UserEntity newUser) throws Exception {
 		UserEntity existing = this.getUser(playground + delim + email);
 
-		if (newUser.getAvatar() != null && !newUser.getAvatar().equals(existing.getAvatar())) {
+		if (!newUser.getAvatar().equals(existing.getAvatar())) {
 			existing.setAvatar(newUser.getAvatar());
 		}
 
-		if (newUser.getUserName() != null && !newUser.getUserName().equals(existing.getUserName())) {
+		if (!newUser.getUserName().equals(existing.getUserName())) {
 			existing.setUserName(newUser.getUserName());
 		}
 
-		if (newUser.getRole() != null && !newUser.getRole().equals(existing.getRole())) {
+		if (!newUser.getRole().equals(existing.getRole())) {
 			existing.setRole(newUser.getRole());
 		}
 

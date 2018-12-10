@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,11 +16,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import playground.aop.annotations.ValidateNull;
 import playground.logic.ConfirmationException;
 import playground.logic.ElementNotFoundException;
 import playground.logic.ElementService;
 import playground.logic.NotFoundExceptions;
 
+@CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
 @RestController
 public class ElementWebUI {
 	private ElementService elementservice;
@@ -41,11 +44,11 @@ public class ElementWebUI {
 			@RequestBody ElementTO element,
 			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email) throws Exception {
-		validateParamsNotNull(userPlayground,email);
 		element.setPlayground(playground);
-		return new ElementTO(elementservice.createElement(element.toEntity(), userPlayground, email));
+		return new ElementTO(elementservice.createElement(userPlayground, email, element.toEntity()));
 	}
 	
+	// Check if user exists
 	@RequestMapping(
 			method = RequestMethod.GET, 
 			path = "/playground/elements/{userPlayground}/{email}/{playground}/{id}", 
@@ -55,10 +58,10 @@ public class ElementWebUI {
 			@PathVariable("email") String email, 
 			@PathVariable("playground") String playground,
 			@PathVariable("id") String id) throws Exception {
-		validateParamsNotNull(userPlayground,email,playground,id);
 		return new ElementTO(elementservice.getElement(id, playground));
 	}
 	
+	// Check if user exists
 	@RequestMapping(
 			method = RequestMethod.GET, 
 			path = "/playground/elements/{userPlayground}/{email}/all", 
@@ -68,7 +71,6 @@ public class ElementWebUI {
 			@PathVariable("email") String email,
 			@RequestParam(name="size", required=false, defaultValue="10") int size, 
 			@RequestParam(name="page", required=false, defaultValue="0") int page) throws Exception {
-		validateParamsNotNull(userPlayground,email);
 		ElementTO[] element = elementservice.getAllElements(size, page)
 				.stream()
 				.map(ElementTO::new)
@@ -77,6 +79,7 @@ public class ElementWebUI {
 		return element;
 	}
 	
+	// Checking if user exists already in ManagerValidator, don't need to check
 	@RequestMapping(
 			method = RequestMethod.PUT, 
 			path = "/playground/elements/{userPlayground}/{email}/{playground}/{id}", 
@@ -87,10 +90,10 @@ public class ElementWebUI {
 			@PathVariable("playground") String playground,
 			@PathVariable("id") String id, 
 			@RequestBody ElementTO newElement) throws Exception {
-		validateParamsNotNull(userPlayground, playground, email, id);
-		elementservice.updateElement(id, playground, newElement.toEntity());
+		elementservice.updateElement(userPlayground, email, id, playground, newElement.toEntity());
 	}
-
+	
+	// Check if user exists
 	@RequestMapping(
 			method = RequestMethod.GET, 
 			path = "/playground/elements/{userPlayground}/{email}/near/{x}/{y}/{distance}", 
@@ -103,7 +106,6 @@ public class ElementWebUI {
 			@PathVariable("distance") String distance,
 			@RequestParam(name="size", required=false, defaultValue="10") int size, 
 			@RequestParam(name="page", required=false, defaultValue="0") int page) throws Exception {
-		validateParamsNotNull(userPlayground,email,x,y,distance);
 		ElementTO[] element = elementservice
 				.getAllElementsByDistance(size, page, 
 						Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(distance))
@@ -114,6 +116,7 @@ public class ElementWebUI {
 		return element;
 	}
 	
+	// Check if user exists
 	@RequestMapping(
 			method = RequestMethod.GET,
 			path = "/playground/elements/{userPlayground}/{email}/search/{attributeName}/{value}",
@@ -125,7 +128,6 @@ public class ElementWebUI {
 			@PathVariable("value") String value,
 			@RequestParam(name="size", required=false, defaultValue="10") int size, 
 			@RequestParam(name="page", required=false, defaultValue="0") int page) throws Exception {
-		validateParamsNotNull(userPlayground,email, attributeName);
 		ElementTO[] elements = elementservice.getAllElementsByAttributeAndItsValue(size, page, attributeName, value)
 				.stream()
 				.map(ElementTO::new)
@@ -143,11 +145,5 @@ public class ElementWebUI {
 	public ErrorMessage handleException(NotFoundExceptions e) {
 		String msg = e.getMessage();
 		return new ErrorMessage(msg == null ? "There's no specified message for this exception" : msg);
-	}
-	
-	private void validateParamsNotNull(String... strings) throws Exception {
-		for(String string : strings) 
-			if ("null".equals(string) || string == null)
-				throw new Exception("One of the paramters provided was null");					
 	}
 }

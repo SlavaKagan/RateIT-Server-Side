@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import org.springframework.beans.factory.annotation.Value;
+
+import playground.aop.annotations.ValidateNull;
 import playground.logic.ActivityEntity;
 
 public class ActivityTO {
@@ -26,6 +28,7 @@ public class ActivityTO {
 		this.id = "" + generator.getAndIncrement();
 	}
 
+	
 	public ActivityTO(ElementTO newElement, String type) {
 		this();
 		this.elementId = newElement.getId();
@@ -36,7 +39,8 @@ public class ActivityTO {
 	public String getPlayground() {
 		return playground;
 	}
-
+	
+	
 	public void setPlayground(String playground) {
 		this.playground = playground;
 	}
@@ -44,16 +48,17 @@ public class ActivityTO {
 	public String getId() {
 		return id;
 	}
-
+	
+	
 	public void setId(String id) {
-		validateNull(id);
 		this.id = id;
 	}
 
 	public String getElementPlayground() {
 		return elementPlayground;
 	}
-
+	
+	
 	public void setElementPlayground(String elementPlayground) {
 		this.elementPlayground = elementPlayground;
 	}
@@ -61,25 +66,26 @@ public class ActivityTO {
 	public String getElementId() {
 		return elementId;
 	}
-
+	
+	
 	public void setElementId(String elementId) {
-		validateNull(elementId);
 		this.elementId = elementId;
 	}
 
 	public String getType() {
 		return type;
 	}
-
+	
+	
 	public void setType(String type) {
-		validateNull(type);
 		this.type = type;
 	}
 
 	public String getPlayerPlayground() {
 		return playerPlayground;
 	}
-
+	
+	
 	public void setPlayerPlayground(String playerPlayground) {
 		this.playerPlayground = playerPlayground;
 	}
@@ -87,7 +93,8 @@ public class ActivityTO {
 	public String getPlayerEmail() {
 		return playerEmail;
 	}
-
+	
+	
 	public void setPlayerEmail(String playerEmail) {
 		this.playerEmail = playerEmail;
 	}
@@ -119,10 +126,5 @@ public class ActivityTO {
 				+ ", elementId=" + elementId + ", type=" + type + ", playerPlayground=" + playerPlayground
 				+ ", playerEmail=" + playerEmail + ", attributes=" + attributes + "]";
 
-	}
-	
-	private void validateNull(String string) throws RuntimeException {
-		if ("null".equals(string) || string == null)
-			throw new RuntimeException("One of the paramters provided was null");
 	}
 }

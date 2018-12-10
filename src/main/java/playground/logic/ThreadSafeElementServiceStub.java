@@ -10,6 +10,8 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import playground.aop.annotations.ValidateNull;
+
 //@Service
 public class ThreadSafeElementServiceStub implements ElementService {
 
@@ -35,9 +37,9 @@ public class ThreadSafeElementServiceStub implements ElementService {
 	public void setElements(Map<String, ElementEntity> elements) {
 		this.elements = elements;
 	}
-
-	public ElementEntity createElement(ElementEntity elementEntity, String creatorPlayground, String email) throws Exception {
-		checkForNulls(elementEntity);
+	
+	@ValidateNull
+	public ElementEntity createElement(String creatorPlayground, String email, ElementEntity elementEntity) throws Exception {
 		checkIfExists(elementEntity);
 		elementEntity.setCreatorPlayground(creatorPlayground);
 		elementEntity.setCreatorEmail(email);
@@ -101,18 +103,14 @@ public class ThreadSafeElementServiceStub implements ElementService {
 				.collect(Collectors.toList());
 	}
 
-	public void updateElement(String id, String playground, ElementEntity newElement) throws Exception {
-		checkForNulls(newElement);
+	@ValidateNull
+	public void updateElement(String userPlayground, String email, String id, String playground,
+			ElementEntity newElement) throws ElementNotFoundException, Exception {
 		ElementEntity element = getElement(id, playground);
 		if (element == null)
 			throw new ElementNotFoundException("Element does not exist");
 		this.elements.remove(id);
 		this.elements.put(newElement.getUniqueKey().split("@@")[0], newElement);
-	}
-	
-	private void checkForNulls(ElementEntity e) throws Exception {
-		if(e.getName() == null || e.getType() == null || e.getUniqueKey().split("@@")[0] == null)
-			throw new Exception("Null was given to name or type");
 	}
 	
 	private void checkIfExists(ElementEntity e) throws Exception {

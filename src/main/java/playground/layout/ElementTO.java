@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Value;
 
+import playground.aop.annotations.ValidateNull;
 import playground.logic.ElementEntity;
 import playground.logic.Location;
 
@@ -50,7 +51,8 @@ public class ElementTO {
 			this.id = idAndPlayground[0];
 		}
 	}
-
+	
+	
 	public ElementTO(String type, String name, String creatorPlayground, String creatorEmail,
 			Map<String, Object> attributes) throws Exception {
 		this();
@@ -64,7 +66,8 @@ public class ElementTO {
 	public String getPlayground() {
 		return playground;
 	}
-
+	
+	
 	public void setPlayground(String playground) {
 		this.playground = playground;
 	}
@@ -72,7 +75,8 @@ public class ElementTO {
 	public String getId() {
 		return id;
 	}
-
+	
+	
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -80,7 +84,8 @@ public class ElementTO {
 	public Location getLocation() {
 		return location;
 	}
-
+	
+	
 	public void setLocation(Location location) {
 		this.location = location;
 	}
@@ -88,7 +93,8 @@ public class ElementTO {
 	public String getName() {
 		return name;
 	}
-
+	
+	
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -112,7 +118,8 @@ public class ElementTO {
 	public String getType() {
 		return type;
 	}
-
+	
+	
 	public void setType(String type) {
 		this.type = type;
 	}

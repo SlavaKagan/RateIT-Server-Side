@@ -4,6 +4,8 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import org.springframework.beans.factory.annotation.Value;
 
+import playground.aop.annotations.ValidateNull;
+
 @Entity
 @Table(name="USERS")
 public class UserEntity {
@@ -24,7 +26,8 @@ public class UserEntity {
 	public UserEntity() {
 
 	}
-
+	
+	
 	public UserEntity(String uniqueKey, String userName, String avatar, String role) {
 		this.uniqueKey = uniqueKey;
 		this.userName = userName;
@@ -45,27 +48,27 @@ public class UserEntity {
 	public String getUserName() {
 		return userName;
 	}
-
+	
+	
 	public void setUserName(String userName) throws Exception {
-		validateNull(userName);
 		this.userName = userName;
 	}
 
 	public String getAvatar() {
 		return avatar;
 	}
-
+	
+	
 	public void setAvatar(String avatar) throws Exception {
-		validateNull(avatar);
 		this.avatar = avatar;
 	}
 
 	public String getRole() {
 		return role;
 	}
-
+	
+	
 	public void setRole(String role) throws Exception {
-		validateNull(role);
 		this.role = role;
 	}
 
@@ -74,9 +77,9 @@ public class UserEntity {
 	}
 
 	public void setStartingPoints() {
-		if (this.role == manager) {
+		if (this.role.equals(manager)) {
 			this.points = 0;
-		} else if (this.role == reviewer) {
+		} else if (this.role.equals(reviewer)) {
 			this.points = 100;
 		}
 	}
@@ -105,9 +108,12 @@ public class UserEntity {
 		this.code = code;
 	}
 	
-	private void validateNull(String string) throws Exception {
-		if ("null".equals(string) || string == null)
-			throw new Exception("One of the paramters provided was null");
+	@Override
+	public String toString() {
+		return "UserEntity [uniqueKey=" + uniqueKey + ", userName=" + userName + ", avatar=" + avatar + ", role=" + role
+				+ ", points=" + points + ", number=" + number + ", code=" + code + ", manager=" + manager
+				+ ", reviewer=" + reviewer + "]";
 	}
+
 
 }

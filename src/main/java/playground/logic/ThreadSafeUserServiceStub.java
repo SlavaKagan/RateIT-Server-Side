@@ -77,14 +77,6 @@ public class ThreadSafeUserServiceStub implements UserService {
 		this.users.put(newUser.getUniqueKey().split("@@")[1], newUser);
 	}
 
-//	private String generateRandomCode() {
-//		String text = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-//		String code = "";
-//		for (int i = 0; i < 6; i++)
-//			code += text.charAt((int) (Math.random() * text.length()));
-//		return code;
-//	}
-
 	@Override
 	public void cleanup() {
 		this.users.clear();

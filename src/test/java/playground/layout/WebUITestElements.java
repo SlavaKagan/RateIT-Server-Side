@@ -1,7 +1,6 @@
 package playground.layout;
 import static org.assertj.core.api.Assertions.assertThat;
 import java.util.HashMap;
-import java.util.Map;
 import javax.annotation.PostConstruct;
 import org.junit.After;
 import org.junit.Before;
@@ -39,9 +38,11 @@ public class WebUITestElements  {
 	@Value("${delim:@@}")
 	private String delim;
 	
+	@Value("${reviewer:Reviewer}")
+	private String reviewer;
+	
 	private RestTemplate restTemplate;
 	private String url;
-	private NewUserForm form;
 	private UserTO user;
 	private String elementJson;
 	
@@ -54,8 +55,7 @@ public class WebUITestElements  {
 	public void init() {
 		this.restTemplate = new RestTemplate();
 		this.url = "http://localhost:" + port + "/playground/elements";
-		form = new NewUserForm(email, "ruby", ":-)", "Manager");
-		user = new UserTO(form);
+		user = new UserTO(new NewUserForm(email, "ruby", ":-)", "Manager"));
 		jacksonMapper = new ObjectMapper();
 		elementJson = "{"
 							+ "\"type\":\"Messaging Board\","
@@ -65,8 +65,9 @@ public class WebUITestElements  {
 	}
 	
 	@Before
-	public void setup () {
-		
+	public void setup () throws Exception {
+		user.setPlayground(playground);
+		userservice.createUser(user.toEntity());
 	}
 
 	@After
@@ -110,16 +111,13 @@ public class WebUITestElements  {
 	 */
 	
 	@Test
-	public void testCreatingAnElementSuccessfully() throws Exception {
-		//Given
-		userservice.createUser(user.toEntity());
-		
+	public void testCreatingAnElementSuccessfully() throws Exception {	
 		//When
 
 		ElementTO postedElement = this.restTemplate
 				.postForObject(url + "/{userPlayground}/{email}", 
 						jacksonMapper.readValue(elementJson, ElementTO.class),
-						ElementTO.class, playground, email);
+						ElementTO.class, user.getPlayground(), user.getEmail());
 		
 		//Then
 		ElementEntity actualElementInDb = elementservice.getElement(postedElement.getId(), playground);
@@ -143,10 +141,8 @@ public class WebUITestElements  {
 						+ "\"creatorPlayground\":\"2019A.Kagan\","
 						+ "\"creatorEmail\":\"rubykozel@gmail.com\""
 						+ "}", ElementEntity.class)));
-	}
-	
-//	***COMMENTED FOR NOW - NO NEED TO TEST IF PLAYER IS MANAGER WHEN POSTING NEW ELEMENT, FOR THIS SPRINT(4)***
-//
+	}	
+
 //	/**
 //	 * 	Given the server is up
 //		And there's an account with playground: "2019A.Kagan", email: email, role: "Reviewer",
@@ -161,7 +157,8 @@ public class WebUITestElements  {
 //	@Test(expected = Exception.class)
 //	public void testCreatingAnElementWithAUserThatIsNotAManager() throws Exception {
 //		// Given
-//		user.setRole(Constants.REVIEWER);
+//		userservice.cleanup(); // specific for this test
+//		user.setRole(reviewer);
 //		userservice.createUser(user.toEntity());
 //
 //		// When
@@ -169,8 +166,8 @@ public class WebUITestElements  {
 //		this.restTemplate.postForObject(url + "/{userPlayground}/{email}", 
 //										elementToPost,		
 //										ElementTO.class, 
-//										playground,
-//										email);
+//										user.getPlayground(),
+//										user.getEmail());
 //			
 //	}
 	
@@ -184,15 +181,12 @@ public class WebUITestElements  {
 	
 	@Test(expected = Exception.class)
 	public void testCreatingAnElementWithoutDeliveringAnyValidJSON() throws Exception {
-		// Given
-		userservice.createUser(user.toEntity());
-		
 		// When
 		this.restTemplate.postForObject(url + "/{userPlayground}/{email}", 
 										null, 
 										ElementTO.class, 
-										playground,
-										email);	
+										user.getPlayground(),
+										user.getEmail());	
 	}
 	
 	/**
@@ -209,15 +203,12 @@ public class WebUITestElements  {
 	
 	@Test(expected = Exception.class)
 	public void testCreatingAnElementWithemailAsNull() throws Exception {
-		// Given
-		userservice.createUser(user.toEntity());
-		
 		// When
 		ElementTO elementToPost = jacksonMapper.readValue(elementJson, ElementTO.class);
 		this.restTemplate.postForObject(url + "/{userPlayground}/{email}", 
 										elementToPost, 
 										ElementTO.class,
-										playground,
+										user.getPlayground(),
 										null); 
 	}
 	
@@ -231,13 +222,10 @@ public class WebUITestElements  {
 	
 	@Test(expected = Exception.class)
 	public void testCreatingAnElementWithEmptyJSON() throws Exception {
-		// Given
-		userservice.createUser(user.toEntity());
-		
 		// When
 		this.restTemplate.postForObject(url + "/{userPlayground}/{email}",
 				jacksonMapper.readValue("{}", ElementTO.class),
-				ElementTO.class, playground, email);
+				ElementTO.class, user.getPlayground(), user.getEmail());
 		 
 	}
 	
@@ -259,13 +247,11 @@ public class WebUITestElements  {
 	 */
 	
 	@Test
-	public void testChangeTheNameOfTheElement() throws Exception{
-		
+	public void testChangeTheNameOfTheElement() throws Exception{	
 		// Given
-		userservice.createUser(user.toEntity());
 		ElementTO elementToPost = jacksonMapper.readValue(elementJson, ElementTO.class);
 		elementToPost.setPlayground(playground);
-		elementservice.createElement(elementToPost.toEntity(), playground, email);
+		elementservice.createElement(user.getPlayground(), user.getEmail(), elementToPost.toEntity());
 		
 		// When
 		ElementTO elementToPut = jacksonMapper.readValue(
@@ -279,8 +265,8 @@ public class WebUITestElements  {
 		
 		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}",
 								elementToPut, 
-								playground,
-								email,
+								user.getPlayground(),
+								user.getEmail(),
 								playground,
 								elementToPost.getId());
 		
@@ -327,15 +313,20 @@ public class WebUITestElements  {
 	public void testTryingToChangeTypeNameWithNull() throws Exception{
 		
 		//Given
-		userservice.createUser(user.toEntity());
 		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
 		newElement.setPlayground(playground);
-		elementservice.createElement(newElement.toEntity(), playground, email);
+		elementservice.createElement(user.getPlayground(), user.getEmail(), newElement.toEntity());
 		
 		// When
+		System.err.println("starting to set type to null");
 		newElement.setType(null);
+		System.err.println("ended set type to null");
 		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", 
-				newElement, playground,email,playground,newElement.getId());
+				newElement, 
+				user.getPlayground(), 
+				user.getEmail(),
+				playground,
+				newElement.getId());
 		
 	}
 	
@@ -358,17 +349,16 @@ public class WebUITestElements  {
 	public void testGetElementsByAttributesValueSuccessfully() throws Exception {	
 		
 		// Given
-		userservice.createUser(user.toEntity());
 		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
 		newElement.setPlayground(playground);
-		elementservice.createElement(newElement.toEntity(), playground, email);
+		elementservice.createElement(user.getPlayground(), user.getEmail(), newElement.toEntity());
 		
 		// When
 		ElementTO[] actualElements = this.restTemplate
 				.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", 
 						ElementTO[].class, 
-						playground, 
-						email, 
+						user.getPlayground(),
+						user.getEmail(), 
 						"name", 
 						"Messaging Board");
 		
@@ -392,17 +382,16 @@ public class WebUITestElements  {
 	public void testGetElementsByNullAttributesValue() throws Exception {
 		
 		// Given
-		userservice.createUser(user.toEntity());
 		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
 		newElement.setPlayground(playground);
-		elementservice.createElement(newElement.toEntity(), playground, email);
+		elementservice.createElement(user.getPlayground(), user.getEmail(), newElement.toEntity());
 		
 		// When
 		this.restTemplate
 		.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", 
 				ElementTO[].class, 
-				playground, 
-				email, 
+				user.getPlayground(),
+				user.getEmail(), 
 				"name", 
 				null);
 		
@@ -420,17 +409,16 @@ public class WebUITestElements  {
 	public void testGetElementsByAttributesValueThatDoesNotExist() throws Exception {
 		
 		// Given
-		userservice.createUser(user.toEntity());
 		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
 		newElement.setPlayground(playground);
-		elementservice.createElement(newElement.toEntity(), playground, email);
+		elementservice.createElement(user.getPlayground(), user.getEmail(), newElement.toEntity());
 		
 		// When
 		ElementTO[] actualElements = this.restTemplate
 		.getForObject(this.url + "/{userPlayground}/{email}/search/{attributeName}/{value}", 
 				ElementTO[].class, 
-				playground, 
-				email, 
+				user.getPlayground(),
+				user.getEmail(), 
 				"type", 
 				"something");
 		
@@ -464,17 +452,16 @@ public class WebUITestElements  {
 	public void testGettingElementsUsingPaginationSuccessfully() throws Exception {
 		
 		// Given
-		userservice.createUser(user.toEntity());	
 		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
 		newElement.setPlayground(playground);	
-		elementservice.createElement(newElement.toEntity(), playground, email);
+		elementservice.createElement(user.getPlayground(), user.getEmail(), newElement.toEntity());
 		
 		// When
 		ElementTO[] actualElements = this.restTemplate
 		.getForObject(this.url + "/{playground}/{email}/all?size={size}&page={page}", 
 				ElementTO[].class, 
-				playground, 
-				email, 5, 0);
+				user.getPlayground(),
+				user.getEmail(), 5, 0);
 		
 		assertThat(actualElements)
 		.isNotNull()
@@ -499,18 +486,17 @@ public class WebUITestElements  {
 	@Test
 	public void testGettingNoElementsFromPageWithNoElementsUsingPaginationSuccessfully() throws Exception {
 		
-		// Given
-		userservice.createUser(user.toEntity());	
+		// Given	
 		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
 		newElement.setPlayground(playground);	
-		elementservice.createElement(newElement.toEntity(), playground, email);
+		elementservice.createElement(user.getPlayground(), user.getEmail(), newElement.toEntity());
 		
 		// When
 		ElementTO[] actualElements = this.restTemplate
 				.getForObject(this.url + "/{playground}/{email}/all?size={size}&page={page}", 
 						ElementTO[].class, 
-						playground, 
-						email, 5, 1);
+						user.getPlayground(),
+						user.getEmail(), 5, 1);
 		
 		// Then
 		assertThat(actualElements)
@@ -528,10 +514,10 @@ public class WebUITestElements  {
 	
 	@Test(expected = Exception.class)
 	public void testUsingBadPageNumberToRetreiveElements() throws Exception {
-		userservice.createUser(user.toEntity());	
+		
 		ElementTO newElement= jacksonMapper.readValue(elementJson, ElementTO.class);
 		newElement.setPlayground(playground);	
-		elementservice.createElement(newElement.toEntity(), playground, email);
+		elementservice.createElement(user.getPlayground(), user.getEmail(), newElement.toEntity());
 		
 		// When
 		this.restTemplate.getForObject(this.url + "/{playground}/{email}/all?page={page}", 
@@ -569,16 +555,16 @@ public class WebUITestElements  {
 	
 	@Test
 	public void testGettingAnElementSuccessfullyWithCorrectId() throws Exception {
-		userservice.createUser(user.toEntity());
+		
 		ElementTO elementToPost = jacksonMapper.readValue(elementJson, ElementTO.class);
 	
 		elementToPost.setId("1"); // For testing purposes
 		elementToPost.setLocation(new Location(0,0));
 		elementToPost.setPlayground(playground);
-		elementservice.createElement(elementToPost.toEntity(), playground, email);
+		elementservice.createElement(user.getPlayground(), user.getEmail(), elementToPost.toEntity());
 		
 		ElementTO actualElement = this.restTemplate.getForObject(url + "/{userPlayground}/{email}/{playground}/{id}",
-				ElementTO.class, playground, email, playground, "1");
+				ElementTO.class, user.getPlayground(), user.getEmail(), playground, "1");
 		
 		actualElement.setCreationDate(null); // For testing purposes
 		
@@ -612,16 +598,14 @@ public class WebUITestElements  {
 	@Test (expected = Exception.class)
 	public void testGettingAnElementUnsuccessfullyWithWrongId() throws Exception {
 
-		userservice.createUser(user.toEntity());
-
 		ElementTO newElement = jacksonMapper.readValue(elementJson, ElementTO.class);
 		newElement.setId("1"); // For testing purposes
 		
 		newElement.setPlayground(playground);	
-		elementservice.createElement(newElement.toEntity(), playground, email);
+		elementservice.createElement(user.getPlayground(), user.getEmail(), newElement.toEntity());
 
 		this.restTemplate.getForObject(url + "/{userPlayground}/{email}/{playground}/{id}", ElementTO.class,
-				playground, email, playground, "2");
+				user.getPlayground(), user.getEmail(), playground, "2");
 	}
 	
 	/**
@@ -653,17 +637,16 @@ public class WebUITestElements  {
 
 	@Test
 	public void testGettingAllElementsSuccessfulyBySpecificCreatoremailAndPlayground() throws Exception {
-		userservice.createUser(user.toEntity());
 
 		ElementTO newElement = jacksonMapper.readValue(elementJson, ElementTO.class);
 		newElement.setId("1"); // For testing purposes
 		
 		newElement.setPlayground(playground);	
-		elementservice.createElement(newElement.toEntity(), playground, email);
+		elementservice.createElement(user.getPlayground(), user.getEmail(), newElement.toEntity());
 		
 		ElementTO[] actualElements = this.restTemplate.getForObject(
 				url + "/{userPlayground}/{email}/all?size={size}&page={page}", ElementTO[].class,
-				playground, email, 5, 0);
+				user.getPlayground(), user.getEmail(), 5, 0);
 		
 		assertThat(actualElements).isNotNull().hasSize(1).usingElementComparator((e1, e2) -> {
 			if (e1.getType().compareTo(e2.getType()) != 0)
@@ -686,11 +669,10 @@ public class WebUITestElements  {
 	
 	@Test
 	public void testGettingNoneElementsWithPlaygroundThatHasNoElements() throws Exception {
-		userservice.createUser(user.toEntity());
 		
 		ElementTO[] elements = this.restTemplate.getForObject(
 				url + "/{userPlayground}/{email}/all?size={size}&page={page}", ElementTO[].class,
-				playground, email, 5, 0);
+				user.getPlayground(), user.getEmail(), 5, 0);
 		
 		assertThat(elements)
 		.isNotNull()
@@ -725,17 +707,16 @@ public class WebUITestElements  {
 	
 	@Test
 	public void testGettingAnElementSuccessfullyWithSpecificDistance() throws Exception {
-		userservice.createUser(user.toEntity());
 
 		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", playground, email,
 				new HashMap<>());
 		newElement.setLocation(new Location(1,1));
-
-		elementservice.createElement(newElement.toEntity(), playground, email);
+		newElement.setPlayground(playground);
+		elementservice.createElement(user.getPlayground(), user.getEmail(), newElement.toEntity());
 		
 		ElementTO[] actualElements = this.restTemplate.getForObject(
 				url + "/{userPlayground}/{email}/near/{x}/{y}/{distance}?size={size}&page={page}", ElementTO[].class,
-				playground, email, 0, 0, 10, 5, 0);
+				user.getPlayground(), user.getEmail(), 0, 0, 10, 5, 0);
 		
 		assertThat(actualElements)
 		.isNotNull()
@@ -758,10 +739,10 @@ public class WebUITestElements  {
 	 */
 	@Test 
 	public void testGettingAnElementWithSpecificDistanceWhenNoElementsInPlayground() throws Exception {
-		userservice.createUser(user.toEntity());
+		
 		ElementTO[] elements = this.restTemplate.getForObject(
 				url + "/{userPlayground}/{email}/near/{x}/{y}/{distance}?size={size}&page={page}", ElementTO[].class,
-				playground, email, 0, 0, 10, 5, 0);
+				user.getPlayground(), user.getEmail(), 0, 0, 10, 5, 0);
 		
 		assertThat(elements)
 		.isNotNull()
