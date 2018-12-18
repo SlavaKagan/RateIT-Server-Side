@@ -10,10 +10,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import org.springframework.beans.factory.annotation.Value;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import playground.aop.annotations.ValidateNull;
 
 @Entity
 @Table(name = "ELEMENTS")

@@ -137,6 +137,7 @@ public class JpaElementService implements ElementService {
 		if(this.elements.existsById(id + delim + playground)) {
 			ElementEntity existing = getElement(id, playground);
 			this.elements.delete(existing);
+			newElement.setUniqueKey(existing.getUniqueKey());
 			this.createElement(existing.getCreatorPlayground(), existing.getCreatorEmail(), newElement);
 		} else {
 			throw new ElementNotFoundException("There's no such element");

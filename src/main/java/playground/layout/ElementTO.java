@@ -5,11 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.annotation.Value;
-
-import playground.aop.annotations.ValidateNull;
 import playground.logic.ElementEntity;
 import playground.logic.Location;
 

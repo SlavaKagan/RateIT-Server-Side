@@ -83,7 +83,7 @@ public class UserTO {
 	public void setStartingPoints() {
 		if (this.role.equals("Manager")) {
 			this.points = 0;
-		} else if (this.role.equals("Reviewer")) {
+		} else if (this.role.equals("Guest")) {
 			this.points = 100;
 		}
 	}

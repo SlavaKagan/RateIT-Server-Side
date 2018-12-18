@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Map;
 import javax.annotation.PostConstruct;
 
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
-
 //@Service
 public class ThreadSafeActivityServiceStub implements ActivityService {
 	private Map<String, ActivityEntity> activities;
@@ -41,8 +39,8 @@ public class ThreadSafeActivityServiceStub implements ActivityService {
 	}
 
 	@Override
-	public void updateActivity(String id, ActivityEntity newActivity) throws Exception {
+	public List<ActivityEntity> getActivitiesOfTypeAndElementId(String type, String id, int size, int page) {
 		// TODO Auto-generated method stub
-		
+		return null;
 	}
 }

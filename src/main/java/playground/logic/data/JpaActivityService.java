@@ -78,18 +78,10 @@ public class JpaActivityService implements ActivityService {
 
 			return this.activities.save(activityEntity);
 		} else {
-			throw new Exception("Activity already exists"); // TODO "Activity already exists" ?
+			throw new Exception("Activity already exists");
 		}
 	}
-
-	@Override
-	@Transactional
-	@MyLog
-	@PlaygroundPerformance
-	public void cleanup() {
-		this.activities.deleteAll();
-	}
-
+	
 	@Override
 	@Transactional(readOnly = true)
 	@MyLog
@@ -101,18 +93,19 @@ public class JpaActivityService implements ActivityService {
 				.findAll(PageRequest.of(page, size, Direction.DESC, "creationDate"))
 				.getContent();
 	}
-	
+
 	@Override
-	@ValidateNull
+	public List<ActivityEntity> getActivitiesOfTypeAndElementId(String type, String id, int size, int page) {
+		return this
+				.activities
+				.findAllByTypeEqualsAndElementIdEquals(type, id, PageRequest.of(page, size, Direction.DESC, "creationDate"));
+	}
+
+	@Override
+	@Transactional
 	@MyLog
 	@PlaygroundPerformance
-	public void updateActivity(String id, ActivityEntity newActivity) throws Exception {
-		if (this.activities.existsById(id)) {
-			ActivityEntity existing = this.getActivity(id);
-			this.activities.delete(existing);
-			this.createActivity(newActivity);
-		} else {
-			throw new Exception("There's no such element");
-		}
+	public void cleanup() {
+		this.activities.deleteAll();
 	}
 }

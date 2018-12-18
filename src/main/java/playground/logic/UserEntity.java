@@ -4,8 +4,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import org.springframework.beans.factory.annotation.Value;
 
-import playground.aop.annotations.ValidateNull;
-
 @Entity
 @Table(name="USERS")
 public class UserEntity {

@@ -1,8 +1,6 @@
 package playground.layout;
 import org.springframework.beans.factory.annotation.Value;
 
-import playground.aop.annotations.ValidateNull;
-
 public class NewUserForm {
 	
 	@Value("${manager.email:Anonymous}")

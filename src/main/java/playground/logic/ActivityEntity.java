@@ -1,16 +1,16 @@
 package playground.logic;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Transient;
-import org.springframework.beans.factory.annotation.Value;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
-import playground.aop.annotations.ValidateNull;
 
 @Entity
 @Table(name="ACTIVITIES")
@@ -23,15 +23,12 @@ public class ActivityEntity {
 	private String playerPlayground;
 	private String playerEmail;	
 	private String number;
+	private Date creationDate;
 	private Map<String, Object> attributes;
 
 	public ActivityEntity() {
-
 		this.attributes = new HashMap<>();
-		this.attributes.put("isActive", "True");
-		this.attributes.put("creatorsName", playerPlayground);
-		this.attributes.put("activity", new Object());
-		this.attributes.put("activityName", "Post a Review");
+		this.creationDate = new Date();
 	}
 
 	public ActivityEntity(ElementEntity newElement, String type) throws Exception {
@@ -112,7 +109,16 @@ public class ActivityEntity {
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
 	}
-	
+		
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
 	@Lob
 	public String getAttributesJson() {
 		try {

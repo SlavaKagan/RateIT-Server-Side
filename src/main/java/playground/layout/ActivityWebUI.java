@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import playground.aop.annotations.ValidateNull;
 import playground.logic.ActivityService;
 import playground.logic.ConfirmationException;
 import playground.logic.ElementNotFoundException;
@@ -42,22 +41,10 @@ public class ActivityWebUI {
 			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email,
 			@RequestBody ActivityTO theActivity) throws Exception {
-		//this.service.createActivity(theActivity.toEntity());
-		/**
-		 * This method returns a dummy activity for now
-		 */
-		switch(theActivity.getType()) {
-		case "x":{
-			UserTO ret = new UserTO(new NewUserForm("rubykozel@gmail.com","ruby",":-)","Guest"));
-			ret.setPlayground(playground);
-			return ret;
-		}
-		default:{
-			UserTO ret = new UserTO();
-			ret.setPlayground(playground);
-			return ret;
-		}
-		}
+		theActivity.setPlayerEmail(email);
+		theActivity.setPlayerPlayground(userPlayground);
+		theActivity.setPlayground(playground);
+		return new ActivityTO(this.service.createActivity(theActivity.toEntity()));
 	}
 	
 	@ExceptionHandler({

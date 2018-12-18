@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import playground.aop.annotations.ValidateNull;
 import playground.logic.ConfirmationException;
 import playground.logic.ElementNotFoundException;
 import playground.logic.NotFoundExceptions;
@@ -40,8 +39,7 @@ public class UserWebUI {
 	public UserTO createUser(@RequestBody NewUserForm userForm) throws Exception {
 		UserTO user = new UserTO(userForm);
 		user.setPlayground(playground);
-		userservice.createUser(user.toEntity());
-		return user;
+		return new UserTO(userservice.createUser(user.toEntity()));
 	}
 	
 	@RequestMapping(

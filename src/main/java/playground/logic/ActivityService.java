@@ -7,10 +7,9 @@ public interface ActivityService {
 	
 	public ActivityEntity createActivity(ActivityEntity activityEntity) throws Exception;
 	
-	public void cleanup();
-	
 	public List<ActivityEntity> getAllActivities(int size, int page);
 	
-	public void updateActivity(String id, ActivityEntity newActivity) throws Exception;
+	public List<ActivityEntity> getActivitiesOfTypeAndElementId(String type, String id, int size, int page);
 	
+	public void cleanup();
 }

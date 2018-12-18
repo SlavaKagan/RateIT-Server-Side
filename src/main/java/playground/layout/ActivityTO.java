@@ -1,12 +1,11 @@
 package playground.layout;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
-import org.springframework.beans.factory.annotation.Value;
-
-import playground.aop.annotations.ValidateNull;
 import playground.logic.ActivityEntity;
+import playground.logic.Location;
 
 public class ActivityTO {
 	
@@ -17,15 +16,30 @@ public class ActivityTO {
 	private String elementPlayground;
 	private String elementId;
 	private String type;
+	private Date creationDate;
 	private static AtomicLong generator = new AtomicLong();
 	private Map<String, Object> attributes;
 
 	public ActivityTO() {
 		this.attributes = new HashMap<>();
-		this.attributes.put("isActive", "True");
-		this.attributes.put("creatorsName", playerPlayground);
-		this.attributes.put("activityName", "Post a Review");
 		this.id = "" + generator.getAndIncrement();
+		this.creationDate = new Date();
+	}
+	
+	public ActivityTO(ActivityEntity activity) {
+		this();
+		if (activity != null) {
+			String[] idAndPlayground = activity.getUniqueKey().split("@@");
+			this.id = idAndPlayground[0];
+			this.playground = idAndPlayground[1];
+			this.creationDate = activity.getCreationDate();
+			this.attributes = activity.getAttributes();
+			this.type = activity.getType();
+			this.playerPlayground = activity.getPlayerPlayground();
+			this.elementPlayground = activity.getElementPlayground();
+			this.elementId = activity.getElementId();
+			this.playerEmail = activity.getPlayerEmail();
+		}
 	}
 
 	
@@ -116,15 +130,17 @@ public class ActivityTO {
 		rv.setPlayerPlayground(this.playerPlayground);
 		rv.setAttributes(this.attributes);
 		rv.setUniqueKey(this.id + "@@" + this.playground);
+		rv.setCreationDate(this.creationDate);
 		
 		return rv;
 	}
 
 	@Override
 	public String toString() {
-		return "ActivityTO [playground=" + playground + ", id=" + id + ", elementPlayground=" + elementPlayground
-				+ ", elementId=" + elementId + ", type=" + type + ", playerPlayground=" + playerPlayground
-				+ ", playerEmail=" + playerEmail + ", attributes=" + attributes + "]";
-
+		return "ActivityTO [playground=" + playground + ", playerPlayground=" + playerPlayground + ", playerEmail="
+				+ playerEmail + ", id=" + id + ", elementPlayground=" + elementPlayground + ", elementId=" + elementId
+				+ ", type=" + type + ", creationDate=" + creationDate + ", attributes=" + attributes + "]";
 	}
+	
+	
 }
