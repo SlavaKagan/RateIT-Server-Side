@@ -7,11 +7,11 @@ public class MovieMessage {
 		
 	}
 	
-	public String getReview() {
+	public String getMessage() {
 		return message;
 	}
 
-	public void setReview(String message) {
+	public void setMessage(String message) {
 		this.message = message;
 	}
 
