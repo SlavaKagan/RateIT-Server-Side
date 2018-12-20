@@ -18,22 +18,18 @@ public class UserValidatorAspect {
 	@Value("${delim:@@}")
 	private String delim;
 	
-	//@Value("${manager:Manager}")
-	//private String manager;
-	
 	@Autowired
 	public void setUserService(UserService userService) {
 		this.userService = userService;
 	}
 	
 	@Around("@annotation(playground.aop.annotations.ValidateUser) && args(userPlayground,email,..)")
-	public Object validateManager(ProceedingJoinPoint jp, String userPlayground, String email) throws Throwable {
+	public Object validateUser(ProceedingJoinPoint jp, String userPlayground, String email) throws Throwable {
 		try {
-			UserEntity user = userService.getUser(userPlayground + delim + email);
-			if(user.getRole().equals(""))
+			if(userService.getUser(userPlayground + delim + email).equals(null))
 				return jp.proceed();
 			else
-				throw new Exception("User is not managar!");
+				throw new Exception("User doesn't exist in database!");
 		} catch (Throwable t) {
 			throw t;
 		}
