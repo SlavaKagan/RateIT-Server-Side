@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import playground.logic.ActivityEntity;
-import playground.logic.Location;
 
 public class ActivityTO {
 	
