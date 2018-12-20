@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import playground.aop.annotations.ValidateNull;
+import playground.aop.annotations.ValidateUser;
 import playground.aop.logger.MyLog;
 import playground.aop.logger.PlaygroundPerformance;
 import playground.dal.NumberGenerator;
@@ -82,9 +83,8 @@ public class JpaUserService implements UserService {
 		}
 	}
 
-	
-	// Need to think how to implement the logic in the annotation
 	@Override
+	@ValidateUser
 	@Transactional(readOnly = true)
 	@MyLog
 	@PlaygroundPerformance
