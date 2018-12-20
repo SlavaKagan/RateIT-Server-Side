@@ -20,7 +20,6 @@ public class UserTO {
 		this.userName = form.getUsername();
 		this.avatar = form.getAvatar();
 		this.role = form.getRole();
-		setStartingPoints();
 	}
 
 	public UserTO(UserEntity user) {
@@ -78,14 +77,6 @@ public class UserTO {
 
 	public long getPoints() {
 		return points;
-	}
-
-	public void setStartingPoints() {
-		if (this.role.equals("Manager")) {
-			this.points = 0;
-		} else if (this.role.equals("Guest")) {
-			this.points = 100;
-		}
 	}
 
 	public void setPoints(long points) {

@@ -117,6 +117,7 @@ public class JpaUserService implements UserService {
 			throw new ConfirmationException("Code given is incorrect");
 		else {
 			user.get().setRole(reviewer);
+			user.get().setPoints(100);
 			user.get().setCode(null); // Means user is registered
 			return user.get();
 		}

@@ -57,8 +57,10 @@ public class ThreadSafeUserServiceStub implements UserService {
 		UserEntity confirmedUser = users.get(email);
 		if(!confirmedUser.getUniqueKey().split("@@")[0].equals(playground))
 			throw new ConfirmationException("There's no such user in the specified playground");
-		else if (code.equals(temporary_code) && confirmedUser.getRole().equals(guest))
-			confirmedUser.setRole(reviewer);		
+		else if (code.equals(temporary_code) && confirmedUser.getRole().equals(guest)){
+			confirmedUser.setRole(reviewer);
+			confirmedUser.setPoints(100);
+		}
 		else if (confirmedUser.getRole().equals(reviewer) || confirmedUser.getRole().equals(manager))
 			throw new ConfirmationException("User is already confirmed");
 		else if (!code.equals(temporary_code))

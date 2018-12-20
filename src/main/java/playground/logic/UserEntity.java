@@ -31,7 +31,6 @@ public class UserEntity {
 		this.userName = userName;
 		this.avatar = avatar;
 		this.role = role;
-		setStartingPoints();
 	}
 	
 	@Id
@@ -72,14 +71,6 @@ public class UserEntity {
 
 	public long getPoints() {
 		return points;
-	}
-
-	public void setStartingPoints() {
-		if (this.role.equals(manager)) {
-			this.points = 0;
-		} else if (this.role.equals(reviewer)) {
-			this.points = 100;
-		}
 	}
 	
 	public void setPoints(long points) {

@@ -128,7 +128,7 @@ public class WebUITestUsers {
 				+ "\"userName\":\"ruby\","
 				+ "\"avatar\":\":-)\","
 				+ "\"role\":\"Guest\","
-				+ "\"points\":0,"
+				+ "\"points\":100,"
 				+ "\"number\":\"" + actualUserInDb.getNumber() + "\","
 				+ "\"code\":\"" + actualUserInDb.getCode() + "\""
 				+ "}");
@@ -207,7 +207,7 @@ public class WebUITestUsers {
 				+ "\"userName\":\"ruby\","
 				+ "\"avatar\":\":-)\","
 				+ "\"role\":\"Reviewer\","
-				+ "\"points\":0,"
+				+ "\"points\":100,"
 				+ "\"number\":\"" + actualUserInDb.getNumber() + "\","
 				+ "\"code\":null"
 				+ "}");
@@ -291,7 +291,7 @@ public class WebUITestUsers {
 					+ "\"userName\":\"ruby\","
 					+ "\"avatar\":\":-)\","
 					+ "\"role\":\"Reviewer\","
-					+ "\"points\":0"
+					+ "\"points\":100"
 					+ "}");
 	}
 	
@@ -373,7 +373,7 @@ public class WebUITestUsers {
 				+ "\"userName\":\"rubson\","
 				+ "\"avatar\":\":-)\","
 				+ "\"role\":\"Reviewer\","
-				+ "\"points\":0"
+				+ "\"points\":100"
 				+ "}");
 	}
 	
