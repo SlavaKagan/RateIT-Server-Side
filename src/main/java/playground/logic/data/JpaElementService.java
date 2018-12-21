@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
@@ -97,14 +98,20 @@ public class JpaElementService implements ElementService {
 	@PlaygroundPerformance
 	public List<ElementEntity> getAllElementsByDistance(String userPlayground, String email, int size, int page,
 			double x, double y, double distance) {
-		return this
-				.elements
-				.findAllByXBetweenAndYBetween(
-						x-distance, 
-						x+distance, 
-						y-distance, 
-						y+distance, 
-						PageRequest.of(page, size, Direction.DESC, "creationDate"));
+		Page<ElementEntity> thePage = this.elements.findAllByXBetweenAndYBetween(x-distance, 
+				x+distance, 
+				y-distance, 
+				y+distance, 
+				PageRequest.of(page, size, Direction.DESC, "creationDate"));
+		
+		long count = thePage.getTotalPages();
+		
+		List<ElementEntity> list = thePage.getContent();
+		
+		if (!list.isEmpty())
+			list.get(0).getAttributes().put("count", count);
+		
+		return list; 
 	}
 	
 	@Override
@@ -115,18 +122,38 @@ public class JpaElementService implements ElementService {
 	@PlaygroundPerformance
 	public List<ElementEntity> getAllElementsByAttributeAndItsValue(String userPlayground, String email, int size,
 			int page, String attributeName, String value) throws Exception {
-		if(attributeName.toLowerCase().equals("name"))
-			return this
-				.elements
-				.findAllByNameLike(
-						value, 
-						PageRequest.of(page, size, Direction.DESC, "creationDate"));
-		else if(attributeName.toLowerCase().equals("type"))
-			return this
+		if(attributeName.toLowerCase().equals("name")) {
+			Page<ElementEntity> thePage = 
+					this
+					.elements
+					.findAllByNameLike(value, PageRequest.of(page, size, Direction.DESC, "creationDate"));
+			
+			long count = thePage.getTotalPages();
+			
+			List<ElementEntity> list = thePage.getContent();
+			
+			if (!list.isEmpty())
+				list.get(0).getAttributes().put("count", count);
+			
+			return list; 
+			
+		}
+		else if(attributeName.toLowerCase().equals("type")) {
+			Page<ElementEntity> thePage = this
 					.elements
 					.findAllByTypeEquals(
 							value, 
 							PageRequest.of(page, size, Direction.DESC, "creationDate"));
+			
+			long count = thePage.getTotalPages();
+			
+			List<ElementEntity> list = thePage.getContent();
+			
+			if (!list.isEmpty())
+				list.get(0).getAttributes().put("count", count);
+			
+			return list; 
+		}
 		else
 			throw new Exception("No such attribute name");
 			

@@ -16,7 +16,6 @@ public class PostMessagePlugin implements Plugin {
 	public PostMessagePlugin() {
 		
 	}
-	
 	@PostConstruct
 	public void init() {
 		jackson = new ObjectMapper();

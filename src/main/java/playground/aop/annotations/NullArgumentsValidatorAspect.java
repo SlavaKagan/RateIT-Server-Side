@@ -64,7 +64,7 @@ public class NullArgumentsValidatorAspect {
 	public void checkActivity(Object arg) {
 		ActivityEntity ae = (ActivityEntity) arg;
 		String[] keyParts = ae.getUniqueKey().split("@@");
-
+		
 		if ("null".equals(ae.getElementId()) 
 				|| ae.getElementId() == null 
 				|| "null".equals(ae.getElementPlayground())

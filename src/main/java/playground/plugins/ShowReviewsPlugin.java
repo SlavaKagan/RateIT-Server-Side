@@ -5,6 +5,7 @@ import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Component;
@@ -38,15 +39,20 @@ public class ShowReviewsPlugin implements Plugin {
 	public Object execute(ActivityEntity command) throws Exception {
 		PageAndSizeRequest rv = jackson.readValue(command.getAttributesJson(), PageAndSizeRequest.class);
 		
+		Page<ActivityEntity> page = activities
+				.findAllByTypeEqualsAndElementIdEquals(
+						"PostReview", 
+						command.getElementId(), 
+						PageRequest.of(rv.getPage(), rv.getSize(), Direction.DESC, "creationDate"));
+		
+		long count = page.getTotalPages();
+		
 		return new ReviewsList(
-			activities
-			.findAllByTypeEqualsAndElementIdEquals(
-					"PostReview", 
-					command.getElementId(), 
-					PageRequest.of(rv.getPage(), rv.getSize(), Direction.DESC, "creationDate"))
+			page
+			.getContent()
 			.stream()
 			.map(activity -> (String) activity.getAttributes().get("review"))
-			.collect(Collectors.toList()));
+			.collect(Collectors.toList()), count);
 	}
 
 }

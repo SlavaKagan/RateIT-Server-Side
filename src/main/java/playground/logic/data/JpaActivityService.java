@@ -28,32 +28,36 @@ public class JpaActivityService implements ActivityService {
 	private ConfigurableApplicationContext spring;
 
 	@Autowired
-	public void setActivityDao(ActivityDao activities, NumberGeneratorDao numberGenerator, ConfigurableApplicationContext spring) {
+	public void setActivityDao(ActivityDao activities, NumberGeneratorDao numberGenerator,
+			ConfigurableApplicationContext spring) {
 		this.activities = activities;
 		this.numberGenerator = numberGenerator;
 		this.jackson = new ObjectMapper();
 		this.spring = spring;
 	}
-	
+
+	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
 	@ValidateNull
 	@ValidateUser
 	@Logger
 	@PlaygroundPerformance
-	public ActivityEntity createActivity(String userPlayground, String email, ActivityEntity activityEntity) throws Exception {
+	public ActivityEntity createActivity(String userPlayground, String email, ActivityEntity activityEntity)
+			throws Exception {
 		if (!this.activities.existsById(activityEntity.getUniqueKey())) {
 			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
 			activityEntity.setNumber("" + temp.getNextNumber());
 
 			this.numberGenerator.delete(temp);
-					
+
 			try {
-				if (activityEntity.getType() != null) {
-					String type = activityEntity.getType();
-					Plugin plugin = (Plugin) spring.getBean(Class.forName("playground.plugins." + type + "Plugin"));
-					Object content = plugin.execute(activityEntity);
-					activityEntity.getAttributes().putAll(jackson.readValue(jackson.writeValueAsString(content), Map.class));
+				if (activityEntity.getType() != null) {				
+					activityEntity.getAttributes()
+							.putAll(jackson.readValue(jackson.writeValueAsString(((Plugin) spring.getBean(
+									Class.forName("playground.plugins." + activityEntity.getType() + "Plugin")))
+											.execute(activityEntity)),
+									Map.class));
 				}
 			} catch (Exception e) {
 				throw new RuntimeException(e);
