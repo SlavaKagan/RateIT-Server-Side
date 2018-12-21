@@ -4,7 +4,7 @@ public interface UserService {
 	
 	public UserEntity createUser(UserEntity userEntity) throws Exception;
 	
-	public UserEntity getUser(String uniqueKey);
+	public UserEntity getUser(String playground, String email);
 	
 	public UserEntity getRegisteredUser(String playground, String email) throws ConfirmationException;
 	

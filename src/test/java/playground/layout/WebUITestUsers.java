@@ -117,7 +117,7 @@ public class WebUITestUsers {
 		// When
 		this.restTemplate.postForObject(url, form, UserTO.class);
 		
-		UserEntity actualUserInDb = this.service.getUser(testUniqueKey);
+		UserEntity actualUserInDb = this.service.getUser(playground, email);
 		
 		// Then
 		assertThat(jacksonMapper.writeValueAsString(actualUserInDb))
@@ -128,7 +128,7 @@ public class WebUITestUsers {
 				+ "\"userName\":\"ruby\","
 				+ "\"avatar\":\":-)\","
 				+ "\"role\":\"Guest\","
-				+ "\"points\":100,"
+				+ "\"points\":0,"
 				+ "\"number\":\"" + actualUserInDb.getNumber() + "\","
 				+ "\"code\":\"" + actualUserInDb.getCode() + "\""
 				+ "}");
@@ -191,13 +191,12 @@ public class WebUITestUsers {
 		
 		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class,
-				playground, email, service.getUser(testUniqueKey).getCode());
+				playground, email, service.getUser(playground, email).getCode());
 		
 		
 		
 		// Then
-		String id = testUniqueKey;
-		UserEntity actualUserInDb = this.service.getUser(id);
+		UserEntity actualUserInDb = this.service.getUser(playground, email);
 		
 		assertThat(jacksonMapper.writeValueAsString(actualUserInDb))
 		.isNotNull()
@@ -245,11 +244,11 @@ public class WebUITestUsers {
 		// Given
 		UserEntity userToPost = user.toEntity();
 		service.createUser(userToPost);
-		service.confirmUser(playground, userToPost.getUniqueKey(), service.getUser(testUniqueKey).getCode());
+		service.confirmUser(playground, userToPost.getUniqueKey(), service.getUser(playground, email).getCode());
 		
 		// When
 		this.restTemplate.getForObject(url + "confirm/{playground}/{email}/{code}", UserTO.class, playground,
-				email, service.getUser(testUniqueKey).getCode()); 
+				email, service.getUser(playground, email).getCode()); 
 	}
 	
 	/**
@@ -273,7 +272,7 @@ public class WebUITestUsers {
 	public void testGettingARegisteredUserFromTheServerSuccessfully() throws Exception {
 		// Given
 		service.createUser(user.toEntity());
-		service.confirmUser(playground, email, service.getUser(testUniqueKey).getCode());
+		service.confirmUser(playground, email, service.getUser(playground, email).getCode());
 				
 		// When
 		
@@ -358,7 +357,7 @@ public class WebUITestUsers {
 		service.createUser(userTemp);
 						
 		// When
-		UserTO newUser = new UserTO(service.confirmUser(playground, form.getEmail(), service.getUser(testUniqueKey).getCode()));
+		UserTO newUser = new UserTO(service.confirmUser(playground, form.getEmail(), service.getUser(playground, email).getCode()));
 		
 		newUser.setUserName("rubson");
 		this.restTemplate.put(url + "{playground}/{email}", newUser, playground,email);
@@ -429,7 +428,7 @@ public class WebUITestUsers {
 		service.createUser(user.toEntity());
 		
 		// When
-		UserTO newUser= new UserTO(service.confirmUser(playground, form.getEmail(), service.getUser(testUniqueKey).getCode()));
+		UserTO newUser= new UserTO(service.confirmUser(playground, form.getEmail(), service.getUser(playground, email).getCode()));
 		
 		newUser.setAvatar(null);
 		this.restTemplate.put(url + "{playground}/{email}", newUser, playground,email);

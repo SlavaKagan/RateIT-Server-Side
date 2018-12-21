@@ -11,7 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import playground.aop.annotations.ValidateManager;
 import playground.aop.annotations.ValidateNull;
-import playground.aop.logger.MyLog;
+import playground.aop.annotations.ValidateUser;
+import playground.aop.logger.Logger;
 import playground.aop.logger.PlaygroundPerformance;
 import playground.dal.ElementDao;
 import playground.dal.NumberGenerator;
@@ -42,7 +43,7 @@ public class JpaElementService implements ElementService {
 	@Transactional
 	@ValidateManager
 	@ValidateNull
-	@MyLog
+	@Logger
 	@PlaygroundPerformance
 	public ElementEntity createElement(String userPlayground, String email, ElementEntity elementEntity)
 			throws Exception {
@@ -63,10 +64,12 @@ public class JpaElementService implements ElementService {
 	@Override
 	@Transactional(readOnly = true)
 	@ValidateNull
-	@MyLog
+	@ValidateUser
+	@Logger
 	@PlaygroundPerformance
-	public ElementEntity getElement(String id, String playground)
+	public ElementEntity getElement(String userPlayground, String email, String id, String playground)
 			throws ElementNotFoundException {
+		System.err.println(id + delim + playground);
 		Optional<ElementEntity> op = this.elements.findById(id + delim + playground);
 		if (op.isPresent())
 			return op.get();
@@ -76,9 +79,10 @@ public class JpaElementService implements ElementService {
 	@Override
 	@Transactional(readOnly = true)
 	@ValidateNull
-	@MyLog
+	@ValidateUser
+	@Logger
 	@PlaygroundPerformance
-	public List<ElementEntity> getAllElements(int size, int page) {
+	public List<ElementEntity> getAllElements(String userPlayground, String email, int size, int page) {
 		return this
 				.elements
 				.findAll(PageRequest.of(page, size, Direction.DESC, "creationDate"))
@@ -88,9 +92,10 @@ public class JpaElementService implements ElementService {
 	@Override
 	@Transactional(readOnly = true)
 	@ValidateNull
-	@MyLog
+	@ValidateUser
+	@Logger
 	@PlaygroundPerformance
-	public List<ElementEntity> getAllElementsByDistance(int size, int page,
+	public List<ElementEntity> getAllElementsByDistance(String userPlayground, String email, int size, int page,
 			double x, double y, double distance) {
 		return this
 				.elements
@@ -105,14 +110,15 @@ public class JpaElementService implements ElementService {
 	@Override
 	@Transactional(readOnly = true)
 	@ValidateNull
-	@MyLog
+	@ValidateUser
+	@Logger
 	@PlaygroundPerformance
-	public List<ElementEntity> getAllElementsByAttributeAndItsValue(int size,
+	public List<ElementEntity> getAllElementsByAttributeAndItsValue(String userPlayground, String email, int size,
 			int page, String attributeName, String value) throws Exception {
 		if(attributeName.toLowerCase().equals("name"))
 			return this
 				.elements
-				.findAllByNameEquals(
+				.findAllByNameLike(
 						value, 
 						PageRequest.of(page, size, Direction.DESC, "creationDate"));
 		else if(attributeName.toLowerCase().equals("type"))
@@ -130,12 +136,12 @@ public class JpaElementService implements ElementService {
 	@Transactional
 	@ValidateManager
 	@ValidateNull
-	@MyLog
+	@Logger
 	@PlaygroundPerformance
 	public void updateElement(String userPlayground, String email, String id, String playground, ElementEntity newElement) 
 			throws Exception {
 		if(this.elements.existsById(id + delim + playground)) {
-			ElementEntity existing = getElement(id, playground);
+			ElementEntity existing = getElement(userPlayground, email, id, playground);
 			this.elements.delete(existing);
 			newElement.setUniqueKey(existing.getUniqueKey());
 			this.createElement(existing.getCreatorPlayground(), existing.getCreatorEmail(), newElement);
@@ -146,7 +152,7 @@ public class JpaElementService implements ElementService {
 
 	@Override
 	@Transactional
-	@MyLog
+	@Logger
 	@PlaygroundPerformance
 	public void cleanup() {
 		this.elements.deleteAll();

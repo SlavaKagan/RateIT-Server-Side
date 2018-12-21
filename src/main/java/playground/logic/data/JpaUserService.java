@@ -1,7 +1,8 @@
 package playground.logic.data;
 
-import java.util.Optional;
-import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -9,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import playground.aop.annotations.ValidateNull;
 import playground.aop.annotations.ValidateUser;
-import playground.aop.logger.MyLog;
+import playground.aop.logger.Logger;
 import playground.aop.logger.PlaygroundPerformance;
 import playground.dal.NumberGenerator;
 import playground.dal.NumberGeneratorDao;
@@ -47,7 +48,7 @@ public class JpaUserService implements UserService {
 	@Override
 	@Transactional
 	@ValidateNull
-	@MyLog
+	@Logger
 	@PlaygroundPerformance
 	public UserEntity createUser(UserEntity userEntity) throws Exception {
 		if (!this.users.existsById(userEntity.getUniqueKey())) {
@@ -72,64 +73,45 @@ public class JpaUserService implements UserService {
 
 	@Override
 	@Transactional(readOnly = true)
-	@MyLog
+	@Logger
 	@PlaygroundPerformance
-	public UserEntity getUser(String uniqueKey) {
-		Optional<UserEntity> op = this.users.findById(uniqueKey);
-		if (op.isPresent()) {
-			return op.get();
-		} else {
-			throw new RuntimeException("no user with uniqueKey: " + uniqueKey);
-		}
+	@ValidateUser
+	public UserEntity getUser(String playground, String email) {
+		return this.users.findById(playground + delim + email).get();
 	}
 
 	@Override
 	@ValidateUser
 	@Transactional(readOnly = true)
-	@MyLog
+	@Logger
 	@PlaygroundPerformance
 	public UserEntity getRegisteredUser(String playground, String email) throws ConfirmationException {
-		Optional<UserEntity> user = this.users.findById(playground + delim + email);
-		if (!user.isPresent())
-			throw new ConfirmationException("This is an unregistered account");
-		else if (!user.get().getUniqueKey().split(delim)[0].equals(playground))
-			throw new ConfirmationException("There's no such user in the specified playground");
-		else if (user.get().getRole().equals(guest))
+		UserEntity user = this.users.findById(playground + delim + email).get();
+		if (user.getRole().equals(guest))
 			throw new ConfirmationException("This is an unconfirmed account");
-		else
-			return user.get();
+		return user;
 	}
 	
-	// Need to think how to implement the logic in the annotation
 	@Override
 	@Transactional
-	@MyLog
+	@Logger
+	@ValidateUser
 	@PlaygroundPerformance
 	public UserEntity confirmUser(String playground, String email, String code) throws Exception {
-		Optional<UserEntity> user = this.users.findById(playground + delim + email);
-		if (!user.isPresent())
-			throw new ConfirmationException("This is an unregistered account");
-		else if (!user.get().getUniqueKey().split(delim)[0].equals(playground))
-			throw new ConfirmationException("There's no such user in the specified playground");
-		else if (!user.get().getRole().equals(guest))
-			throw new ConfirmationException("This user is already confirmed");
-		else if (!code.equals(user.get().getCode()))
-			throw new ConfirmationException("Code given is incorrect");
-		else {
-			user.get().setRole(reviewer);
-			user.get().setPoints(100);
-			user.get().setCode(null); // Means user is registered
-			return user.get();
-		}
+		UserEntity user = this.users.findById(playground + delim + email).get();
+		user.setRole(reviewer);
+		user.setPoints(100);
+		user.setCode(null); // Means user is registered
+		return user;
 	}
 
 	@Override
 	@Transactional
 	@ValidateNull
-	@MyLog
+	@Logger
 	@PlaygroundPerformance
 	public void editUser(String playground, String email, UserEntity newUser) throws Exception {
-		UserEntity existing = this.getUser(playground + delim + email);
+		UserEntity existing = this.getUser(playground, email);
 
 		if (!newUser.getAvatar().equals(existing.getAvatar())) {
 			existing.setAvatar(newUser.getAvatar());
@@ -148,23 +130,21 @@ public class JpaUserService implements UserService {
 
 	@Override
 	@Transactional
-	@MyLog
+	@Logger
 	@PlaygroundPerformance
 	public void cleanup() {
 		this.users.deleteAll();
 	}
 	
 	private String generateCode() {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-        StringBuilder rndStrBuild = new StringBuilder();
-        Random rnd = new Random();
-        while (rndStrBuild.length() < 10) { // length of the random string.
-            int index = (int) (rnd.nextFloat() * chars.length());
-            rndStrBuild.append(chars.charAt(index));
-        }
-        String rndString = rndStrBuild.toString();
-        return rndString;
-
+        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+         return IntStream
+        		 .range(0, 10)
+        		 .boxed()
+        		 .collect(Collectors.toList())
+        		 .stream()
+        		 .map(i -> "" + chars.charAt((int)(Math.random()*chars.length())))
+        		 .collect(Collectors.joining(""));
     }
 
 }

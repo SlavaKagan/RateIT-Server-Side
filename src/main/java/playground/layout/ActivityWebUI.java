@@ -44,7 +44,7 @@ public class ActivityWebUI {
 		theActivity.setPlayerEmail(email);
 		theActivity.setPlayerPlayground(userPlayground);
 		theActivity.setPlayground(playground);
-		return new ActivityTO(this.service.createActivity(theActivity.toEntity()));
+		return new ActivityTO(this.service.createActivity(userPlayground, email, theActivity.toEntity()));
 	}
 	
 	@ExceptionHandler({

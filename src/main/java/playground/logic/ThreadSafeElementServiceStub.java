@@ -47,7 +47,7 @@ public class ThreadSafeElementServiceStub implements ElementService {
 		return elementEntity;
 	}
 
-	public ElementEntity getElement(String id, String playground)
+	public ElementEntity getElement(String userPlayground, String email, String id, String playground)
 			throws ElementNotFoundException {
 		ElementEntity element = elements.get(id);
 		if (element == null)
@@ -55,7 +55,7 @@ public class ThreadSafeElementServiceStub implements ElementService {
 		return element;
 	}
 
-	public List<ElementEntity> getAllElements(int size, int page) {
+	public List<ElementEntity> getAllElements(String userPlayground, String email, int size, int page) {
 		
 		Collection<ElementEntity> copy;
 				
@@ -70,7 +70,7 @@ public class ThreadSafeElementServiceStub implements ElementService {
 				.collect(Collectors.toList());
 	}
 
-	public List<ElementEntity> getAllElementsByDistance(int size, int page, double x, double y, double distance) {
+	public List<ElementEntity> getAllElementsByDistance(String userPlayground, String email, int size, int page, double x, double y, double distance) {
 		
 		Collection<ElementEntity> copy;
 		
@@ -87,7 +87,7 @@ public class ThreadSafeElementServiceStub implements ElementService {
 				.collect(Collectors.toList());
 	}
 
-	public List<ElementEntity> getAllElementsByAttributeAndItsValue(int size, int page, String attributeName, String value) {
+	public List<ElementEntity> getAllElementsByAttributeAndItsValue(String userPlayground, String email, int size, int page, String attributeName, String value) {
 		
 		Collection<ElementEntity> copy;
 		
@@ -106,7 +106,7 @@ public class ThreadSafeElementServiceStub implements ElementService {
 	@ValidateNull
 	public void updateElement(String userPlayground, String email, String id, String playground,
 			ElementEntity newElement) throws ElementNotFoundException, Exception {
-		ElementEntity element = getElement(id, playground);
+		ElementEntity element = getElement(userPlayground, email, id, playground);
 		if (element == null)
 			throw new ElementNotFoundException("Element does not exist");
 		this.elements.remove(id);

@@ -30,7 +30,7 @@ public class ManagarValidatorAspect {
 	@Around("@annotation(playground.aop.annotations.ValidateManager) && args(userPlayground,email,..)")
 	public Object validateManager(ProceedingJoinPoint jp, String userPlayground, String email) throws Throwable {
 		try {
-			UserEntity user = userService.getUser(userPlayground + delim + email);
+			UserEntity user = userService.getUser(userPlayground, email);
 			if(user.getRole().equals(manager))
 				return jp.proceed();
 			else

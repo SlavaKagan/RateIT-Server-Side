@@ -16,7 +16,7 @@ public interface ElementDao extends PagingAndSortingRepository<ElementEntity, St
 			@Param("moreY") double morey,
 			Pageable pageable);
 	
-	public List<ElementEntity> findAllByNameEquals(
+	public List<ElementEntity> findAllByNameLike(
 			@Param("value") String value,
 			Pageable pageable);
 	

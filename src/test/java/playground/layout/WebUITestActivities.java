@@ -17,6 +17,8 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import playground.logic.ActivityService;
+import playground.logic.ElementService;
+import playground.logic.UserService;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -24,6 +26,12 @@ public class WebUITestActivities {
 	
 	@Autowired
 	private ActivityService service;
+	
+	@Autowired
+	private ElementService elementService;
+	
+	@Autowired
+	private UserService userService;
 	
 	@Value("${playground:Anonymous}")
 	private String playground;
@@ -34,25 +42,47 @@ public class WebUITestActivities {
 	private RestTemplate restTemplate;
 	private String url;
 	private ObjectMapper jacksonMapper;
+	private String activityJson;
 	
 	@LocalServerPort
 	private int port;
-
+	
 	@PostConstruct
 	public void init() {
 		this.restTemplate = new RestTemplate();
 		this.url = "http://localhost:" + port + "/playground/activities";
 		jacksonMapper = new ObjectMapper();
+		
+		activityJson = "{"
+							+ "\"elementPlayground\":\"2019A.Kagan\","
+							+ "\"elementId\":0,"
+							+ "\"type\":\"PostReview\","
+							+ "\"attributes\": {\"review\":\"This is a review\"}"
+						+ "}";
 	}
+
 	
 	@Before
-	public void setup () {
-		
+	public void setup () throws Exception {
+		UserTO user = new UserTO(new NewUserForm(email, "ruby", ":-)", "Manager"));
+		user.setPlayground(playground);
+		userService.createUser(user.toEntity());
+		ElementTO element = jacksonMapper.readValue(
+			"{"
+				+ "\"type\":\"Movie Page\","
+				+ "\"location\": {\"x\":0,\"y\":0},"
+				+ "\"name\":\"Saw 3 movie\","
+				+ "\"attributes\": {}"
+			+ "}", ElementTO.class);
+		element.setPlayground(playground);
+		elementService.createElement(playground, email, element.toEntity());
 	}
 	
 	@After
 	public void teardown() {
 		this.service.cleanup();
+		this.elementService.cleanup();
+		this.userService.cleanup();
 	}
 	
 	@Test
@@ -62,17 +92,30 @@ public class WebUITestActivities {
 	
 	/**
 	 * 	Given the server is up
-	  	And there's an element with id: 1025028355
-		When I POST "/playground/activities/2019A.Kagan/rubykozel@gmail.com" with '{"elementId": "1025028355","elementPlayground": "2019A.Kagan","type": "x"}'
+	 * 	And there's a confirmed user in the database
+	  	And there's an element with id: 0
+		When I POST "/playground/activities/2019A.Kagan/rubykozel@gmail.com" with 
+		{
+			"elementPlayground":"2019A.Kagan",
+			"elementId":0,
+			"type":"PostReview",
+			"attributes": {
+				"review":"This is a review"
+			}
+		}
 		Then the response is 200
 		And the output is 
 		{
-			"email":"rubykozel@gmail.com",
-			"playground":"2019A.Kagan",
-			"userName":"ruby",
-			"avatar":":-)",
-			"role":"Guest",
-			"points":0
+    		"playground": "2019A.Kagan",
+    		"playerPlayground": "2019A.Kagan",
+    		"playerEmail": "admin@gmail.com",
+    		"id": "0",
+    		"elementPlayground": "2019A.Kagan",
+    		"elementId": "0",
+    		"type": "PostReview",
+    		"attributes": {
+        		"review": "This is a review"
+    		}
 		}
 	 * @throws Exception
 	 */
@@ -80,55 +123,60 @@ public class WebUITestActivities {
 	@Test
 	public void testPostANewActivitySuccessfuly() throws Exception {
 		
-		// Given
-		ElementTO element = new ElementTO();
-		element.setId("1025028355");
-		element.setPlayground(playground);
-		
 		// When
-		ActivityTO activity = new ActivityTO(element, "x");
-		UserTO activityTO = this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", activity, UserTO.class, playground, email);
-
+		ActivityTO activityTO = this.restTemplate.postForObject(
+				url + "/{userPlayground}/{email}",
+				jacksonMapper.readValue(activityJson, ActivityTO.class),
+				ActivityTO.class, playground, email);
+		
 		
 		assertThat(jacksonMapper.writeValueAsString(activityTO))
 		.isNotNull()
 		.isEqualTo(
 				"{"
-				+ "\"email\":\"rubykozel@gmail.com\","
 				+ "\"playground\":\"2019A.Kagan\","
-				+ "\"userName\":\"ruby\","
-				+ "\"avatar\":\":-)\","
-				+ "\"role\":\"Guest\","
-				+ "\"points\":0"
+				+ "\"playerPlayground\":\"2019A.Kagan\","
+				+ "\"playerEmail\":\""+ email +"\","
+				+ "\"id\":\""+ activityTO.getId() +"\","
+				+ "\"elementPlayground\":\"2019A.Kagan\","
+				+ "\"elementId\":\"0\","
+				+ "\"type\":\"PostReview\","
+				+ "\"attributes\":{\"review\":\"This is a review\"}"
 				+ "}");
 
 	}
 	
 	/**
 	 * 	Given the server is up
-	 	And there's an element with id: 1025028355
-		When I POST "/playground/activities/2019A.Kagan/null" with '{"elementId": "1025028355","elementPlayground": "2019A.Kagan","type": "x"}'
+	 * 	And there's a valid user in the database
+	 	And there's an element with id: 0
+		When I POST "/playground/activities/2019A.Kagan/null" with
+		{
+			"elementPlayground":"2019A.Kagan",
+			"elementId":0,
+			"type":"PostReview",
+			"attributes": {
+				"review":"This is a review"
+			}
+		}
 		Then the response is 500
 	 * @throws Exception
 	 */
 	
 	@Test(expected=Exception.class)
 	public void testPostANewActivityWithNullEmailUnsuccessfuly() throws Exception {
-		
-		// Given
-		ElementTO element = new ElementTO();
-		element.setId("1025028355");
-		element.setPlayground("2019A.Kagan");
-		
 		// When
-		ActivityTO activity = new ActivityTO(element, "x");
-		this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", activity, ActivityTO.class, playground, null);
+		this.restTemplate.postForObject(
+				url + "/{userPlayground}/{email}",
+				jacksonMapper.readValue(activityJson, ActivityTO.class),
+				ActivityTO.class, playground, null);
 		
 	}
 	
 	/**
 	 * 	Given the server is up
-	 	And there's an element with id: 1025028355
+	 * 	And there's a valid user in the database
+	 	And there's an element with id: 0
 		When I POST "/playground/activities/2019A.Kagan/rubykozel@gmail.com" with '{}'
 		Then the response is 500
 	 * @throws Exception
@@ -136,13 +184,43 @@ public class WebUITestActivities {
 	
 	@Test(expected=Exception.class)
 	public void testPostANewActivityWithAnEmptyJSONUnsuccessfuly() throws Exception {
-		// Given
-		ElementTO element = new ElementTO();
-		element.setId("1025028355");
-		element.setPlayground("2019A.Kagan");
 		
 		// When
-		Object emptyJson = jacksonMapper.readValue("{}", Object.class);
-		this.restTemplate.postForObject(this.url + "/{userPlayground}/{email}", emptyJson, ActivityTO.class, playground, email);
+		this.restTemplate.postForObject(
+				url + "/{userPlayground}/{email}",
+				jacksonMapper.readValue("{}", ActivityTO.class),
+				ActivityTO.class, playground, email);
+	}
+	
+	/**
+	 * 	Given the server is up
+	 * 	And there's a valid user in the database
+	 	And there's an element with id: 0
+		When I POST "/playground/activities/2019A.Kagan/rubykozel@gmail.com" with
+		{
+			"elementPlayground":"2019A.Kagan",
+			"elementId":0,
+			"type": unsupported type,
+			"attributes": {
+				"review":"This is a review"
+			}
+		}
+		Then the response is 500
+	 * @throws Exception
+	 */
+	
+	@Test(expected=Exception.class)
+	public void testPostANewActivityWithAnUnSupportedTypeUnsuccessfuly() throws Exception {
+		
+		// When
+		this.restTemplate.postForObject(
+				url + "/{userPlayground}/{email}",
+				jacksonMapper.readValue("{"
+						+ "\"elementPlayground\":\"2019A.Kagan\","
+						+ "\"elementId\":0,"
+						+ "\"type\":\"Unsupported\","
+						+ "\"attributes\": {\"review\":\"This is a review\"}"
+					+ "}", ActivityTO.class),
+				ActivityTO.class, playground, email);
 	}
 }

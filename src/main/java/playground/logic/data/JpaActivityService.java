@@ -1,20 +1,16 @@
 package playground.logic.data;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import playground.aop.annotations.ValidateNull;
-import playground.aop.logger.MyLog;
+import playground.aop.annotations.ValidateUser;
+import playground.aop.logger.Logger;
 import playground.aop.logger.PlaygroundPerformance;
 import playground.dal.ActivityDao;
 import playground.dal.NumberGenerator;
@@ -38,33 +34,20 @@ public class JpaActivityService implements ActivityService {
 		this.jackson = new ObjectMapper();
 		this.spring = spring;
 	}
-
-	@Override
-	@Transactional
-	@MyLog
-	@PlaygroundPerformance
-	public ActivityEntity getActivity(String uniqueKey) throws Exception {
-		Optional<ActivityEntity> op = this.activities.findById(uniqueKey);
-		if (op.isPresent()) {
-			return op.get();
-		} else {
-			throw new Exception("No activity with key " + uniqueKey);
-		}
-	}
-
+	
 	@Override
 	@Transactional
 	@ValidateNull
-	@MyLog
+	@ValidateUser
+	@Logger
 	@PlaygroundPerformance
-	public ActivityEntity createActivity(ActivityEntity activityEntity) throws Exception {
+	public ActivityEntity createActivity(String userPlayground, String email, ActivityEntity activityEntity) throws Exception {
 		if (!this.activities.existsById(activityEntity.getUniqueKey())) {
 			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
 			activityEntity.setNumber("" + temp.getNextNumber());
 
 			this.numberGenerator.delete(temp);
-			
-			
+					
 			try {
 				if (activityEntity.getType() != null) {
 					String type = activityEntity.getType();
@@ -81,29 +64,10 @@ public class JpaActivityService implements ActivityService {
 			throw new Exception("Activity already exists");
 		}
 	}
-	
-	@Override
-	@Transactional(readOnly = true)
-	@MyLog
-	@PlaygroundPerformance
-	public List<ActivityEntity> getAllActivities(int size, int page) {
-		return 
-				this
-				.activities
-				.findAll(PageRequest.of(page, size, Direction.DESC, "creationDate"))
-				.getContent();
-	}
-
-	@Override
-	public List<ActivityEntity> getActivitiesOfTypeAndElementId(String type, String id, int size, int page) {
-		return this
-				.activities
-				.findAllByTypeEqualsAndElementIdEquals(type, id, PageRequest.of(page, size, Direction.DESC, "creationDate"));
-	}
 
 	@Override
 	@Transactional
-	@MyLog
+	@Logger
 	@PlaygroundPerformance
 	public void cleanup() {
 		this.activities.deleteAll();

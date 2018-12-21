@@ -37,7 +37,7 @@ public class ThreadSafeUserServiceStub implements UserService {
 	}
 	
 	@Override
-	public UserEntity getUser(String email) {
+	public UserEntity getUser(String playground, String email) {
 		return users.get(email);
 	}
 

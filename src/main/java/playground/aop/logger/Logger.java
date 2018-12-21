@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 
 @Retention(RUNTIME)
 @Target({ METHOD, CONSTRUCTOR })
-public @interface MyLog {
+public @interface Logger {
 
 }

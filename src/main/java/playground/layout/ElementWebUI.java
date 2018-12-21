@@ -57,7 +57,7 @@ public class ElementWebUI {
 			@PathVariable("email") String email, 
 			@PathVariable("playground") String playground,
 			@PathVariable("id") String id) throws Exception {
-		return new ElementTO(elementservice.getElement(id, playground));
+		return new ElementTO(elementservice.getElement(userPlayground, email, id, playground));
 	}
 	
 	// Check if user exists
@@ -70,7 +70,7 @@ public class ElementWebUI {
 			@PathVariable("email") String email,
 			@RequestParam(name="size", required=false, defaultValue="10") int size, 
 			@RequestParam(name="page", required=false, defaultValue="0") int page) throws Exception {
-		ElementTO[] element = elementservice.getAllElements(size, page)
+		ElementTO[] element = elementservice.getAllElements(userPlayground, email, size, page)
 				.stream()
 				.map(ElementTO::new)
 				.collect(Collectors.toList())
@@ -106,7 +106,7 @@ public class ElementWebUI {
 			@RequestParam(name="size", required=false, defaultValue="10") int size, 
 			@RequestParam(name="page", required=false, defaultValue="0") int page) throws Exception {
 		ElementTO[] element = elementservice
-				.getAllElementsByDistance(size, page, 
+				.getAllElementsByDistance(userPlayground, email, size, page, 
 						Double.parseDouble(x), Double.parseDouble(y), Double.parseDouble(distance))
 				.stream()
 				.map(ElementTO::new)
@@ -127,7 +127,7 @@ public class ElementWebUI {
 			@PathVariable("value") String value,
 			@RequestParam(name="size", required=false, defaultValue="10") int size, 
 			@RequestParam(name="page", required=false, defaultValue="0") int page) throws Exception {
-		ElementTO[] elements = elementservice.getAllElementsByAttributeAndItsValue(size, page, attributeName, value)
+		ElementTO[] elements = elementservice.getAllElementsByAttributeAndItsValue(userPlayground, email, size, page, attributeName, value)
 				.stream()
 				.map(ElementTO::new)
 				.collect(Collectors.toList())

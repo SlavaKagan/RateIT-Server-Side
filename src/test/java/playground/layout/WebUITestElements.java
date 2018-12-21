@@ -120,7 +120,7 @@ public class WebUITestElements  {
 						ElementTO.class, user.getPlayground(), user.getEmail());
 		
 		//Then
-		ElementEntity actualElementInDb = elementservice.getElement(postedElement.getId(), playground);
+		ElementEntity actualElementInDb = elementservice.getElement(playground, email, postedElement.getId(), playground);
 		
 		actualElementInDb.setCreationDate(null);
 		actualElementInDb.setX(0.0); // For testing purposes
@@ -143,33 +143,33 @@ public class WebUITestElements  {
 						+ "}", ElementEntity.class)));
 	}	
 
-//	/**
-//	 * 	Given the server is up
-//		And there's an account with playground: "2019A.Kagan", email: email, role: "Reviewer",
-//		When I POST "/playground/elements/2019A.Kagan/rubykozel@gmail.com" with 
-//		{
-//		 	"type":"Messaging Board", 
-//		 	"name":"Messaging Board"
-//		}
-//		Then the response is 500
-//	 * @throws Exception
-//	 */
-//	@Test(expected = Exception.class)
-//	public void testCreatingAnElementWithAUserThatIsNotAManager() throws Exception {
-//		// Given
-//		userservice.cleanup(); // specific for this test
-//		user.setRole(reviewer);
-//		userservice.createUser(user.toEntity());
-//
-//		// When
-//		ElementTO elementToPost = jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\"}", ElementTO.class);
-//		this.restTemplate.postForObject(url + "/{userPlayground}/{email}", 
-//										elementToPost,		
-//										ElementTO.class, 
-//										user.getPlayground(),
-//										user.getEmail());
-//			
-//	}
+	/**
+	 * 	Given the server is up
+		And there's an account with playground: "2019A.Kagan", email: email, role: "Reviewer",
+		When I POST "/playground/elements/2019A.Kagan/rubykozel@gmail.com" with 
+		{
+		 	"type":"Messaging Board", 
+		 	"name":"Messaging Board"
+		}
+		Then the response is 500
+	 * @throws Exception
+	 */
+	@Test(expected = Exception.class)
+	public void testCreatingAnElementWithAUserThatIsNotAManager() throws Exception {
+		// Given
+		userservice.cleanup(); // specific for this test
+		user.setRole(reviewer);
+		userservice.createUser(user.toEntity());
+
+		// When
+		ElementTO elementToPost = jacksonMapper.readValue("{\"type\":\"Messaging Board\", \"name\":\"Messaging Board\"}", ElementTO.class);
+		this.restTemplate.postForObject(url + "/{userPlayground}/{email}", 
+										elementToPost,		
+										ElementTO.class, 
+										user.getPlayground(),
+										user.getEmail());
+			
+	}
 	
 	/**
 	 *  Given the server is up
@@ -270,7 +270,7 @@ public class WebUITestElements  {
 								playground,
 								elementToPost.getId());
 		
-		ElementEntity actualElementInDb = this.elementservice.getElement(elementToPut.getId(), playground);
+		ElementEntity actualElementInDb = this.elementservice.getElement(playground, email, elementToPost.getId(), playground);
 		actualElementInDb.setCreationDate(null);
 		actualElementInDb.setX(0.0); // For testing purposes
 		actualElementInDb.setY(0.0);
@@ -281,7 +281,7 @@ public class WebUITestElements  {
 		.isEqualTo(jacksonMapper.writeValueAsString(
 				jacksonMapper.readValue(""
 						+ "{"
-						+ "\"uniqueKey\": \"" + elementToPut.getId() + "@@2019A.Kagan\","
+						+ "\"uniqueKey\": \"" + elementToPost.getId() + "@@2019A.Kagan\","
 						+ "\"name\":\"MyBoard\","
 						+ "\"expirationDate\": null,"
 						+ "\"type\":\"Messaging Board\","
