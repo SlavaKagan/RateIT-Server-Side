@@ -36,7 +36,6 @@ public class JpaActivityService implements ActivityService {
 		this.spring = spring;
 	}
 
-	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional
 	@ValidateNull
@@ -53,11 +52,15 @@ public class JpaActivityService implements ActivityService {
 
 			try {
 				if (activityEntity.getType() != null) {				
-					activityEntity.getAttributes()
-							.putAll(jackson.readValue(jackson.writeValueAsString(((Plugin) spring.getBean(
-									Class.forName("playground.plugins." + activityEntity.getType() + "Plugin")))
-											.execute(activityEntity)),
-									Map.class));
+					activityEntity
+					.getAttributes()
+					.putAll(
+							jackson.readValue(
+							jackson.writeValueAsString(
+							((Plugin) spring.getBean(
+							Class.forName("playground.plugins." + activityEntity.getType() + "Plugin")))
+							.execute(activityEntity)), Map.class)
+							);
 				}
 			} catch (Exception e) {
 				throw new RuntimeException(e);
