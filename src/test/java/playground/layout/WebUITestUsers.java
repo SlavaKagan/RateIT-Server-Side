@@ -129,7 +129,6 @@ public class WebUITestUsers {
 				+ "\"avatar\":\":-)\","
 				+ "\"role\":\"Guest\","
 				+ "\"points\":0,"
-				+ "\"number\":\"" + actualUserInDb.getNumber() + "\","
 				+ "\"code\":\"" + actualUserInDb.getCode() + "\""
 				+ "}");
 	}
@@ -207,7 +206,6 @@ public class WebUITestUsers {
 				+ "\"avatar\":\":-)\","
 				+ "\"role\":\"Reviewer\","
 				+ "\"points\":100,"
-				+ "\"number\":\"" + actualUserInDb.getNumber() + "\","
 				+ "\"code\":null"
 				+ "}");
 	}

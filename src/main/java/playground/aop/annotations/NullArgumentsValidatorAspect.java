@@ -48,15 +48,17 @@ public class NullArgumentsValidatorAspect {
 	public void checkElement(Object arg) {
 		ElementEntity ee = (ElementEntity) arg;
 		String[] keyParts = ee.getUniqueKey().split("@@");
-
+		
+		System.err.println(ee);
+		
 		if ("null".equals(ee.getName()) 
 				|| ee.getName() == null 
 				|| "null".equals(ee.getType()) 
 				|| ee.getType() == null
 				|| "null".equals(keyParts[0]) 
 				|| keyParts[0] == null 
-				|| "null".equals(keyParts[1])
-				|| keyParts[1] == null) {
+				/*|| "null".equals(keyParts[1])
+				|| keyParts[1] == null*/) {
 			throw EXCEPTION;
 		}
 	}
@@ -69,16 +71,10 @@ public class NullArgumentsValidatorAspect {
 				|| ae.getElementId() == null 
 				|| "null".equals(ae.getElementPlayground())
 				|| ae.getElementPlayground() == null 
-				|| "null".equals(ae.getPlayerEmail())
-				|| ae.getPlayerEmail() == null 
-				|| "null".equals(ae.getPlayerPlayground())
-				|| ae.getPlayerPlayground() == null 
 				|| "null".equals(ae.getType()) 
 				|| ae.getType() == null
 				|| "null".equals(keyParts[0]) 
-				|| keyParts[0] == null 
-				|| "null".equals(keyParts[1])
-				|| keyParts[1] == null) {
+				|| keyParts[0] == null ) {
 			throw EXCEPTION;
 		}
 	}
@@ -87,9 +83,7 @@ public class NullArgumentsValidatorAspect {
 		UserEntity ue = (UserEntity) arg;
 		String[] keyParts = ue.getUniqueKey().split("@@");
 		
-		if ("null".equals(keyParts[0]) 
-				|| keyParts[0] == null 
-				|| "null".equals(keyParts[1]) 
+		if ("null".equals(keyParts[1]) 
 				|| keyParts[1] == null
 				|| "null".equals(ue.getUserName()) 
 				|| ue.getUserName() == null 

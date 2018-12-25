@@ -22,27 +22,23 @@ import playground.logic.UserService;
 @Service
 public class JpaUserService implements UserService {
 	private UserDao users;
-	private NumberGeneratorDao numberGenerator;
-
-	@Value("${guest:Anonymous}")
 	private String guest;
-
-	@Value("${temporary.code:Anonymous}")
-	private String temporary_code;
-
-	@Value("${reviewer:Anonymous}")
 	private String reviewer;
-
-	@Value("${playground:Anonymous}")
 	private String playground;
-	
-	@Value("${delim:@@}")
 	private String delim;
-
+	
 	@Autowired
-	public void setElementDao(UserDao users, NumberGeneratorDao numberGenerator) {
+	public void setElementDao(
+			UserDao users, 
+			@Value("${guest:Anonymous}") String guest,
+			@Value("${reviewer:Anonymous}") String reviewer,
+			@Value("${playground:Anonymous}") String playground,
+			@Value("${delim:@@}") String delim) {
 		this.users = users;
-		this.numberGenerator = numberGenerator;
+		this.guest = guest;
+		this.reviewer = reviewer;
+		this.playground = playground;
+		this.delim = delim;
 	}
 
 	@Override
@@ -52,19 +48,12 @@ public class JpaUserService implements UserService {
 	@PlaygroundPerformance
 	public UserEntity createUser(UserEntity userEntity) throws Exception {
 		if (!this.users.existsById(userEntity.getUniqueKey())) {
-			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
-			String number = "" + temp.getNextNumber();
-			userEntity.setNumber(number);
-			if (userEntity.getCode() == null) {
-				userEntity.setCode(this.generateCode());
-			}
+		
+			userEntity.setCode(this.generateCode());		
 			String email = userEntity.getUniqueKey().split(delim)[1];
 			userEntity.setUniqueKey(playground + delim + email);
+			return this.users.save(userEntity);
 			
-			this.numberGenerator.delete(temp);
-			
-			UserEntity saved = this.users.save(userEntity);
-			return saved;
 		} else {
 			throw new RuntimeException("User already exists!");
 		}
@@ -120,10 +109,10 @@ public class JpaUserService implements UserService {
 		if (!newUser.getUserName().equals(existing.getUserName())) {
 			existing.setUserName(newUser.getUserName());
 		}
-
-		if (!newUser.getRole().equals(existing.getRole())) {
-			existing.setRole(newUser.getRole());
-		}
+		
+		if(		  !newUser.getRole().equals(existing.getRole())
+				|| newUser.getPoints() != existing.getPoints())
+			throw new RuntimeException("you are trying to edit read-only attributes");
 
 		this.users.save(existing);
 	}

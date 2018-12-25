@@ -27,17 +27,19 @@ public class JpaElementService implements ElementService {
 
 	private ElementDao elements;
 	private NumberGeneratorDao numberGenerator;
-	
-	@Value("${playground:Default}")
-	private String playground;
-	
-	@Value("${delim:@@}")
+	private String playground;	
 	private String delim;
 
 	@Autowired
-	public void setElementDao(ElementDao elements, NumberGeneratorDao numberGenerator) {
+	public void setElementDao(
+			ElementDao elements,
+			NumberGeneratorDao numberGenerator,
+			@Value("${playground:Default}") String playground,
+			@Value("${delim:@@}") String delim) {
 		this.elements = elements;
 		this.numberGenerator = numberGenerator;
+		this.playground = playground;
+		this.delim = delim;
 	}
 
 	@Override
@@ -52,6 +54,10 @@ public class JpaElementService implements ElementService {
 			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
 			
 			elementEntity.setNumber("" + temp.getNextNumber());
+			
+			//Inserting number to uniqueKey
+			elementEntity.setUniqueKey(elementEntity.getNumber() + delim + playground);
+			
 			elementEntity.setCreatorPlayground(userPlayground);
 			elementEntity.setCreatorEmail(email);
 			
@@ -169,9 +175,30 @@ public class JpaElementService implements ElementService {
 			throws Exception {
 		if(this.elements.existsById(id + delim + playground)) {
 			ElementEntity existing = getElement(userPlayground, email, id, playground);
+			
+			if(!newElement.getAttributes().equals(existing.getAttributes()))
+				existing.setAttributes(newElement.getAttributes());
+			
+			if(!newElement.getName().equals(existing.getName()))
+				existing.setName(newElement.getName());
+			
+			if(!newElement.getType().equals(existing.getType()))
+				existing.setType(newElement.getType());
+			
+			if(!newElement.getX().equals(existing.getX()))
+				existing.setX(newElement.getX());
+			
+			if(!newElement.getY().equals(existing.getY()))
+				existing.setY(newElement.getY());
+			
+			if(		   !newElement.getCreatorEmail().equals(existing.getCreatorEmail())
+					|| !newElement.getCreatorPlayground().equals(existing.getCreatorPlayground()))
+				throw new RuntimeException("You are trying to edit read-only attributes");
+			
 			this.elements.delete(existing);
 			newElement.setUniqueKey(existing.getUniqueKey());
-			this.createElement(existing.getCreatorPlayground(), existing.getCreatorEmail(), newElement);
+			this.elements.save(newElement);
+			
 		} else {
 			throw new ElementNotFoundException("There's no such element");
 		}

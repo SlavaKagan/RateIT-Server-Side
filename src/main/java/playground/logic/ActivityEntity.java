@@ -135,4 +135,13 @@ public class ActivityEntity {
 			throw new RuntimeException(e);
 		}
 	}
+
+	@Override
+	public String toString() {
+		return "ActivityEntity [uniqueKey=" + uniqueKey + ", elementPlayground=" + elementPlayground + ", elementId="
+				+ elementId + ", type=" + type + ", playerPlayground=" + playerPlayground + ", playerEmail="
+				+ playerEmail + ", number=" + number + ", creationDate=" + creationDate + ", attributes=" + attributes
+				+ "]";
+	}
+	
 }

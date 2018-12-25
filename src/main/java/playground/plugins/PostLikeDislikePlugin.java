@@ -17,8 +17,6 @@ public class PostLikeDislikePlugin implements Plugin {
 	private ObjectMapper jackson;
 	private final static String LIKE = "like";
 	private final static String DISLIKE = "dislike";
-	
-	@Value("${delim:@@}")
 	private String delim;
 	
 	@PostConstruct
@@ -27,15 +25,20 @@ public class PostLikeDislikePlugin implements Plugin {
 	}
 
 	@Autowired
-	public void setElements(ElementDao elements) {
+	public void setElements(
+			ElementDao elements,
+			@Value("${delim:@@}") String delim) {
 		this.elements = elements;
+		this.delim = delim;
 	}
 
 	@Override
 	public Object execute(ActivityEntity command) throws Exception {
 		LikeDislike likeStatus = jackson.readValue(command.getAttributesJson(), LikeDislike.class);
 		System.err.println(command.getElementId() + delim + command.getElementPlayground());
-		ElementEntity theElement = elements.findById(command.getElementId() + delim + command.getElementPlayground()).get();
+		ElementEntity theElement = elements
+				.findById(command.getElementId() + delim + command.getElementPlayground())
+				.get();
 		
 		int totalLike = (int) theElement.getAttributes().get(LIKE) + likeStatus.getLike();
 		int totalDislike = (int) theElement.getAttributes().get(DISLIKE) + likeStatus.getDislike();

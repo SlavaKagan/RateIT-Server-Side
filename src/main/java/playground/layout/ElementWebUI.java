@@ -24,13 +24,12 @@ import playground.logic.NotFoundExceptions;
 @CrossOrigin(origins = "http://localhost:8080", maxAge = 3600)
 @RestController
 public class ElementWebUI {
-	private ElementService elementservice;
+	private ElementService elementservice;	
 	
-	@Value("${playground:default}")
-	private String playground;
-
 	@Autowired
-	public void setService(ElementService elementervice) {
+	public void setService(
+			ElementService elementervice,
+			@Value("${playground:default}") String playground) {
 		this.elementservice = elementervice;
 	}
 	
@@ -43,7 +42,6 @@ public class ElementWebUI {
 			@RequestBody ElementTO element,
 			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email) throws Exception {
-		element.setPlayground(playground);
 		return new ElementTO(elementservice.createElement(userPlayground, email, element.toEntity()));
 	}
 	
@@ -127,7 +125,8 @@ public class ElementWebUI {
 			@PathVariable("value") String value,
 			@RequestParam(name="size", required=false, defaultValue="10") int size, 
 			@RequestParam(name="page", required=false, defaultValue="0") int page) throws Exception {
-		ElementTO[] elements = elementservice.getAllElementsByAttributeAndItsValue(userPlayground, email, size, page, attributeName, value)
+		ElementTO[] elements = elementservice
+				.getAllElementsByAttributeAndItsValue(userPlayground, email, size, page, attributeName, value)
 				.stream()
 				.map(ElementTO::new)
 				.collect(Collectors.toList())

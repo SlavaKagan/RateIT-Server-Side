@@ -2,6 +2,7 @@ package playground.logic.data;
 
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,14 +27,22 @@ public class JpaActivityService implements ActivityService {
 	private NumberGeneratorDao numberGenerator;
 	private ObjectMapper jackson;
 	private ConfigurableApplicationContext spring;
-
+	private String delim;
+	private String playground;
+	
 	@Autowired
-	public void setActivityDao(ActivityDao activities, NumberGeneratorDao numberGenerator,
-			ConfigurableApplicationContext spring) {
+	public void setActivityDao(
+			ActivityDao activities,
+			NumberGeneratorDao numberGenerator,
+			ConfigurableApplicationContext spring,
+			@Value("${delim:@@}") String delim,
+			@Value("${playground:Default}") String playground) {
 		this.activities = activities;
 		this.numberGenerator = numberGenerator;
 		this.jackson = new ObjectMapper();
 		this.spring = spring;
+		this.delim = delim;
+		this.playground = playground;
 	}
 
 	@Override
@@ -44,32 +53,30 @@ public class JpaActivityService implements ActivityService {
 	@PlaygroundPerformance
 	public ActivityEntity createActivity(String userPlayground, String email, ActivityEntity activityEntity)
 			throws Exception {
-		if (!this.activities.existsById(activityEntity.getUniqueKey())) {
-			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
-			activityEntity.setNumber("" + temp.getNextNumber());
+		NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
+		
+		activityEntity.setNumber("" + temp.getNextNumber());
+		activityEntity.setPlayerEmail(email);
+		activityEntity.setPlayerPlayground(userPlayground);
 
-			this.numberGenerator.delete(temp);
+		// creating the uniqueKey
+		activityEntity.setUniqueKey(activityEntity.getNumber() + delim + playground);
 
-			try {
-				if (activityEntity.getType() != null) {				
-					activityEntity
-					.getAttributes()
-					.putAll(
-							jackson.readValue(
-							jackson.writeValueAsString(
-							((Plugin) spring.getBean(
-							Class.forName("playground.plugins." + activityEntity.getType() + "Plugin")))
-							.execute(activityEntity)), Map.class)
-							);
-				}
-			} catch (Exception e) {
-				throw new RuntimeException(e);
+		this.numberGenerator.delete(temp);
+
+		try {
+			if (activityEntity.getType() != null) {
+				activityEntity.getAttributes()
+						.putAll(jackson.readValue(jackson.writeValueAsString(((Plugin) spring
+								.getBean(Class.forName("playground.plugins." + activityEntity.getType() + "Plugin")))
+										.execute(activityEntity)),
+								Map.class));
 			}
-
-			return this.activities.save(activityEntity);
-		} else {
-			throw new Exception("Activity already exists");
+		} catch (Exception e) {
+			throw new RuntimeException(e);
 		}
+
+		return this.activities.save(activityEntity);
 	}
 
 	@Override

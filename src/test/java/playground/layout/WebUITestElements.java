@@ -248,10 +248,11 @@ public class WebUITestElements  {
 	
 	@Test
 	public void testChangeTheNameOfTheElement() throws Exception{	
+		System.err.println("STARTED THIS TEST");
 		// Given
 		ElementTO elementToPost = jacksonMapper.readValue(elementJson, ElementTO.class);
 		elementToPost.setPlayground(playground);
-		elementservice.createElement(user.getPlayground(), user.getEmail(), elementToPost.toEntity());
+		ElementEntity element = elementservice.createElement(user.getPlayground(), user.getEmail(), elementToPost.toEntity());
 		
 		// When
 		ElementTO elementToPut = jacksonMapper.readValue(
@@ -268,9 +269,9 @@ public class WebUITestElements  {
 								user.getPlayground(),
 								user.getEmail(),
 								playground,
-								elementToPost.getId());
+								element.getNumber());
 		
-		ElementEntity actualElementInDb = this.elementservice.getElement(playground, email, elementToPost.getId(), playground);
+		ElementEntity actualElementInDb = this.elementservice.getElement(playground, email, element.getNumber(), playground);
 		actualElementInDb.setCreationDate(null);
 		actualElementInDb.setX(0.0); // For testing purposes
 		actualElementInDb.setY(0.0);
@@ -281,7 +282,7 @@ public class WebUITestElements  {
 		.isEqualTo(jacksonMapper.writeValueAsString(
 				jacksonMapper.readValue(""
 						+ "{"
-						+ "\"uniqueKey\": \"" + elementToPost.getId() + "@@2019A.Kagan\","
+						+ "\"uniqueKey\": \"" + element.getNumber() + "@@2019A.Kagan\","
 						+ "\"name\":\"MyBoard\","
 						+ "\"expirationDate\": null,"
 						+ "\"type\":\"Messaging Board\","
@@ -558,13 +559,12 @@ public class WebUITestElements  {
 		
 		ElementTO elementToPost = jacksonMapper.readValue(elementJson, ElementTO.class);
 	
-		elementToPost.setId("1"); // For testing purposes
 		elementToPost.setLocation(new Location(0,0));
 		elementToPost.setPlayground(playground);
-		elementservice.createElement(user.getPlayground(), user.getEmail(), elementToPost.toEntity());
+		ElementEntity element = elementservice.createElement(user.getPlayground(), user.getEmail(), elementToPost.toEntity());
 		
 		ElementTO actualElement = this.restTemplate.getForObject(url + "/{userPlayground}/{email}/{playground}/{id}",
-				ElementTO.class, user.getPlayground(), user.getEmail(), playground, "1");
+				ElementTO.class, user.getPlayground(), user.getEmail(), playground, element.getNumber());
 		
 		actualElement.setCreationDate(null); // For testing purposes
 		
@@ -573,12 +573,12 @@ public class WebUITestElements  {
 		.isEqualTo("{" 
 						+ "\"playground\":\"2019A.Kagan\"," 
 						+ "\"creationDate\":null," 
-						+ "\"id\":\"1\","
+						+ "\"id\":\"" + element.getNumber() + "\","
 						+ "\"location\":{\"x\":0.0,\"y\":0.0}," 
 						+ "\"name\":\"Messaging Board\","
 						+ "\"expirationDate\":null," 
 						+ "\"type\":\"Messaging Board\","
-						+ "\"attributes\":{}," 
+						+ "\"attributes\":{\"like\":0,\"dislike\":0}," 
 						+ "\"creatorPlayground\":\"2019A.Kagan\","
 						+ "\"creatorEmail\":\"rubykozel@gmail.com\"" 
 						+ "}");

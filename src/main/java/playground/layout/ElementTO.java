@@ -23,10 +23,12 @@ public class ElementTO {
 	private static AtomicLong generator = new AtomicLong();
 
 	public ElementTO() {
-		this.location = new Location(Math.random() * 20, Math.random() * 20);
 		this.expirationDate = null;
 		this.attributes = new HashMap<>();
+		this.attributes.put("like", 0);
+		this.attributes.put("dislike", 0);
 		this.creationDate = new Date();
+		this.location = new Location(0,0);
 		this.id = "" + generator.getAndIncrement();
 	}
 

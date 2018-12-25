@@ -12,19 +12,11 @@ public class UserEntity {
 	private String avatar;
 	private String role;
 	private long points;
-	private String number;
 	private String code;
 	
-	@Value("${manager:Anonymous}")
-	private String manager;
-	
-	@Value("${reviewer:Anonymous}")
-	private String reviewer;
 
 	public UserEntity() {
-
 	}
-	
 	
 	public UserEntity(String uniqueKey, String userName, String avatar, String role) {
 		this.uniqueKey = uniqueKey;
@@ -46,7 +38,6 @@ public class UserEntity {
 		return userName;
 	}
 	
-	
 	public void setUserName(String userName) throws Exception {
 		this.userName = userName;
 	}
@@ -55,7 +46,6 @@ public class UserEntity {
 		return avatar;
 	}
 	
-	
 	public void setAvatar(String avatar) throws Exception {
 		this.avatar = avatar;
 	}
@@ -63,7 +53,6 @@ public class UserEntity {
 	public String getRole() {
 		return role;
 	}
-	
 	
 	public void setRole(String role) throws Exception {
 		this.role = role;
@@ -81,14 +70,6 @@ public class UserEntity {
 		this.points += amount;
 	}
 	
-	public String getNumber() {
-		return number;
-	}
-
-	public void setNumber(String number) {
-		this.number = number;
-	}
-	
 	public String getCode() {
 		return code;
 	}
@@ -96,13 +77,11 @@ public class UserEntity {
 	public void setCode(String code) {
 		this.code = code;
 	}
-	
+
 	@Override
 	public String toString() {
 		return "UserEntity [uniqueKey=" + uniqueKey + ", userName=" + userName + ", avatar=" + avatar + ", role=" + role
-				+ ", points=" + points + ", number=" + number + ", code=" + code + ", manager=" + manager
-				+ ", reviewer=" + reviewer + "]";
+				+ ", points=" + points + ", code=" + code + "]";
 	}
-
-
+	
 }

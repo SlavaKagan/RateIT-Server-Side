@@ -28,10 +28,10 @@ public class ElementEntity {
 	private String number;
 
 	public ElementEntity() {
-		this.x = Math.random() * 20;
-		this.y = Math.random() * 20;
 		this.expirationDate = null;
 		this.attributes = new HashMap<>();
+		this.attributes.put("like", 0);
+		this.attributes.put("dislike", 0);
 	}
 	
 	

@@ -1,7 +1,6 @@
 package playground.layout;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -24,9 +23,6 @@ public class ActivityWebUI {
 	
 	private ActivityService service;
 	
-	@Value("${playground:default}")
-	private String playground;
-	
 	@Autowired
 	public void setService(ActivityService service) {
 		this.service = service;
@@ -41,9 +37,6 @@ public class ActivityWebUI {
 			@PathVariable("userPlayground") String userPlayground,
 			@PathVariable("email") String email,
 			@RequestBody ActivityTO theActivity) throws Exception {
-		theActivity.setPlayerEmail(email);
-		theActivity.setPlayerPlayground(userPlayground);
-		theActivity.setPlayground(playground);
 		return new ActivityTO(this.service.createActivity(userPlayground, email, theActivity.toEntity()));
 	}
 	
