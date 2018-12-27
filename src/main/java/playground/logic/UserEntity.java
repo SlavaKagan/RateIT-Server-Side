@@ -1,11 +1,8 @@
 package playground.logic;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name="USERS")
+@Document(collection="users")
 public class UserEntity {
 	private String uniqueKey;
 	private String userName;

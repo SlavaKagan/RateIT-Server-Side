@@ -3,8 +3,6 @@ package playground.layout;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-
 import playground.logic.ElementEntity;
 import playground.logic.Location;
 
@@ -20,7 +18,6 @@ public class ElementTO {
 	private Map<String, Object> attributes;
 	private String creatorPlayground;
 	private String creatorEmail;
-	private static AtomicLong generator = new AtomicLong();
 
 	public ElementTO() {
 		this.expirationDate = null;
@@ -29,7 +26,7 @@ public class ElementTO {
 		this.attributes.put("dislike", 0);
 		this.creationDate = new Date();
 		this.location = new Location(0,0);
-		this.id = "" + generator.getAndIncrement();
+		this.id = "";
 	}
 
 	public ElementTO(ElementEntity element) {
@@ -48,17 +45,6 @@ public class ElementTO {
 			this.id = idAndPlayground[0];
 		}
 	}
-	
-	
-	public ElementTO(String type, String name, String creatorPlayground, String creatorEmail,
-			Map<String, Object> attributes) throws Exception {
-		this();
-		this.type = type;
-		this.name = name;
-		this.creatorPlayground = creatorPlayground;
-		this.creatorEmail = creatorEmail;
-		this.attributes = attributes;
-	}
 
 	public String getPlayground() {
 		return playground;
@@ -73,7 +59,6 @@ public class ElementTO {
 		return id;
 	}
 	
-	
 	public void setId(String id) {
 		this.id = id;
 	}
@@ -82,7 +67,6 @@ public class ElementTO {
 		return location;
 	}
 	
-	
 	public void setLocation(Location location) {
 		this.location = location;
 	}
@@ -90,7 +74,6 @@ public class ElementTO {
 	public String getName() {
 		return name;
 	}
-	
 	
 	public void setName(String name) {
 		this.name = name;
@@ -115,7 +98,6 @@ public class ElementTO {
 	public String getType() {
 		return type;
 	}
-	
 	
 	public void setType(String type) {
 		this.type = type;

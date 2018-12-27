@@ -3,17 +3,10 @@ package playground.logic;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name="ACTIVITIES")
+@Document(collection="activities")
 public class ActivityEntity {
 	
 	private String uniqueKey;
@@ -60,7 +53,6 @@ public class ActivityEntity {
 		return elementPlayground;
 	}
 
-	
 	public void setElementPlayground(String elementPlayground) {
 		this.elementPlayground = elementPlayground;
 	}
@@ -69,7 +61,6 @@ public class ActivityEntity {
 		return elementId;
 	}
 
-	
 	public void setElementId(String elementId)  {
 		this.elementId = elementId;
 	}
@@ -78,7 +69,6 @@ public class ActivityEntity {
 		return type;
 	}
 
-	
 	public void setType(String type) {
 		this.type = type;
 	}
@@ -87,7 +77,6 @@ public class ActivityEntity {
 		return playerPlayground;
 	}
 
-	
 	public void setPlayerPlayground(String playerPlayground)  {
 		this.playerPlayground = playerPlayground;
 	}
@@ -96,12 +85,10 @@ public class ActivityEntity {
 		return playerEmail;
 	}
 
-	
 	public void setPlayerEmail(String playerEmail)  {
 		this.playerEmail = playerEmail;
 	}
 	
-	@Transient
 	public Map<String, Object> getAttributes() {
 		return attributes;
 	}
@@ -110,30 +97,12 @@ public class ActivityEntity {
 		this.attributes = attributes;
 	}
 		
-	@Temporal(TemporalType.TIMESTAMP)
 	public Date getCreationDate() {
 		return creationDate;
 	}
 
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
-	}
-
-	@Lob
-	public String getAttributesJson() {
-		try {
-			return new ObjectMapper().writeValueAsString(this.attributes);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public void setAttributesJson(String attributes) {
-		try {
-			this.attributes = new ObjectMapper().readValue(attributes, Map.class);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	@Override

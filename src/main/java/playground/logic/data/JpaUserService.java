@@ -12,8 +12,6 @@ import playground.aop.annotations.ValidateNull;
 import playground.aop.annotations.ValidateUser;
 import playground.aop.logger.Logger;
 import playground.aop.logger.PlaygroundPerformance;
-import playground.dal.NumberGenerator;
-import playground.dal.NumberGeneratorDao;
 import playground.dal.UserDao;
 import playground.logic.ConfirmationException;
 import playground.logic.UserEntity;
@@ -91,6 +89,7 @@ public class JpaUserService implements UserService {
 		user.setRole(reviewer);
 		user.setPoints(100);
 		user.setCode(null); // Means user is registered
+		this.users.save(user);
 		return user;
 	}
 

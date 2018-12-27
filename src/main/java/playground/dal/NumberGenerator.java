@@ -1,12 +1,13 @@
 package playground.dal;
 
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
 
-@Entity
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document(collection="number_generator")
 public class NumberGenerator {
-	private Long nextNumber;
+	private String nextNumber;
 	
 	public NumberGenerator() {
 		
@@ -14,11 +15,11 @@ public class NumberGenerator {
 	
 	@Id
 	@GeneratedValue
-	public Long getNextNumber() {
+	public String getNextNumber() {
 		return nextNumber;
 	}
 
-	public void setNextNumber(Long nextNumber) {
+	public void setNextNumber(String nextNumber) {
 		this.nextNumber = nextNumber;
 	}
 }

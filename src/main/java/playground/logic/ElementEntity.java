@@ -3,17 +3,10 @@ package playground.logic;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
-@Table(name = "ELEMENTS")
+@Document(collection="elements")
 public class ElementEntity {
 	private String uniqueKey;
 	private Double x;
@@ -33,7 +26,6 @@ public class ElementEntity {
 		this.attributes.put("like", 0);
 		this.attributes.put("dislike", 0);
 	}
-	
 	
 	public ElementEntity(String type, String name, String creatorPlayground, String creatorEmail,
 			Map<String, Object> attributes) {
@@ -86,7 +78,6 @@ public class ElementEntity {
 		this.name = name;
 	}
 
-	@Temporal(TemporalType.TIMESTAMP)
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -95,7 +86,6 @@ public class ElementEntity {
 		this.creationDate = creationDate;
 	}
 
-	@Temporal(TemporalType.TIMESTAMP)
 	public Date getExpirationDate() {
 		return expirationDate;
 	}
@@ -112,30 +102,12 @@ public class ElementEntity {
 		this.type = type;
 	}
 
-	@Transient
 	public Map<String, Object> getAttributes() {
 		return attributes;
 	}
 
 	public void setAttributes(Map<String, Object> attributes) {
 		this.attributes = attributes;
-	}
-
-	@Lob
-	public String getAttributesJson() {
-		try {
-			return new ObjectMapper().writeValueAsString(this.attributes);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
-	}
-
-	public void setAttributesJson(String attributes) {
-		try {
-			this.attributes = new ObjectMapper().readValue(attributes, Map.class);
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 	public String getCreatorPlayground() {

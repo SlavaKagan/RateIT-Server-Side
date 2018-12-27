@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import playground.dal.ActivityDao;
 import playground.dal.ElementDao;
 import playground.logic.ActivityEntity;
 import playground.logic.ElementEntity;
@@ -34,8 +33,9 @@ public class PostLikeDislikePlugin implements Plugin {
 
 	@Override
 	public Object execute(ActivityEntity command) throws Exception {
-		LikeDislike likeStatus = jackson.readValue(command.getAttributesJson(), LikeDislike.class);
-		System.err.println(command.getElementId() + delim + command.getElementPlayground());
+		LikeDislike likeStatus = jackson.readValue(
+				jackson.writeValueAsString(command.getAttributes()), LikeDislike.class);
+		
 		ElementEntity theElement = elements
 				.findById(command.getElementId() + delim + command.getElementPlayground())
 				.get();

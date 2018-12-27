@@ -49,16 +49,12 @@ public class NullArgumentsValidatorAspect {
 		ElementEntity ee = (ElementEntity) arg;
 		String[] keyParts = ee.getUniqueKey().split("@@");
 		
-		System.err.println(ee);
-		
 		if ("null".equals(ee.getName()) 
 				|| ee.getName() == null 
 				|| "null".equals(ee.getType()) 
 				|| ee.getType() == null
 				|| "null".equals(keyParts[0]) 
-				|| keyParts[0] == null 
-				/*|| "null".equals(keyParts[1])
-				|| keyParts[1] == null*/) {
+				|| keyParts[0] == null) {
 			throw EXCEPTION;
 		}
 	}

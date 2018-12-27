@@ -55,7 +55,7 @@ public class JpaActivityService implements ActivityService {
 			throws Exception {
 		NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
 		
-		activityEntity.setNumber("" + temp.getNextNumber());
+		activityEntity.setNumber(temp.getNextNumber());
 		activityEntity.setPlayerEmail(email);
 		activityEntity.setPlayerPlayground(userPlayground);
 

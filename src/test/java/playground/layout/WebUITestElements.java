@@ -1,6 +1,5 @@
 package playground.layout;
 import static org.assertj.core.api.Assertions.assertThat;
-import java.util.HashMap;
 import javax.annotation.PostConstruct;
 import org.junit.After;
 import org.junit.Before;
@@ -137,7 +136,7 @@ public class WebUITestElements  {
 						+ "\"type\": \"Messaging Board\","
 						+ "\"x\": 0.0,"
 						+ "\"y\": 0.0,"
-						+ "\"number\": " + actualElementInDb.getNumber() + ","
+						+ "\"number\": \"" + actualElementInDb.getNumber() + "\","
 						+ "\"creatorPlayground\":\"2019A.Kagan\","
 						+ "\"creatorEmail\":\"rubykozel@gmail.com\""
 						+ "}", ElementEntity.class)));
@@ -248,7 +247,6 @@ public class WebUITestElements  {
 	
 	@Test
 	public void testChangeTheNameOfTheElement() throws Exception{	
-		System.err.println("STARTED THIS TEST");
 		// Given
 		ElementTO elementToPost = jacksonMapper.readValue(elementJson, ElementTO.class);
 		elementToPost.setPlayground(playground);
@@ -288,7 +286,7 @@ public class WebUITestElements  {
 						+ "\"type\":\"Messaging Board\","
 						+ "\"x\": 0.0,"
 						+ "\"y\": 0.0,"
-						+ "\"number\": " + actualElementInDb.getNumber() + ","
+						+ "\"number\": \"" + element.getNumber() + "\","
 						+ "\"creatorPlayground\":\"2019A.Kagan\","
 						+ "\"creatorEmail\":\"rubykozel@gmail.com\""
 						+ "}", ElementEntity.class)));
@@ -708,8 +706,7 @@ public class WebUITestElements  {
 	@Test
 	public void testGettingAnElementSuccessfullyWithSpecificDistance() throws Exception {
 
-		ElementTO newElement = new ElementTO("Messaging Board", "Messaging Board", playground, email,
-				new HashMap<>());
+		ElementTO newElement = jacksonMapper.readValue(elementJson, ElementTO.class);
 		newElement.setLocation(new Location(1,1));
 		newElement.setPlayground(playground);
 		elementservice.createElement(user.getPlayground(), user.getEmail(), newElement.toEntity());

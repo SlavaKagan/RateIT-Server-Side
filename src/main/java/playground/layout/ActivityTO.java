@@ -3,7 +3,6 @@ package playground.layout;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 import playground.logic.ActivityEntity;
 
 public class ActivityTO {
@@ -16,13 +15,12 @@ public class ActivityTO {
 	private String elementId;
 	private String type;
 	private Date creationDate;
-	private static AtomicLong generator = new AtomicLong();
 	private Map<String, Object> attributes;
 
 	public ActivityTO() {
 		this.attributes = new HashMap<>();
-		this.id = "" + generator.getAndIncrement();
 		this.creationDate = new Date();
+		this.id = "";
 	}
 	
 	public ActivityTO(ActivityEntity activity) {
@@ -39,14 +37,6 @@ public class ActivityTO {
 			this.elementId = activity.getElementId();
 			this.playerEmail = activity.getPlayerEmail();
 		}
-	}
-
-	
-	public ActivityTO(ElementTO newElement, String type) {
-		this();
-		this.elementId = newElement.getId();
-		this.elementPlayground = newElement.getPlayground();	
-		this.type = type;
 	}
 
 	public String getPlayground() {

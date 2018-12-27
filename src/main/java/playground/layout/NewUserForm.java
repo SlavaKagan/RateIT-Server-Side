@@ -1,24 +1,14 @@
 package playground.layout;
-import org.springframework.beans.factory.annotation.Value;
 
-public class NewUserForm {
-	
-	@Value("${manager.email:Anonymous}")
+public class NewUserForm {	
 	private String email;
-	
-	@Value("${default.user.name:Anonymous}")
 	private String username;
-	
-	@Value("${default.avatar:Anonymous}")
 	private String avatar;
-	
-	@Value("${guest:Anonymous}")
 	private String role;
 	
 	public NewUserForm() { 
 
 	}
-	
 	
 	public NewUserForm(String email, String username, String avatar, String role) {
 		this.email = email;
@@ -31,7 +21,6 @@ public class NewUserForm {
 		return email;
 	}
 
-	
 	public void setEmail(String email) throws Exception {
 		this.email = email;
 	}
@@ -40,7 +29,6 @@ public class NewUserForm {
 		return username;
 	}
 
-	
 	public void setUsername(String username) throws Exception {
 		this.username = username;
 	}
@@ -49,7 +37,6 @@ public class NewUserForm {
 		return avatar;
 	}
 
-	
 	public void setAvatar(String avatar) throws Exception {
 		this.avatar = avatar;
 	}
@@ -58,7 +45,6 @@ public class NewUserForm {
 		return role;
 	}
 
-	
 	public void setRole(String role) throws Exception {
 		this.role = role;
 	}

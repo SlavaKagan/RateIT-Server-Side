@@ -37,7 +37,8 @@ public class ShowReviewsPlugin implements Plugin {
 
 	@Override
 	public Object execute(ActivityEntity command) throws Exception {
-		PageAndSizeRequest rv = jackson.readValue(command.getAttributesJson(), PageAndSizeRequest.class);
+		PageAndSizeRequest rv = jackson.readValue(
+				jackson.writeValueAsString(command.getAttributes()), PageAndSizeRequest.class);
 		
 		Page<ActivityEntity> page = activities
 				.findAllByTypeEqualsAndElementIdEquals(

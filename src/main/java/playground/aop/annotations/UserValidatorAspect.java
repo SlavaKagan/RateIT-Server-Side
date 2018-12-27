@@ -15,18 +15,18 @@ import playground.logic.UserEntity;
 @Component
 @Aspect
 public class UserValidatorAspect {
-
 	private UserDao users;
-
-	@Value("${delim:@@}")
 	private String delim;
-	
-	@Value("${guest:Guest}")
 	private String guest;
 	
 	@Autowired
-	public void setUserService(UserDao users) {
+	public void setUserService(
+			UserDao users,
+			@Value("${delim:@@}") String delim,
+			@Value("${guest:Guest}") String guest) {
 		this.users = users;
+		this.delim = delim;
+		this.guest = guest;
 	}
 
 	@Around("@annotation(playground.aop.annotations.ValidateUser) && args(playground,email,..)")

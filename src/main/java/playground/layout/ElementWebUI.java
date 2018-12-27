@@ -45,7 +45,6 @@ public class ElementWebUI {
 		return new ElementTO(elementservice.createElement(userPlayground, email, element.toEntity()));
 	}
 	
-	// Check if user exists
 	@RequestMapping(
 			method = RequestMethod.GET, 
 			path = "/playground/elements/{userPlayground}/{email}/{playground}/{id}", 
@@ -58,7 +57,6 @@ public class ElementWebUI {
 		return new ElementTO(elementservice.getElement(userPlayground, email, id, playground));
 	}
 	
-	// Check if user exists
 	@RequestMapping(
 			method = RequestMethod.GET, 
 			path = "/playground/elements/{userPlayground}/{email}/all", 
@@ -76,7 +74,6 @@ public class ElementWebUI {
 		return element;
 	}
 	
-	// Checking if user exists already in ManagerValidator, don't need to check
 	@RequestMapping(
 			method = RequestMethod.PUT, 
 			path = "/playground/elements/{userPlayground}/{email}/{playground}/{id}", 
@@ -90,7 +87,6 @@ public class ElementWebUI {
 		elementservice.updateElement(userPlayground, email, id, playground, newElement.toEntity());
 	}
 	
-	// Check if user exists
 	@RequestMapping(
 			method = RequestMethod.GET, 
 			path = "/playground/elements/{userPlayground}/{email}/near/{x}/{y}/{distance}", 
@@ -113,7 +109,6 @@ public class ElementWebUI {
 		return element;
 	}
 	
-	// Check if user exists
 	@RequestMapping(
 			method = RequestMethod.GET,
 			path = "/playground/elements/{userPlayground}/{email}/search/{attributeName}/{value}",
