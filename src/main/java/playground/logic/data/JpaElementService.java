@@ -35,6 +35,8 @@ public class JpaElementService implements ElementService {
 	private String playground;	
 	private String delim;
 	private UserService userService;
+	private String moviePageType;
+	private String messagingBoardType;
 
 	@Autowired
 	public void setElementDao(
@@ -42,7 +44,9 @@ public class JpaElementService implements ElementService {
 			NumberGeneratorDao numberGenerator,
 			UserService userService,
 			@Value("${playground:Default}") String playground,
-			@Value("${delim:@@}") String delim) {
+			@Value("${delim:@@}") String delim,
+			@Value("${movie.page.type:Default}") String moviePageType,
+			@Value("${messaging.board.type:Default}") String messagingBoardType) {
 		this.elements = elements;
 		this.numberGenerator = numberGenerator;
 		this.playground = playground;
@@ -59,6 +63,10 @@ public class JpaElementService implements ElementService {
 	public ElementEntity createElement(String userPlayground, String email, ElementEntity elementEntity)
 			throws Exception {
 		if (!this.elements.existsById(elementEntity.getUniqueKey())) {
+			if(!elementEntity.getType().equals(this.messagingBoardType) 
+					&& !elementEntity.getType().equals(this.messagingBoardType))
+				throw new RuntimeException("Unexcpected element type " + elementEntity.getType());
+			
 			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
 			
 			elementEntity.setNumber(temp.getNextNumber());
@@ -69,6 +77,11 @@ public class JpaElementService implements ElementService {
 			elementEntity.setCreatorPlayground(userPlayground);
 			elementEntity.setCreatorEmail(email);
 			
+			if(elementEntity.getType().equals(this.moviePageType)) {
+				elementEntity.getAttributes().put("like", 0);
+				elementEntity.getAttributes().put("dislike", 0);
+			} 
+				
 			this.numberGenerator.delete(temp);
 			
 			return this.elements.save(elementEntity);

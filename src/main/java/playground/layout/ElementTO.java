@@ -22,8 +22,6 @@ public class ElementTO {
 	public ElementTO() {
 		this.expirationDate = null;
 		this.attributes = new HashMap<>();
-		this.attributes.put("like", 0);
-		this.attributes.put("dislike", 0);
 		this.creationDate = new Date();
 		this.location = new Location(0,0);
 		this.id = "";
