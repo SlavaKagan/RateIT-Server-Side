@@ -145,7 +145,7 @@ public class JpaUserService implements UserService {
         		 .collect(Collectors.joining(""));
     }
 	
-	/*Sending mail with the details of the payment*/
+	/*Sending mail to the user*/
 	private void sendEmail(String toEmail,String code) throws Exception {
 		try {
 			final String fromEmail = "2019A.Kagan@gmail.com";
