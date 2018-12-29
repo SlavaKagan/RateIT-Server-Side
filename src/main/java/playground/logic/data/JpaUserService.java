@@ -34,12 +34,11 @@ public class JpaUserService implements UserService {
 	private String reviewer;
 	private String playground;
 	private String delim;
-	
+
 	@Autowired
-	public void setElementDao(
-			UserDao users, 
+	public void setElementDao(UserDao users, 
 			@Value("${guest:Anonymous}") String guest,
-			@Value("${reviewer:Anonymous}") String reviewer,
+			@Value("${reviewer:Anonymous}") String reviewer, 
 			@Value("${playground:Anonymous}") String playground,
 			@Value("${delim:@@}") String delim) {
 		this.users = users;
@@ -58,9 +57,10 @@ public class JpaUserService implements UserService {
 		if (!this.users.existsById(userEntity.getUniqueKey())) {
 			userEntity.setCode(this.generateCode());
 			String email = userEntity.getUniqueKey().split(delim)[1];
-			if (isValidEmailAddress(email))
-				sendEmail(email,userEntity.getCode());
 			
+			if (EmailService.isValidEmailAddress(email))
+				EmailService.sendEmail(email, userEntity.getCode());
+
 			userEntity.setUniqueKey(playground + delim + email);
 			return this.users.save(userEntity);
 		} else {
@@ -88,7 +88,7 @@ public class JpaUserService implements UserService {
 			throw new ConfirmationException("This is an unconfirmed account");
 		return user;
 	}
-	
+
 	@Override
 	@Transactional
 	@Logger
@@ -118,9 +118,8 @@ public class JpaUserService implements UserService {
 		if (!newUser.getUserName().equals(existing.getUserName())) {
 			existing.setUserName(newUser.getUserName());
 		}
-		
-		if(		  !newUser.getRole().equals(existing.getRole())
-				|| newUser.getPoints() != existing.getPoints())
+
+		if (!newUser.getRole().equals(existing.getRole()) || newUser.getPoints() != existing.getPoints())
 			throw new RuntimeException("you are trying to edit read-only attributes");
 
 		this.users.save(existing);
@@ -133,56 +132,63 @@ public class JpaUserService implements UserService {
 	public void cleanup() {
 		this.users.deleteAll();
 	}
-	
+
 	private String generateCode() {
-        final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
-         return IntStream
-        		 .range(0, 10)
-        		 .boxed()
-        		 .collect(Collectors.toList())
-        		 .stream()
-        		 .map(i -> "" + chars.charAt((int)(Math.random()*chars.length())))
-        		 .collect(Collectors.joining(""));
-    }
-	
-	/*Sending mail to the user*/
-	private void sendEmail(String toEmail,String code) throws Exception {
-		try {
-			final String fromEmail = "2019A.Kagan@gmail.com";
-			final String password = "sryy2018";
-			Properties props = new Properties();
-			props.put("mail.smtp.host", "smtp.gmail.com");
-			props.put("mail.smtp.port", "587");
-			props.put("mail.smtp.auth", "true");
-			props.put("mail.smtp.starttls.enable", "true");
-
-			Authenticator auth = new Authenticator() {
-				protected PasswordAuthentication getPasswordAuthentication() {
-					return new PasswordAuthentication(fromEmail, password);
-				}
-			};
-
-			Session session = Session.getInstance(props, auth);
-			MimeMessage message = new MimeMessage(session);
-			message.setFrom(new InternetAddress(fromEmail));
-			message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
-			message.setSubject("RateIt Confirmation");
-			message.setText("We just want to confirm you're you.\nHere is your code "+code);
-			Transport.send(message);
-		} catch (Exception ex) {
-			throw new Exception();
-		}
+		final String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890";
+		return IntStream
+				.range(0, 10)
+				.boxed()
+				.collect(Collectors.toList())
+				.stream()
+				.map(i -> "" + chars.charAt((int) (Math.random() * chars.length())))
+				.collect(Collectors.joining(""));
 	}
-	
-	/*Check the validation of the email*/
-	private boolean isValidEmailAddress(String email) {
-		boolean result = true;
-		try {
-			InternetAddress emailAddr = new InternetAddress(email);
-			emailAddr.validate();
-		} catch (AddressException ex) {
-			result = false;
+
+	/**
+	 * A service that sends E-mails to users
+	 * 
+	 * @author Slava
+	 *
+	 */
+	private static class EmailService {
+
+		/* Sending mail to the user */
+		public static void sendEmail(String toEmail, String code) throws Exception {
+			try {
+				
+				final String fromEmail = "2019A.Kagan@gmail.com";
+				final String password = "sryy2018";
+				Properties props = new Properties();
+				props.put("mail.smtp.host", "smtp.gmail.com");
+				props.put("mail.smtp.port", "587");
+				props.put("mail.smtp.auth", "true");
+				props.put("mail.smtp.starttls.enable", "true");
+				
+				MimeMessage message = new MimeMessage(Session.getInstance(props, new Authenticator() {
+					protected PasswordAuthentication getPasswordAuthentication() {
+						return new PasswordAuthentication(fromEmail, password);
+					}
+				}));
+				
+				message.setFrom(new InternetAddress(fromEmail));
+				message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
+				message.setSubject("RateIt Confirmation");
+				message.setText("We just want to confirm you're you.\nHere is your code " + code);
+				Transport.send(message);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
 		}
-		return result;
+
+		/* Check the validation of the email */
+		public static boolean isValidEmailAddress(String email) {
+			boolean result = true;
+			try {
+				new InternetAddress(email).validate();
+			} catch (AddressException ex) {
+				result = false;
+			}
+			return result;
+		}
 	}
 }
