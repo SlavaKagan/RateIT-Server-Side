@@ -1,7 +1,17 @@
 package playground.logic.data;
 
+import java.util.Properties;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -46,16 +56,16 @@ public class JpaUserService implements UserService {
 	@PlaygroundPerformance
 	public UserEntity createUser(UserEntity userEntity) throws Exception {
 		if (!this.users.existsById(userEntity.getUniqueKey())) {
-		
-			userEntity.setCode(this.generateCode());		
+			userEntity.setCode(this.generateCode());
 			String email = userEntity.getUniqueKey().split(delim)[1];
+			if (isValidEmailAddress(email))
+				sendEmail(email,userEntity.getCode());
+			
 			userEntity.setUniqueKey(playground + delim + email);
 			return this.users.save(userEntity);
-			
 		} else {
 			throw new RuntimeException("User already exists!");
 		}
-
 	}
 
 	@Override
@@ -134,5 +144,45 @@ public class JpaUserService implements UserService {
         		 .map(i -> "" + chars.charAt((int)(Math.random()*chars.length())))
         		 .collect(Collectors.joining(""));
     }
+	
+	/*Sending mail with the details of the payment*/
+	private void sendEmail(String toEmail,String code) throws Exception {
+		try {
+			final String fromEmail = "2019A.Kagan@gmail.com";
+			final String password = "sryy2018";
+			Properties props = new Properties();
+			props.put("mail.smtp.host", "smtp.gmail.com");
+			props.put("mail.smtp.port", "587");
+			props.put("mail.smtp.auth", "true");
+			props.put("mail.smtp.starttls.enable", "true");
 
+			Authenticator auth = new Authenticator() {
+				protected PasswordAuthentication getPasswordAuthentication() {
+					return new PasswordAuthentication(fromEmail, password);
+				}
+			};
+
+			Session session = Session.getInstance(props, auth);
+			MimeMessage message = new MimeMessage(session);
+			message.setFrom(new InternetAddress(fromEmail));
+			message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
+			message.setSubject("RateIt Confirmation");
+			message.setText("We just want to confirm you're you.\nHere is your code "+code);
+			Transport.send(message);
+		} catch (Exception ex) {
+			throw new Exception();
+		}
+	}
+	
+	/*Check the validation of the email*/
+	private boolean isValidEmailAddress(String email) {
+		boolean result = true;
+		try {
+			InternetAddress emailAddr = new InternetAddress(email);
+			emailAddr.validate();
+		} catch (AddressException ex) {
+			result = false;
+		}
+		return result;
+	}
 }
