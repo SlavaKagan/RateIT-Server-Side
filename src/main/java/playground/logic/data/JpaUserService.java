@@ -59,7 +59,7 @@ public class JpaUserService implements UserService {
 			String email = userEntity.getUniqueKey().split(delim)[1];
 			
 			if (EmailService.isValidEmailAddress(email))
-				EmailService.sendEmail(email, userEntity.getCode());
+				EmailService.sendEmail(email, userEntity.getCode(),userEntity.getUserName());
 
 			userEntity.setUniqueKey(playground + delim + email);
 			return this.users.save(userEntity);
@@ -146,20 +146,18 @@ public class JpaUserService implements UserService {
 
 	/**
 	 * A service that sends E-mails to users
-	 * 
-	 * @author Slava
-	 *
 	 */
 	private static class EmailService {
 
 		/* Sending mail to the user */
-		public static void sendEmail(String toEmail, String code) throws Exception {
+		public static void sendEmail(String toEmail, String code,String userName) throws Exception {
 			try {
 				
 				final String fromEmail = "2019A.Kagan@gmail.com";
 				final String password = "sryy2018";
 				Properties props = new Properties();
 				props.put("mail.smtp.host", "smtp.gmail.com");
+				props.put("mail.smtp.ssl.trust", "smtp.gmail.com");
 				props.put("mail.smtp.port", "587");
 				props.put("mail.smtp.auth", "true");
 				props.put("mail.smtp.starttls.enable", "true");
@@ -173,7 +171,10 @@ public class JpaUserService implements UserService {
 				message.setFrom(new InternetAddress(fromEmail));
 				message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
 				message.setSubject("RateIt Confirmation");
-				message.setText("We just want to confirm you're you.\nHere is your code " + code);
+				message.setText("Hello " + userName + " and Welcome To RateIt!!"
+						+ "\nWe just want to confirm you're you and not a robot."
+						+ "\nHere is your code to complete the registration: " + code
+						+ "\nEnjoy using our site!");
 				Transport.send(message);
 			} catch (Exception ex) {
 				ex.printStackTrace();
