@@ -168,7 +168,7 @@ public class JpaUserService implements UserService {
 					}
 				}));
 				
-				message.setFrom(new InternetAddress(fromEmail));
+				message.setFrom(new InternetAddress(fromEmail,"RateIt"));
 				message.addRecipient(Message.RecipientType.TO, new InternetAddress(toEmail));
 				message.setSubject("RateIt Confirmation");
 				message.setText("Hello " + userName + " and Welcome To RateIt!!"

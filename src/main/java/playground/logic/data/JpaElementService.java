@@ -3,7 +3,6 @@ package playground.logic.data;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
@@ -11,7 +10,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import playground.aop.annotations.ValidateManager;
 import playground.aop.annotations.ValidateNull;
 import playground.aop.annotations.ValidateUser;
@@ -20,7 +18,6 @@ import playground.aop.logger.PlaygroundPerformance;
 import playground.dal.ElementDao;
 import playground.dal.NumberGenerator;
 import playground.dal.NumberGeneratorDao;
-import playground.logic.ConfirmationException;
 import playground.logic.ElementEntity;
 import playground.logic.ElementNotFoundException;
 import playground.logic.ElementService;
