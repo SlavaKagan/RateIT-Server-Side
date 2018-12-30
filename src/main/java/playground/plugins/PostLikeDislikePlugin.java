@@ -40,13 +40,16 @@ public class PostLikeDislikePlugin implements Plugin {
 				.findById(command.getElementId() + delim + command.getElementPlayground())
 				.get();
 		
-		int totalLike = (int) theElement.getAttributes().get(LIKE) + likeStatus.getLike();
-		int totalDislike = (int) theElement.getAttributes().get(DISLIKE) + likeStatus.getDislike();
+		theElement.getAttributes().put(LIKE,
+				(int) theElement.getAttributes().get(LIKE) + likeStatus.getLike());
+		theElement.getAttributes().put(DISLIKE,
+				(int) theElement.getAttributes().get(DISLIKE) + likeStatus.getDislike());
 		
-		theElement.getAttributes().put(LIKE, totalLike);
-		theElement.getAttributes().put(DISLIKE, totalDislike);
+		elements.save(theElement);
 		
-		return new LikeDislike(totalLike, totalDislike);
+		return new LikeDislike(
+				(int) theElement.getAttributes().get(LIKE),
+				(int) theElement.getAttributes().get(DISLIKE));
 	}
 
 }

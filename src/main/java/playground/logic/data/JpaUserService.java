@@ -58,8 +58,8 @@ public class JpaUserService implements UserService {
 			userEntity.setCode(this.generateCode());
 			String email = userEntity.getUniqueKey().split(delim)[1];
 			
-			//if (EmailService.isValidEmailAddress(email))
-			//	EmailService.sendEmail(email, userEntity.getCode(),userEntity.getUserName());
+			if (EmailService.isValidEmailAddress(email))
+				EmailService.sendEmail(email, userEntity.getCode(),userEntity.getUserName());
 
 			userEntity.setUniqueKey(playground + delim + email);
 			return this.users.save(userEntity);
