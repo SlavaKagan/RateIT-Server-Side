@@ -23,8 +23,6 @@ public class PostMessagePlugin implements Plugin {
 	
 	@Override
 	public Object execute(ActivityEntity command) throws Exception {
-		MovieMessage rv = jackson.readValue(
-				jackson.writeValueAsString(command.getAttributes()), MovieMessage.class);
-		return rv;
+		return jackson.readValue(jackson.writeValueAsString(command.getAttributes()), MovieMessage.class);
 	}
 }

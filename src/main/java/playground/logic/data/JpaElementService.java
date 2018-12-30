@@ -49,6 +49,8 @@ public class JpaElementService implements ElementService {
 		this.playground = playground;
 		this.delim = delim;
 		this.userService = userService;
+		this.moviePageType = moviePageType;
+		this.messagingBoardType = messagingBoardType;
 	}
 
 	@Override
@@ -61,7 +63,7 @@ public class JpaElementService implements ElementService {
 			throws Exception {
 		if (!this.elements.existsById(elementEntity.getUniqueKey())) {
 			if(!elementEntity.getType().equals(this.messagingBoardType) 
-					&& !elementEntity.getType().equals(this.messagingBoardType))
+					&& !elementEntity.getType().equals(this.moviePageType))
 				throw new RuntimeException("Unexcpected element type " + elementEntity.getType());
 			
 			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
@@ -94,7 +96,6 @@ public class JpaElementService implements ElementService {
 	@PlaygroundPerformance
 	public ElementEntity getElement(String userPlayground, String email, String id, String playground)
 			throws ElementNotFoundException {
-		System.err.println(id + delim + playground);
 		Optional<ElementEntity> op = this.elements.findById(id + delim + playground);
 		if (op.isPresent())
 			return op.get();

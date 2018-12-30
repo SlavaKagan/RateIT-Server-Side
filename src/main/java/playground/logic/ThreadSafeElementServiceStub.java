@@ -10,6 +10,9 @@ import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
 import playground.aop.annotations.ValidateNull;
 
 //@Service
@@ -17,9 +20,16 @@ public class ThreadSafeElementServiceStub implements ElementService {
 
 	private Map<String, ElementEntity> elements;
 	
+	private String delim;
+	
 	@PostConstruct
 	public void init() {
 		elements = Collections.synchronizedMap(new HashMap<>());
+	}
+	
+	@Autowired
+	public void setConstants(@Value("${delim:@@}") String delim) {
+		this.delim = delim;
 	}
 
 	public ThreadSafeElementServiceStub() {
@@ -31,7 +41,7 @@ public class ThreadSafeElementServiceStub implements ElementService {
 	}
 
 	public void addElement(ElementEntity element) {
-		elements.put(element.getUniqueKey().split("@@")[0], element);
+		elements.put(element.getUniqueKey().split(delim)[0], element);
 	}
 
 	public void setElements(Map<String, ElementEntity> elements) {
@@ -110,11 +120,11 @@ public class ThreadSafeElementServiceStub implements ElementService {
 		if (element == null)
 			throw new ElementNotFoundException("Element does not exist");
 		this.elements.remove(id);
-		this.elements.put(newElement.getUniqueKey().split("@@")[0], newElement);
+		this.elements.put(newElement.getUniqueKey().split(delim)[0], newElement);
 	}
 	
 	private void checkIfExists(ElementEntity e) throws Exception {
-		if (this.elements.containsKey(e.getUniqueKey().split("@@")[0]))
+		if (this.elements.containsKey(e.getUniqueKey().split(delim)[0]))
 			throw new Exception("Element already exists");
 	}
 

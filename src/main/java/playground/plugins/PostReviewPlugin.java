@@ -24,9 +24,7 @@ public class PostReviewPlugin implements Plugin {
 
 	@Override
 	public Object execute(ActivityEntity command) throws Exception {
-		MovieReview rv = jackson.readValue(
-				jackson.writeValueAsString(command.getAttributes()), MovieReview.class);
-		return rv;
+		return jackson.readValue(jackson.writeValueAsString(command.getAttributes()), MovieReview.class);
 	}
 
 }

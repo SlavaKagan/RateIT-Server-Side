@@ -317,9 +317,7 @@ public class WebUITestElements  {
 		elementservice.createElement(user.getPlayground(), user.getEmail(), newElement.toEntity());
 		
 		// When
-		System.err.println("starting to set type to null");
 		newElement.setType(null);
-		System.err.println("ended set type to null");
 		this.restTemplate.put(url + "/{userPlayground}/{email}/{playground}/{id}", 
 				newElement, 
 				user.getPlayground(), 
@@ -576,7 +574,7 @@ public class WebUITestElements  {
 						+ "\"name\":\"Messaging Board\","
 						+ "\"expirationDate\":null," 
 						+ "\"type\":\"Messaging Board\","
-						+ "\"attributes\":{\"like\":0,\"dislike\":0}," 
+						+ "\"attributes\":" + jacksonMapper.writeValueAsString(actualElement.getAttributes()) + "," 
 						+ "\"creatorPlayground\":\"2019A.Kagan\","
 						+ "\"creatorEmail\":\"rubykozel@gmail.com\"" 
 						+ "}");

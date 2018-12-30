@@ -23,8 +23,6 @@ public class ElementEntity {
 	public ElementEntity() {
 		this.expirationDate = null;
 		this.attributes = new HashMap<>();
-		this.attributes.put("like", 0);
-		this.attributes.put("dislike", 0);
 	}
 	
 	public ElementEntity(String type, String name, String creatorPlayground, String creatorEmail,

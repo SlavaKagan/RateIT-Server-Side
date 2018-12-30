@@ -4,6 +4,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import javax.annotation.PostConstruct;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
 //@Service
@@ -11,21 +13,30 @@ public class ThreadSafeUserServiceStub implements UserService {
 
 	private Map<String, UserEntity> users;
 	
-	@Value("${temporary.code:Anonymous}")
 	private String temporary_code;
-	
-	@Value("${reviewer:Anonymous}")
 	private String reviewer;
-	
-	@Value("${guest:Anonymous}")
 	private String guest;
-	
-	@Value("${manager:Anonymous}")
 	private String manager;
+	private String delim;
 	
 	@PostConstruct
 	public void init() {
 		users = Collections.synchronizedMap(new HashMap<>());
+	}
+	
+	@Autowired
+	public void setConstants(
+			@Value("${temporary.code:Anonymous}") String temporary_code,
+			@Value("${reviewer:Anonymous}") String reviewer,
+			@Value("${guest:Anonymous}") String guest,
+			@Value("${manager:Anonymous}") String manager,
+			@Value("${delim:@@}") String delim) {
+		this.reviewer = reviewer;
+		this.temporary_code = temporary_code;
+		this.guest = guest;
+		this.manager = manager;
+		this.delim = delim;
+		
 	}
 
 	public Map<String, UserEntity> getAllUsers() {
@@ -33,7 +44,7 @@ public class ThreadSafeUserServiceStub implements UserService {
 	}
 
 	public UserEntity createUser(UserEntity user) throws Exception {
-		return this.users.put(user.getUniqueKey().split("@@")[1], user);
+		return this.users.put(user.getUniqueKey().split(delim)[1], user);
 	}
 	
 	@Override
@@ -45,7 +56,7 @@ public class ThreadSafeUserServiceStub implements UserService {
 		UserEntity user = users.get(email);
 		if(user == null)
 			throw new ConfirmationException("This is an unregistered account");
-		else if (!user.getUniqueKey().split("@@")[0].equals(playground))
+		else if (!user.getUniqueKey().split(delim)[0].equals(playground))
 			throw new ConfirmationException("There's no such user in the specified playground");		
 		else if(user.getRole().equals(guest))
 			throw new ConfirmationException("This is an unconfirmed account");
@@ -55,7 +66,7 @@ public class ThreadSafeUserServiceStub implements UserService {
 
 	public UserEntity confirmUser(String playground, String email, String code) throws Exception {
 		UserEntity confirmedUser = users.get(email);
-		if(!confirmedUser.getUniqueKey().split("@@")[0].equals(playground))
+		if(!confirmedUser.getUniqueKey().split(delim)[0].equals(playground))
 			throw new ConfirmationException("There's no such user in the specified playground");
 		else if (code.equals(temporary_code) && confirmedUser.getRole().equals(guest)){
 			confirmedUser.setRole(reviewer);
@@ -69,13 +80,13 @@ public class ThreadSafeUserServiceStub implements UserService {
 	}
 
 	public void editUser(String playground, String email, UserEntity newUser) throws Exception {
-		if(newUser.getUniqueKey().split("@@")[1] == null)
+		if(newUser.getUniqueKey().split(delim)[1] == null)
 			throw new Exception("Email of user can't be null");
 		UserEntity user = getRegisteredUser(playground, email);
 		if(user == null)
 			throw new ConfirmationException("This is an unregistered account");
 		this.users.remove(email);
-		this.users.put(newUser.getUniqueKey().split("@@")[1], newUser);
+		this.users.put(newUser.getUniqueKey().split(delim)[1], newUser);
 	}
 
 	@Override
