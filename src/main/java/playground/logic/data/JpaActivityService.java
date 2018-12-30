@@ -16,14 +16,17 @@ import playground.aop.logger.PlaygroundPerformance;
 import playground.dal.ActivityDao;
 import playground.dal.NumberGenerator;
 import playground.dal.NumberGeneratorDao;
+import playground.dal.UserDao;
 import playground.logic.ActivityEntity;
 import playground.logic.ActivityService;
+import playground.logic.UserEntity;
 import playground.plugins.Plugin;
 
 @Service
 public class JpaActivityService implements ActivityService {
 
 	private ActivityDao activities;
+	private UserDao users;
 	private NumberGeneratorDao numberGenerator;
 	private ObjectMapper jackson;
 	private ConfigurableApplicationContext spring;
@@ -33,11 +36,13 @@ public class JpaActivityService implements ActivityService {
 	@Autowired
 	public void setActivityDao(
 			ActivityDao activities,
+			UserDao users,
 			NumberGeneratorDao numberGenerator,
 			ConfigurableApplicationContext spring,
 			@Value("${delim:@@}") String delim,
 			@Value("${playground:Default}") String playground) {
 		this.activities = activities;
+		this.users = users;
 		this.numberGenerator = numberGenerator;
 		this.jackson = new ObjectMapper();
 		this.spring = spring;
@@ -74,6 +79,14 @@ public class JpaActivityService implements ActivityService {
 			}
 		} catch (Exception e) {
 			throw new RuntimeException(e);
+		}
+		
+		// Grant 10 points to users that posted a review
+		if(activityEntity.getType().equals("PostReview")) {
+			UserEntity userInvokingActivity = this.users.findById(userPlayground + delim + email).get();
+			userInvokingActivity.updatePoints(10);
+			this.users.save(userInvokingActivity);
+			activityEntity.getAttributes().put("userPoints", userInvokingActivity.getPoints());
 		}
 
 		return this.activities.save(activityEntity);
