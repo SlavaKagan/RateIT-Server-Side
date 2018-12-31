@@ -141,7 +141,7 @@ public class WebUITestActivities {
 				+ "\"elementPlayground\":\"2019A.Kagan\","
 				+ "\"elementId\":\"0\","
 				+ "\"type\":\"PostReview\","
-				+ "\"attributes\":{\"review\":\"This is a review\"}"
+				+ "\"attributes\":{\"review\":\"This is a review\",\"userPoints\":10}"
 				+ "}");
 
 	}
