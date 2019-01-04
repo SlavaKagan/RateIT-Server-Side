@@ -262,8 +262,8 @@ public class JpaElementService implements ElementService {
 		if(this.elements.existsById(id + delim + playground)) {
 			ElementEntity existing = getElement(userPlayground, email, id, playground);
 			
-			if(!newElement.getAttributes().equals(existing.getAttributes()))
-				existing.setAttributes(newElement.getAttributes());
+			if(!newElement.getAttributes().isEmpty())
+				existing.getAttributes().putAll(newElement.getAttributes());
 			
 			if(!newElement.getName().equals(existing.getName()))
 				existing.setName(newElement.getName());

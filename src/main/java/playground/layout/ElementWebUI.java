@@ -3,7 +3,6 @@ package playground.layout;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -27,9 +26,7 @@ public class ElementWebUI {
 	private ElementService elementservice;	
 	
 	@Autowired
-	public void setService(
-			ElementService elementervice,
-			@Value("${playground:default}") String playground) {
+	public void setService(ElementService elementervice) {
 		this.elementservice = elementervice;
 	}
 	
