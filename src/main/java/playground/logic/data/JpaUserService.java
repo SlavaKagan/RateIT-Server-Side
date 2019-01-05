@@ -45,14 +45,15 @@ public class JpaUserService implements UserService {
 	@Logger
 	@PlaygroundPerformance
 	public UserEntity createUser(UserEntity userEntity) throws Exception {
+		String email = userEntity.getUniqueKey().split(delim)[1];
+		userEntity.setUniqueKey(playground + delim + email);
+		
 		if (!this.users.existsById(userEntity.getUniqueKey())) {
 			userEntity.setCode(this.generateCode());
-			String email = userEntity.getUniqueKey().split(delim)[1];
 			
 			if (EmailService.getInstance().isValidEmailAddress(email))
 				EmailService.getInstance().sendEmail(email, userEntity.getCode(),userEntity.getUserName());
-
-			userEntity.setUniqueKey(playground + delim + email);
+			
 			return this.users.save(userEntity);
 		} else {
 			throw new RuntimeException("User already exists!");

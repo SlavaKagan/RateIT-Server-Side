@@ -61,18 +61,17 @@ public class JpaElementService implements ElementService {
 	@PlaygroundPerformance
 	public ElementEntity createElement(String userPlayground, String email, ElementEntity elementEntity)
 			throws Exception {
+		
+		NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
+		elementEntity.setNumber(temp.getNextNumber());
+		//Inserting number to uniqueKey
+		elementEntity.setUniqueKey(elementEntity.getNumber() + delim + playground);
+		
 		if (!this.elements.existsById(elementEntity.getUniqueKey())) {
 			if(!elementEntity.getType().equals(this.messagingBoardType) 
 					&& !elementEntity.getType().equals(this.moviePageType))
 				throw new RuntimeException("Unexcpected element type " + elementEntity.getType());
-			
-			NumberGenerator temp = this.numberGenerator.save(new NumberGenerator());
-			
-			elementEntity.setNumber(temp.getNextNumber());
-			
-			//Inserting number to uniqueKey
-			elementEntity.setUniqueKey(elementEntity.getNumber() + delim + playground);
-			
+				
 			elementEntity.setCreatorPlayground(userPlayground);
 			elementEntity.setCreatorEmail(email);
 			
